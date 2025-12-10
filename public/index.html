@@ -1,707 +1,469 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    />
-    <title data-i18n="title.main">Yakutia Local — Маркетплейс Якутии</title>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title data-i18n="title.main">Yakutia Local — Маркетплейс Якутии</title>
 
-    <!-- Базовые стили -->
-    <link rel="stylesheet" href="./assets/css/main.css" />
+  <!-- Общие стили -->
+  <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
 <body>
-    <!-- ========== ШАПКА ========== -->
-    <header class="header">
-        <div class="header__left">
-            <!-- Логотип / название -->
-            <a href="./index.html" class="header__logo" data-i18n="header.logo">
-                Yakutia Local
-            </a>
+  <!-- ========== ШАПКА ========== -->
+  <header class="header">
+    <div class="header__left">
+      <a href="./index.html" class="header__logo" data-i18n="header.logo">
+        Yakutia Local
+      </a>
 
-            <!-- Поиск по товарам -->
-            <div class="header__search">
-                <input
-                    type="text"
-                    id="search-input"
-                    class="header__search-input"
-                    placeholder="Поиск по товарам..."
-                    data-i18n-placeholder="header.searchPlaceholder"
-                />
-            </div>
-        </div>
-
-        <div class="header__right">
-            <!-- Переключатель языка -->
-            <select
-                id="language-select"
-                class="header__lang-select"
-                aria-label="Выбор языка"
-            >
-                <option value="ru">RU</option>
-                <option value="en">EN</option>
-            </select>
-
-            <!-- Кнопки корзины и заказов -->
-            <button
-                id="cart-button"
-                class="header__icon-button"
-                data-i18n="header.cart"
-            >
-                Корзина
-            </button>
-            <button
-                id="orders-button"
-                class="header__icon-button"
-                data-i18n="header.orders"
-            >
-                Мои заказы
-            </button>
-
-            <!-- Кабинет (роль зависит от авторизации) -->
-            <button
-                id="cabinet-button"
-                class="header__icon-button"
-                data-i18n="header.cabinet"
-            >
-                Кабинет
-            </button>
-
-            <!-- Блок авторизации -->
-            <div id="auth-block" class="header__auth">
-                <!-- Версия гостя -->
-                <button
-                    id="login-button"
-                    class="header__auth-button"
-                    data-i18n="header.login"
-                >
-                    Вход
-                </button>
-                <button
-                    id="register-button"
-                    class="header__auth-button header__auth-button--primary"
-                    data-i18n="header.register"
-                >
-                    Регистрация
-                </button>
-                <!--
-                    Комментарий:
-                    После авторизации JS заменит блок на что‑то вроде:
-                    <span class="header__user-name">Иван (продавец)</span>
-                    <button id="logout-button">Выйти</button>
-                -->
-            </div>
-        </div>
-    </header>
-
-    <!-- ========== ОСНОВНОЙ КОНТЕНТ ========== -->
-    <main class="main">
-        <!-- ===== ФИЛЬТРЫ / НАСТРОЙКИ СУММЫ ===== -->
-        <section class="filters" aria-labelledby="filters-title">
-            <h1
-                id="filters-title"
-                class="filters__title"
-                data-i18n="filters.title"
-            >
-                Найдите продукты Якутии под свои задачи
-            </h1>
-            <p class="filters__subtitle" data-i18n="filters.subtitle">
-                Задайте категорию, цену и формат поставки. Сверху — частные мастера и малый бизнес, снизу — крупные поставщики по тем же категориям.
-            </p>
-
-            <div class="filters__row">
-                <!-- Категория -->
-                <div class="filters__group">
-                    <label
-                        for="category-select"
-                        class="filters__label"
-                        data-i18n="filters.category"
-                    >
-                        Категория
-                    </label>
-                    <select
-                        id="category-select"
-                        class="filters__select"
-                    >
-                        <option
-                            value="all"
-                            data-i18n="filters.category_all"
-                        >
-                            Все категории
-                        </option>
-                        <option value="meat" data-i18n="filters.category_meat">
-                            Мясо и рыба
-                        </option>
-                        <option value="milk" data-i18n="filters.category_milk">
-                            Молочные продукты
-                        </option>
-                        <option value="berries" data-i18n="filters.category_berries">
-                            Ягоды и дикоросы
-                        </option>
-                        <option value="ready" data-i18n="filters.category_ready">
-                            Готовые блюда
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Диапазон цены -->
-                <div class="filters__group">
-                    <span
-                        class="filters__label"
-                        data-i18n="filters.priceRange"
-                    >
-                        Диапазон цены
-                    </span>
-                    <div class="filters__price-range">
-                        <input
-                            type="number"
-                            id="price-min"
-                            class="filters__number-input"
-                            placeholder="от"
-                            min="0"
-                        />
-                        <span class="filters__price-separator">—</span>
-                        <input
-                            type="number"
-                            id="price-max"
-                            class="filters__number-input"
-                            placeholder="до"
-                            min="0"
-                        />
-                    </div>
-                </div>
-
-                <!-- Чекбоксы -->
-                <div class="filters__group filters__group--checkboxes">
-                    <label class="filters__checkbox-label">
-                        <input type="checkbox" id="only-sale" />
-                        <span data-i18n="filters.onlySale">
-                            Только со скидкой
-                        </span>
-                    </label>
-                    <label class="filters__checkbox-label">
-                        <input type="checkbox" id="only-popular" />
-                        <span data-i18n="filters.onlyPopular">
-                            Самое популярное
-                        </span>
-                    </label>
-                </div>
-
-                <!-- Кнопка применить -->
-                <div class="filters__group">
-                    <button
-                        id="apply-filters"
-                        class="filters__apply-button"
-                        data-i18n="filters.apply"
-                    >
-                        Применить
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== КАТАЛОГ ЧАСТНЫХ МАСТЕРОВ ===== -->
-        <section
-            class="catalog"
-            aria-labelledby="catalog-title"
-        >
-            <h2
-                id="catalog-title"
-                class="catalog__title"
-                data-i18n="catalog.title"
-            >
-                Объявления частных мастеров и малого бизнеса
-            </h2>
-            <p
-                class="catalog__subtitle"
-                data-i18n="catalog.subtitle"
-            >
-                Выше — объявления частных мастеров и малого бизнеса. Ниже — ориентир по крупным брендам Якутии в тех же категориях.
-            </p>
-
-            <!-- Список товаров -->
-            <div
-                id="products-list"
-                class="catalog__grid"
-            >
-                <!--
-                    Демонстрационные карточки.
-                    Комментарий: в боевой версии JS сначала подгружает список из /api/products,
-                    а если сервер не отвечает — может показать эти примеры как fallback.
-                -->
-
-                <!-- Карточка товара 1 (пример) -->
-                <article
-                    class="product-card"
-                    data-product-id="demo-1"
-                    data-category="meat"
-                >
-                    <div class="product-card__image-wrapper">
-                        <img
-                            src="./assets/img/products/demo_meat.jpg"
-                            alt="Мороженое мясо оленя"
-                            class="product-card__image"
-                        />
-                        <span class="product-card__badge product-card__badge--sale">
-                            -10%
-                        </span>
-                    </div>
-                    <div class="product-card__body">
-                        <h3 class="product-card__title">
-                            Мороженое мясо оленя, 1 кг
-                        </h3>
-                        <p class="product-card__seller">
-                            Продавец: <span>ИП Петров</span>
-                        </p>
-                        <p class="product-card__place">
-                            Якутск, самовывоз / доставка
-                        </p>
-                        <p class="product-card__desc">
-                            Оленина шоковой заморозки, фермерское хозяйство из района Кобяйский.
-                        </p>
-                        <div class="product-card__prices">
-                            <span class="product-card__price-current">
-                                900 ₽
-                            </span>
-                            <span class="product-card__price-old">
-                                1000 ₽
-                            </span>
-                        </div>
-                    </div>
-                    <div class="product-card__footer">
-                        <!-- Кнопки для покупателей -->
-                        <button
-                            class="product-card__button product-card__button--primary js-add-to-cart"
-                        >
-                            В корзину
-                        </button>
-                        <button
-                            class="product-card__button js-add-to-favorites"
-                        >
-                            ❤ В избранное
-                        </button>
-                        <button
-                            class="product-card__button js-open-chat"
-                        >
-                            Написать продавцу
-                        </button>
-
-                        <!-- Кнопки для продавца (показываются, если авторизован как продавец) -->
-                        <div class="product-card__owner-actions">
-                            <button
-                                class="product-card__link js-edit-product"
-                            >
-                                Редактировать
-                            </button>
-                            <button
-                                class="product-card__link product-card__link--danger js-delete-product"
-                            >
-                                Удалить
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Карточка товара 2 (пример) -->
-                <article
-                    class="product-card"
-                    data-product-id="demo-2"
-                    data-category="berries"
-                >
-                    <div class="product-card__image-wrapper">
-                        <img
-                            src="./assets/img/products/demo_berries.jpg"
-                            alt="Смесь северных ягод"
-                            class="product-card__image"
-                        />
-                        <span class="product-card__badge">
-                            Хит
-                        </span>
-                    </div>
-                    <div class="product-card__body">
-                        <h3 class="product-card__title">
-                            Смесь северных ягод, 1 кг
-                        </h3>
-                        <p class="product-card__seller">
-                            Продавец: <span>ООО «СеверЯгода»</span>
-                        </p>
-                        <p class="product-card__place">
-                            Якутск, отправка по России
-                        </p>
-                        <p class="product-card__desc">
-                            Брусника, голубика, морошка. Собрано вручную, быстрая заморозка.
-                        </p>
-                        <div class="product-card__prices">
-                            <span class="product-card__price-current">
-                                1200 ₽
-                            </span>
-                        </div>
-                    </div>
-                    <div class="product-card__footer">
-                        <button
-                            class="product-card__button product-card__button--primary js-add-to-cart"
-                        >
-                            В корзину
-                        </button>
-                        <button
-                            class="product-card__button js-add-to-favorites"
-                        >
-                            ❤ В избранное
-                        </button>
-                        <button
-                            class="product-card__button js-open-chat"
-                        >
-                            Написать продавцу
-                        </button>
-                        <div class="product-card__owner-actions">
-                            <button
-                                class="product-card__link js-edit-product"
-                            >
-                                Редактировать
-                            </button>
-                            <button
-                                class="product-card__link product-card__link--danger js-delete-product"
-                            >
-                                Удалить
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- При реальной работе все карточки будут добавляться JS из /api/products -->
-            </div>
-        </section>
-
-        <!-- ===== КРУПНЫЕ ПРОИЗВОДИТЕЛИ / БРЕНДЫ ===== -->
-        <section
-            class="brands"
-            aria-labelledby="brands-title"
-        >
-            <h2
-                id="brands-title"
-                class="brands__title"
-                data-i18n="brands.title"
-            >
-                Крупные производители Якутии
-            </h2>
-            <p
-                class="brands__subtitle"
-                data-i18n="brands.subtitle"
-            >
-                Ниже — ориентир по крупным поставщикам продуктов и брендам Якутии в тех же категориях.
-            </p>
-
-            <div
-                id="brands-list"
-                class="brands__grid"
-            >
-                <!-- Бренд 1 (пример) -->
-                <article
-                    class="brand-card"
-                    data-brand-id="demo-brand-1"
-                >
-                    <div class="brand-card__logo-wrapper">
-                        <img
-                            src="./assets/img/brands/demo_brand_meat.png"
-                            alt="Логотип «ЯкутМясо»"
-                            class="brand-card__logo"
-                        />
-                    </div>
-                    <div class="brand-card__body">
-                        <h3 class="brand-card__title">
-                            ООО «ЯкутМясо»
-                        </h3>
-                        <p class="brand-card__categories">
-                            Категории: мясо, полуфабрикаты
-                        </p>
-                        <p class="brand-card__desc">
-                            Крупный поставщик мяса и мясных изделий по всей Якутии.
-                        </p>
-                        <button
-                            class="brand-card__button js-open-brand"
-                        >
-                            Подробнее о производителе
-                        </button>
-                    </div>
-                </article>
-
-                <!-- Бренд 2 (пример) -->
-                <article
-                    class="brand-card"
-                    data-brand-id="demo-brand-2"
-                >
-                    <div class="brand-card__logo-wrapper">
-                        <img
-                            src="./assets/img/brands/demo_brand_milk.png"
-                            alt="Логотип «СеверМолоко»"
-                            class="brand-card__logo"
-                        />
-                    </div>
-                    <div class="brand-card__body">
-                        <h3 class="brand-card__title">
-                            АО «СеверМолоко»
-                        </h3>
-                        <p class="brand-card__categories">
-                            Категории: молочные продукты
-                        </p>
-                        <p class="brand-card__desc">
-                            Молочные продукты из сырья местных фермеров.
-                        </p>
-                        <button
-                            class="brand-card__button js-open-brand"
-                        >
-                            Подробнее о производителе
-                        </button>
-                    </div>
-                </article>
-            </div>
-        </section>
-    </main>
-
-    <!-- ========== МОДАЛКИ ========== -->
-
-    <!-- Корзина -->
-    <div
-        id="cart-modal"
-        class="modal"
-        aria-hidden="true"
-    >
-        <div
-            class="modal__overlay"
-            data-modal-close
-        ></div>
-        <div class="modal__content">
-            <header class="modal__header">
-                <h3
-                    class="modal__title"
-                    data-i18n="cart.title"
-                >
-                    Моя корзина
-                </h3>
-                <button
-                    class="modal__close-button"
-                    data-modal-close
-                >
-                    &times;
-                </button>
-            </header>
-            <div
-                id="cart-items"
-                class="modal__body"
-            >
-                <!-- Список товаров в корзине -->
-            </div>
-            <footer class="modal__footer">
-                <div class="modal__footer-row">
-                    <span data-i18n="cart.total">
-                        Итого:
-                    </span>
-                    <span id="cart-total-amount">0 ₽</span>
-                </div>
-                <button
-                    id="cart-checkout"
-                    class="modal__primary-button"
-                    data-i18n="cart.checkout"
-                >
-                    Оформить заказ
-                </button>
-            </footer>
-        </div>
+      <div class="header__search">
+        <input
+          type="text"
+          id="search-input"
+          class="header__search-input"
+          placeholder="Поиск по товарам..."
+          data-i18n-placeholder="header.searchPlaceholder"
+        />
+      </div>
     </div>
 
-    <!-- Заказы -->
-    <div
-        id="orders-modal"
-        class="modal"
-        aria-hidden="true"
-    >
-        <div
-            class="modal__overlay"
-            data-modal-close
-        ></div>
-        <div class="modal__content">
-            <header class="modal__header">
-                <h3
-                    class="modal__title"
-                    data-i18n="orders.title"
-                >
-                    Мои заказы
-                </h3>
-                <button
-                    class="modal__close-button"
-                    data-modal-close
-                >
-                    &times;
-                </button>
-            </header>
-            <div
-                id="orders-list"
-                class="modal__body"
-            >
-                <!-- Список заказов -->
-            </div>
-        </div>
-    </div>
+    <div class="header__right">
+      <select
+        id="language-select"
+        class="header__lang-select"
+        aria-label="Выбор языка"
+      >
+        <option value="ru">RU</option>
+        <option value="en">EN</option>
+      </select>
 
-    <!-- Чат с продавцом -->
-    <div
-        id="chat-modal"
-        class="modal"
-        aria-hidden="true"
-    >
-        <div
-            class="modal__overlay"
-            data-modal-close
-        ></div>
-        <div class="modal__content modal__content--chat">
-            <header class="modal__header">
-                <h3
-                    class="modal__title"
-                    data-i18n="chat.title"
-                >
-                    Чат с продавцом
-                </h3>
-                <button
-                    class="modal__close-button"
-                    data-modal-close
-                >
-                    &times;
-                </button>
-            </header>
-            <div
-                id="chat-messages"
-                class="chat"
-            >
-                <!-- Сообщения -->
-            </div>
-            <footer class="modal__footer modal__footer--chat">
-                <input
-                    type="text"
-                    id="chat-input"
-                    class="chat__input"
-                    placeholder="Напишите сообщение..."
-                    data-i18n-placeholder="chat.placeholder"
-                />
-                <button
-                    id="chat-send"
-                    class="chat__send-button"
-                    data-i18n="chat.send"
-                >
-                    Отправить
-                </button>
-            </footer>
-        </div>
-    </div>
+      <button
+        id="cart-button"
+        class="header__icon-button"
+        data-i18n="header.cart"
+      >
+        Корзина
+      </button>
+      <button
+        id="orders-button"
+        class="header__icon-button"
+        data-i18n="header.orders"
+      >
+        Мои заказы
+      </button>
 
-    <!-- Информация о бренде -->
-    <div
-        id="brand-modal"
-        class="modal"
-        aria-hidden="true"
-    >
-        <div
-            class="modal__overlay"
-            data-modal-close
-        ></div>
-        <div class="modal__content">
-            <header class="modal__header">
-                <h3
-                    id="brand-modal-title"
-                    class="modal__title"
-                ></h3>
-                <button
-                    class="modal__close-button"
-                    data-modal-close
-                >
-                    &times;
-                </button>
-            </header>
-            <div
-                id="brand-modal-body"
-                class="modal__body"
-            >
-                <!-- Описание бренда -->
-            </div>
-        </div>
-    </div>
+      <button
+        id="cabinet-button"
+        class="header__icon-button"
+        data-i18n="header.cabinet"
+      >
+        Кабинет
+      </button>
 
-    <!-- ========== ВИДЖЕТ ИИ-БОТА ========== -->
-    <div class="bot-widget">
+      <div id="auth-block" class="header__auth">
         <button
-            id="bot-toggle"
-            class="bot-widget__button"
-            data-i18n="bot.help"
+          id="login-button"
+          class="header__auth-button"
+          data-i18n="header.login"
         >
-            Нужна помощь?
+          Вход
         </button>
-        <div
-            id="bot-panel"
-            class="bot-widget__panel"
-            hidden
+        <button
+          id="register-button"
+          class="header__auth-button header__auth-button--primary"
+          data-i18n="header.register"
         >
-            <div
-                id="bot-messages"
-                class="bot-widget__messages"
-            >
-                <!-- Диалог с ботом -->
-            </div>
-            <div class="bot-widget__footer">
-                <input
-                    type="text"
-                    id="bot-input"
-                    class="bot-widget__input"
-                    placeholder="Спросите о товаре..."
-                    data-i18n-placeholder="bot.placeholder"
-                />
-                <button
-                    id="bot-send"
-                    class="bot-widget__send"
-                    data-i18n="bot.send"
-                >
-                    ▶
-                </button>
-            </div>
-        </div>
+          Регистрация
+        </button>
+      </div>
     </div>
+  </header>
 
-    <!-- ========== ПОДВАЛ ========== -->
-    <footer class="footer">
-        <div class="footer__inner">
-            <span data-i18n="footer.copy">
-                © Yakutia Local. Все права защищены.
-            </span>
-            <a
-                href="#"
-                class="footer__link"
-                data-i18n="footer.about"
+  <!-- ========== ОСНОВНОЙ КОНТЕНТ ========== -->
+  <main class="main">
+    <!-- Фильтры -->
+    <section class="filters" aria-labelledby="filters-title">
+      <h1
+        id="filters-title"
+        class="filters__title"
+        data-i18n="filters.title"
+      >
+        Найдите продукты Якутии под свои задачи
+      </h1>
+      <p class="filters__subtitle" data-i18n="filters.subtitle">
+        Задайте категорию, цену и формат поставки. Сверху — частные мастера и малый бизнес, снизу — крупные поставщики по тем же категориям.
+      </p>
+
+      <div class="filters__row">
+        <div class="filters__group">
+          <label
+            for="category-select"
+            class="filters__label"
+            data-i18n="filters.category"
+          >
+            Категория
+          </label>
+          <select
+            id="category-select"
+            class="filters__select"
+          >
+            <option
+              value="all"
+              data-i18n="filters.category_all"
             >
-                О проекте
-            </a>
-            <a
-                href="#"
-                class="footer__link"
-                data-i18n="footer.contacts"
-            >
-                Контакты
-            </a>
+              Все категории
+            </option>
+            <option value="meat" data-i18n="filters.category_meat">
+              Мясо и рыба
+            </option>
+            <option value="milk" data-i18n="filters.category_milk">
+              Молочные продукты
+            </option>
+            <option value="berries" data-i18n="filters.category_berries">
+              Ягоды и дикоросы
+            </option>
+            <option value="ready" data-i18n="filters.category_ready">
+              Готовые блюда
+            </option>
+          </select>
         </div>
-    </footer>
 
-    <!-- ========== СКРИПТЫ ========== -->
-    <script src="./assets/js/modules/state.js"></script>
-    <script src="./assets/js/modules/i18n.js"></script>
-    <script src="./assets/js/api/apiClient.js"></script>
-    <script src="./assets/js/api/productsApi.js"></script>
-    <script src="./assets/js/api/brandsApi.js"></script>
-    <script src="./assets/js/modules/catalog.js"></script>
-    <script src="./assets/js/modules/brands.js"></script>
-    <script src="./assets/js/modules/cart.js"></script>
-    <script src="./assets/js/modules/orders.js"></script>
-    <script src="./assets/js/modules/favorites.js"></script>
-    <script src="./assets/js/modules/chat.js"></script>
-    <script src="./assets/js/modules/bot.js"></script>
-    <script src="./assets/js/modules/auth.js"></script>
-    <script src="./assets/js/pages/indexPage.js"></script>
+        <div class="filters__group">
+          <span
+            class="filters__label"
+            data-i18n="filters.priceRange"
+          >
+            Диапазон цены
+          </span>
+          <div class="filters__price-range">
+            <input
+              type="number"
+              id="price-min"
+              class="filters__number-input"
+              placeholder="от"
+              min="0"
+            />
+            <span class="filters__price-separator">—</span>
+            <input
+              type="number"
+              id="price-max"
+              class="filters__number-input"
+              placeholder="до"
+              min="0"
+            />
+          </div>
+        </div>
+
+        <div class="filters__group filters__group--checkboxes">
+          <label class="filters__checkbox-label">
+            <input type="checkbox" id="only-sale" />
+            <span data-i18n="filters.onlySale">
+              Только со скидкой
+            </span>
+          </label>
+          <label class="filters__checkbox-label">
+            <input type="checkbox" id="only-popular" />
+            <span data-i18n="filters.onlyPopular">
+              Самое популярное
+            </span>
+          </label>
+        </div>
+
+        <div class="filters__group">
+          <button
+            id="apply-filters"
+            class="filters__apply-button"
+            data-i18n="filters.apply"
+          >
+            Применить
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Каталог частных мастеров -->
+    <section
+      class="catalog"
+      aria-labelledby="catalog-title"
+    >
+      <h2
+        id="catalog-title"
+        class="catalog__title"
+        data-i18n="catalog.title"
+      >
+        Объявления частных мастеров и малого бизнеса
+      </h2>
+      <p
+        class="catalog__subtitle"
+        data-i18n="catalog.subtitle"
+      >
+        Выше — объявления частных мастеров и малого бизнеса. Ниже — ориентир по крупным брендам Якутии в тех же категориях.
+      </p>
+
+      <div
+        id="products-list"
+        class="catalog__grid"
+      >
+        <!-- Карточки товаров будут подгружены через JS -->
+      </div>
+    </section>
+
+    <!-- Крупные производители -->
+    <section
+      class="brands"
+      aria-labelledby="brands-title"
+    >
+      <h2
+        id="brands-title"
+        class="brands__title"
+        data-i18n="brands.title"
+      >
+        Крупные производители Якутии
+      </h2>
+      <p
+        class="brands__subtitle"
+        data-i18n="brands.subtitle"
+      >
+        Ниже — ориентир по крупным поставщикам продуктов и брендам Якутии в тех же категориях.
+      </p>
+
+      <div
+        id="brands-list"
+        class="brands__grid"
+      >
+        <!-- Карточки брендов будут подгружены через JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== МОДАЛКИ (КОРОТКО, БЕЗ ПОЛНОЙ ЛОГИКИ) ========== -->
+
+  <!-- Корзина -->
+  <div
+    id="cart-modal"
+    class="modal"
+    aria-hidden="true"
+  >
+    <div
+      class="modal__overlay"
+      data-modal-close
+    ></div>
+    <div class="modal__content">
+      <header class="modal__header">
+        <h3
+          class="modal__title"
+          data-i18n="cart.title"
+        >
+          Моя корзина
+        </h3>
+        <button
+          class="modal__close-button"
+          data-modal-close
+        >
+          &times;
+        </button>
+      </header>
+      <div
+        id="cart-items"
+        class="modal__body"
+      ></div>
+      <footer class="modal__footer">
+        <div class="modal__footer-row">
+          <span data-i18n="cart.total">Итого:</span>
+          <span id="cart-total-amount">0 ₽</span>
+        </div>
+        <button
+          id="cart-checkout"
+          class="modal__primary-button"
+          data-i18n="cart.checkout"
+        >
+          Оформить заказ
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Заказы -->
+  <div
+    id="orders-modal"
+    class="modal"
+    aria-hidden="true"
+  >
+    <div
+      class="modal__overlay"
+      data-modal-close
+    ></div>
+    <div class="modal__content">
+      <header class="modal__header">
+        <h3
+          class="modal__title"
+          data-i18n="orders.title"
+        >
+          Мои заказы
+        </h3>
+        <button
+          class="modal__close-button"
+          data-modal-close
+        >
+          &times;
+        </button>
+      </header>
+      <div
+        id="orders-list"
+        class="modal__body"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Чат с продавцом -->
+  <div
+    id="chat-modal"
+    class="modal"
+    aria-hidden="true"
+  >
+    <div
+      class="modal__overlay"
+      data-modal-close
+    ></div>
+    <div class="modal__content modal__content--chat">
+      <header class="modal__header">
+        <h3
+          class="modal__title"
+          data-i18n="chat.title"
+        >
+          Чат с продавцом
+        </h3>
+        <button
+          class="modal__close-button"
+          data-modal-close
+        >
+          &times;
+        </button>
+      </header>
+      <div
+        id="chat-messages"
+        class="chat"
+      ></div>
+      <footer class="modal__footer modal__footer--chat">
+        <input
+          type="text"
+          id="chat-input"
+          class="chat__input"
+          placeholder="Напишите сообщение..."
+          data-i18n-placeholder="chat.placeholder"
+        />
+        <button
+          id="chat-send"
+          class="chat__send-button"
+          data-i18n="chat.send"
+        >
+          Отправить
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Модалка бренда -->
+  <div
+    id="brand-modal"
+    class="modal"
+    aria-hidden="true"
+  >
+    <div
+      class="modal__overlay"
+      data-modal-close
+    ></div>
+    <div class="modal__content">
+      <header class="modal__header">
+        <h3
+          id="brand-modal-title"
+          class="modal__title"
+        ></h3>
+        <button
+          class="modal__close-button"
+          data-modal-close
+        >
+          &times;
+        </button>
+      </header>
+      <div
+        id="brand-modal-body"
+        class="modal__body"
+      ></div>
+    </div>
+  </div>
+
+  <!-- ========== ВИДЖЕТ БОТА (УПРОЩЁННЫЙ) ========== -->
+  <div class="bot-widget">
+    <button
+      id="bot-toggle"
+      class="bot-widget__button"
+      data-i18n="bot.help"
+    >
+      Нужна помощь?
+    </button>
+    <div
+      id="bot-panel"
+      class="bot-widget__panel"
+      hidden
+    >
+      <div
+        id="bot-messages"
+        class="bot-widget__messages"
+      ></div>
+      <div class="bot-widget__footer">
+        <input
+          type="text"
+          id="bot-input"
+          class="bot-widget__input"
+          placeholder="Спросите о товаре..."
+          data-i18n-placeholder="bot.placeholder"
+        />
+        <button
+          id="bot-send"
+          class="bot-widget__send"
+          data-i18n="bot.send"
+        >
+          ▶
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ПОДВАЛ ========== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <span data-i18n="footer.copy">
+        © Yakutia Local. Все права защищены.
+      </span>
+      <a
+        href="#"
+        class="footer__link"
+        data-i18n="footer.about"
+      >
+        О проекте
+      </a>
+      <a
+        href="#"
+        class="footer__link"
+        data-i18n="footer.contacts"
+      >
+        Контакты
+      </a>
+    </div>
+  </footer>
+
+  <!-- ========== СКРИПТЫ ========== -->
+  <script src="./assets/js/api/apiClient.js"></script>
+  <script src="./assets/js/api/productsApi.js"></script>
+  <script src="./assets/js/api/brandsApi.js"></script>
+  <script src="./assets/js/modules/cart.js"></script>
+  <script src="./assets/js/modules/favorites.js"></script>
+  <script src="./assets/js/modules/catalog.js"></script>
+  <script src="./assets/js/modules/brands.js"></script>
+  <script src="./assets/js/pages/indexPage.js"></script>
 </body>
 </html>
