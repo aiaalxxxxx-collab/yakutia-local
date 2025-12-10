@@ -1,330 +1,371 @@
-// cabinetPage.js — логика работы Личного кабинета
-// Переключение ролей, профили, список объявлений продавца, форма создания/редактирования.
-
-/** @type {string|null} */
-let currentRole = 'buyer';
-/** @type {any|null} */
-let currentUser = null;
-/** @type {Array<any>} */
-let sellerProducts = [];
-
 /**
- * Инициализация страницы кабинета.
+ * cabinetPage.js — Production-ready логика кабинета
  */
-async function initCabinetPage() {
-  // Определяем пользователя по токену (если есть)
-  try {
-    currentUser = await getCurrentUser();
-    renderCurrentUserHeader(currentUser);
-    if (currentUser && currentUser.role) {
-      // Если у юзера своя роль — включим соответствующую вкладку
-      switchRole(currentUser.role);
-    }
-  } catch {
-    // Гость или токен невалиден — оставляем роль "покупатель"
-    currentUser = null;
-  }
 
-  initRoleTabs();
-  initProfileForms();
-  if (currentUser && currentUser.role === 'seller') {
-    await loadSellerProducts();
-    bindSellerProductModal();
-  } else {
-    bindSellerProductModal(); // хотя бы откроется пустая форма
-  }
-}
+// --- КОНФИГУРАЦИЯ ---
+const API_URL = 'http://localhost:3000/api'; // Убедись, что Python сервер запущен
+let CURRENT_USER = null;
+let AUTH_TOKEN = localStorage.getItem('token');
 
-/**
- * Показать имя и роль в шапке Кабинета.
- * @param {{name?:string,role?:string,email?:string}} user
- */
-function renderCurrentUserHeader(user) {
-  const nameEl = document.getElementById('current-user-name');
-  if (!nameEl || !user) return;
-  const roleLabel =
-    user.role === 'seller'
-      ? 'продавец'
-      : user.role === 'courier'
-      ? 'курьер'
-      : 'покупатель';
-  nameEl.textContent = `${user.name || user.email || 'Пользователь'} (роль: ${roleLabel})`;
-}
-
-/**
- * Инициализировать переключение вкладок ролей.
- */
-function initRoleTabs() {
-  const tabs = document.querySelectorAll('.cabinet__role-tab');
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      const role = tab.getAttribute('data-role');
-      if (!role) return;
-      switchRole(role);
-    });
-  });
-}
-
-/**
- * Переключить роль/панель кабинета.
- * @param {'buyer'|'seller'|'courier'} role
- */
-function switchRole(role) {
-  currentRole = role;
-
-  // Кнопки-вкладки
-  const tabs = document.querySelectorAll('.cabinet__role-tab');
-  tabs.forEach((tab) => {
-    const r = tab.getAttribute('data-role');
-    if (r === role) {
-      tab.classList.add('cabinet__role-tab--active');
-    } else {
-      tab.classList.remove('cabinet__role-tab--active');
-    }
-  });
-
-  // Панели
-  const panels = document.querySelectorAll('.cabinet__role-panel');
-  panels.forEach((panel) => {
-    if (panel.id === `cabinet-${role}`) {
-      panel.classList.add('cabinet__role-panel--active');
-    } else {
-      panel.classList.remove('cabinet__role-panel--active');
-    }
-  });
-}
-
-/**
- * Инициализировать обработчики форм профилей (пока просто alert + console).
- */
-function initProfileForms() {
-  const buyerForm = document.getElementById('buyer-profile-form');
-  if (buyerForm) {
-    buyerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(buyerForm).entries());
-      console.log('Сохранение профиля покупателя:', data);
-      alert('Профиль покупателя сохранён (демо, без сервера).');
-    });
-  }
-
-  const sellerForm = document.getElementById('seller-profile-form');
-  if (sellerForm) {
-    sellerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(sellerForm).entries());
-      console.log('Сохранение профиля продавца:', data);
-      alert('Профиль продавца сохранён (демо, без сервера).');
-    });
-  }
-
-  const courierForm = document.getElementById('courier-profile-form');
-  if (courierForm) {
-    courierForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(courierForm).entries());
-      console.log('Сохранение профиля курьера:', data);
-      alert('Профиль курьера сохранён (демо, без сервера).');
-    });
-  }
-}
-
-/**
- * Загрузить товары текущего продавца и отрисовать их.
- */
-async function loadSellerProducts() {
-  try {
-    const allProducts = await getProducts();
-    // В JSON сервера товары имеют поле sellerId, фильтруем по текущему юзеру.
-    sellerProducts = Array.isArray(allProducts)
-      ? allProducts.filter((p) => p.sellerId === currentUser.id)
-      : [];
-
-    renderSellerProductsList();
-  } catch (e) {
-    console.error('Ошибка загрузки объявлений продавца:', e);
-  }
-}
-
-/**
- * Отрисовать список объявлений продавца в блоке #seller-products-list.
- */
-function renderSellerProductsList() {
-  const listEl = document.getElementById('seller-products-list');
-  if (!listEl) return;
-
-  if (!sellerProducts.length) {
-    listEl.innerHTML =
-      '<p style="font-size:0.9rem;color:#6b7280;">У вас пока нет опубликованных объявлений.</p>';
-    return;
-  }
-
-  const html = sellerProducts
-    .map(
-      (p) => `
-      <div class="seller-product-row" data-product-id="${p.id}">
-        <div class="seller-product-row__main">
-          <strong>${escapeHtml(p.title)}</strong>
-          <span>${Number(p.price)} ₽</span>
-          <span>${escapeHtml(p.category || '')}</span>
-        </div>
-        <div class="seller-product-row__actions">
-          <button class="seller-product-row__btn js-seller-edit">Редактировать</button>
-          <button class="seller-product-row__btn seller-product-row__btn--danger js-seller-delete">Удалить</button>
-        </div>
-      </div>
-    `
-    )
-    .join('');
-
-  listEl.innerHTML = html;
-
-  listEl.addEventListener(
-    'click',
-    async (event) => {
-      const target = /** @type {HTMLElement} */ (event.target);
-      const row = target.closest('.seller-product-row');
-      if (!row) return;
-      const id = Number(row.getAttribute('data-product-id'));
-      const product = sellerProducts.find((p) => p.id === id);
-      if (!product) return;
-
-      if (target.closest('.js-seller-edit')) {
-        openProductEditModal(product);
+// --- ИНИЦИАЛИЗАЦИЯ ---
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!AUTH_TOKEN) {
+        window.location.href = 'index.html'; // Редирект, если нет токена
         return;
-      }
-
-      if (target.closest('.js-seller-delete')) {
-        if (!confirm('Удалить это объявление?')) return;
-        // В боевой версии здесь вызовем реальное API удаления
-        alert('Удаление товара пока заглушка. API delete можно добавить позже.');
-        return;
-      }
-    },
-    { once: true }
-  );
-}
-
-/**
- * Привязать кнопку "Добавить объявление" и форму модалки.
- */
-function bindSellerProductModal() {
-  const openBtn = document.getElementById('seller-add-product-button');
-  if (openBtn) {
-    openBtn.addEventListener('click', () => {
-      openProductEditModal(null);
-    });
-  }
-
-  const form = document.getElementById('product-edit-form');
-  if (!form) return;
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (!currentUser || currentUser.role !== 'seller') {
-      alert('Создавать объявления может только авторизованный продавец.');
-      return;
     }
-
-    const formData = new FormData(form);
-    const raw = Object.fromEntries(formData.entries());
-
-    const payload = {
-      title: raw.title || '',
-      price: Number(raw.price) || 0,
-      oldPrice: raw.oldPrice ? Number(raw.oldPrice) : null,
-      discount: raw.discount ? Number(raw.discount) : null,
-      category: raw.category || 'other',
-      place: raw.place || 'Якутия',
-      desc: raw.desc || '',
-      promoted: !!raw.promoted,
-      isSale: !!raw.isSale
-      // imageUrl пока не трогаем (нужен отдельный upload)
-    };
-
-    const id = raw.id ? Number(raw.id) : null;
 
     try {
-      if (id) {
-        await updateProduct(id, payload);
-        alert('Объявление обновлено (демо).');
-      } else {
-        await createProduct(payload);
-        alert('Объявление создано (демо).');
-      }
-      closeProductEditModal();
-      await loadSellerProducts();
+        await fetchUserInfo();
+        setupSidebar();
+        setupModal();
+        
+        // По умолчанию открываем Обзор
+        switchView('overview');
     } catch (e) {
-      console.error('Ошибка сохранения объявления:', e);
-      alert('Не удалось сохранить объявление.');
+        console.error('Auth error', e);
+        showToast('Ошибка авторизации. Войдите снова.', 'error');
+        // localStorage.removeItem('token');
+        // window.location.href = 'index.html';
     }
-  });
+    
+    // Кнопка выхода
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        if(confirm('Выйти из аккаунта?')) {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+    });
+});
+
+// --- API CLIENT (Обертка) ---
+async function apiRequest(endpoint, method = 'GET', body = null, isFormData = false) {
+    const headers = { 'Authorization': `Bearer ${AUTH_TOKEN}` };
+    if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    const config = { method, headers };
+    if (body) {
+        config.body = isFormData ? body : JSON.stringify(body);
+    }
+
+    const res = await fetch(`${API_URL}${endpoint}`, config);
+    if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `Error ${res.status}`);
+    }
+    return res.json();
 }
 
-/**
- * Открыть модалку редактирования товара.
- * @param {any|null} product - Товар или null для нового.
- */
-function openProductEditModal(product) {
-  const modal = document.getElementById('product-edit-modal');
-  const titleEl = document.getElementById('product-edit-title');
-  const form = document.getElementById('product-edit-form');
-  const preview = document.getElementById('product-image-preview');
-
-  if (!modal || !form) return;
-
-  if (product) {
-    titleEl.textContent = 'Редактирование объявления';
-    form.elements.id.value = product.id;
-    form.elements.title.value = product.title || '';
-    form.elements.price.value = product.price || '';
-    form.elements.oldPrice.value = product.oldPrice || '';
-    form.elements.discount.value = product.discount || '';
-    form.elements.category.value = product.category || 'other';
-    form.elements.place.value = product.place || '';
-    form.elements.desc.value = product.desc || '';
-    form.elements.promoted.checked = !!product.promoted;
-    form.elements.isSale.checked = !!product.isSale;
-    if (preview && product.imageUrl) {
-      preview.src = product.imageUrl;
-      preview.hidden = false;
-    }
-  } else {
-    titleEl.textContent = 'Новое объявление';
-    form.reset();
-    form.elements.id.value = '';
-    if (preview) {
-      preview.hidden = true;
-      preview.src = '';
-    }
-  }
-
-  modal.classList.add('modal--open');
+// --- ПОЛУЧЕНИЕ ДАННЫХ ПОЛЬЗОВАТЕЛЯ ---
+async function fetchUserInfo() {
+    CURRENT_USER = await apiRequest('/users/me');
+    
+    // Обновляем UI в сайдбаре
+    document.getElementById('user-name-display').textContent = CURRENT_USER.name || CURRENT_USER.email;
+    
+    const roleMap = { buyer: 'Покупатель', seller: 'Продавец', courier: 'Курьер' };
+    document.getElementById('user-role-display').textContent = roleMap[CURRENT_USER.role] || CURRENT_USER.role;
 }
 
-/**
- * Закрыть модалку редактирования товара.
- */
-function closeProductEditModal() {
-  const modal = document.getElementById('product-edit-modal');
-  if (modal) {
+// --- ГЕНЕРАЦИЯ МЕНЮ (ПО РОЛЯМ) ---
+function setupSidebar() {
+    const menu = document.getElementById('sidebar-menu');
+    menu.innerHTML = ''; // Очистка
+
+    // Общие пункты
+    addMenuItem(menu, 'overview', 'Обзор');
+
+    // Пункты для Продавца
+    if (CURRENT_USER.role === 'seller') {
+        addMenuItem(menu, 'products', 'Мои товары');
+        addMenuItem(menu, 'orders', 'Заказы покупателей');
+    }
+    
+    // Пункты для Покупателя
+    if (CURRENT_USER.role === 'buyer') {
+        addMenuItem(menu, 'orders', 'Мои покупки');
+        addMenuItem(menu, 'favorites', 'Избранное');
+    }
+
+    // Обработчик кликов
+    menu.addEventListener('click', (e) => {
+        const item = e.target.closest('.nav-item');
+        if (item) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+            switchView(item.dataset.tab);
+        }
+    });
+}
+
+function addMenuItem(container, tabName, label) {
+    const div = document.createElement('div');
+    div.className = 'nav-item';
+    div.dataset.tab = tabName;
+    div.textContent = label;
+    container.appendChild(div);
+}
+
+// --- ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ---
+async function switchView(viewName) {
+    // Скрываем все секции
+    document.querySelectorAll('.view-section').forEach(el => el.hidden = true);
+    
+    // Логика загрузки данных для экрана
+    if (viewName === 'overview') {
+        document.getElementById('view-overview').hidden = false;
+        loadStats();
+    } else if (viewName === 'products') {
+        document.getElementById('view-products').hidden = false;
+        loadSellerProducts();
+    } else if (viewName === 'orders') {
+        document.getElementById('view-orders').hidden = false;
+        loadOrders();
+    } else {
+        showToast(`Раздел ${viewName} в разработке`, 'warning');
+    }
+}
+
+// --- ЛОГИКА: ТОВАРЫ (Seller) ---
+async function loadSellerProducts() {
+    const tbody = document.getElementById('products-table-body');
+    tbody.innerHTML = '<tr><td colspan="5">Загрузка...</td></tr>';
+
+    try {
+        // Получаем все товары
+        const allProducts = await apiRequest('/products');
+        // Фильтруем на клиенте (т.к. у нас простой JSON сервер)
+        // В реальном SQL API фильтр был бы на бэкенде
+        const myProducts = allProducts.filter(p => p.sellerId === CURRENT_USER.id);
+
+        if (myProducts.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">У вас нет товаров</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = myProducts.map(p => `
+            <tr>
+                <td><img src="${p.imageUrl || 'assets/img/no-photo.png'}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"></td>
+                <td>${escapeHtml(p.title)}</td>
+                <td><b>${p.price} ₽</b></td>
+                <td>${p.category}</td>
+                <td>
+                    <button class="button button--sm button--secondary" onclick="editProduct(${p.id})">Edit</button>
+                    <button class="button button--sm" style="background:#fee2e2; color:#991b1b;" onclick="deleteProduct(${p.id})">Del</button>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Сохраним список локально для редактирования
+        window.loadedProducts = myProducts;
+
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:red">Ошибка: ${e.message}</td></tr>`;
+    }
+}
+
+// --- МОДАЛЬНОЕ ОКНО И ФОРМЫ ---
+const modal = document.getElementById('product-modal');
+const form = document.getElementById('product-form');
+const preview = document.getElementById('image-preview');
+
+function setupModal() {
+    // Открытие "Добавить"
+    const addBtn = document.getElementById('btn-add-product');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            form.reset();
+            form.elements.id.value = '';
+            preview.style.display = 'none';
+            document.getElementById('modal-title').textContent = 'Новый товар';
+            openModal();
+        });
+    }
+
+    // Закрытие
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+    document.querySelector('.modal__overlay').addEventListener('click', closeModal);
+
+    // Превью картинки при выборе файла
+    document.getElementById('product-file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                preview.src = ev.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // ОТПРАВКА ФОРМЫ (Самая "мясная" часть)
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('modal-save-btn');
+        btn.textContent = 'Сохранение...';
+        btn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const productId = formData.get('id');
+            const file = document.getElementById('product-file-input').files[0];
+            
+            let imageUrl = null;
+            
+            // Если есть уже существующий товар, берем его старую картинку
+            if (productId && window.loadedProducts) {
+                const oldP = window.loadedProducts.find(p => p.id == productId);
+                if (oldP) imageUrl = oldP.imageUrl;
+            }
+
+            // 1. Если выбран новый файл — грузим его
+            if (file) {
+                const uploadData = new FormData();
+                uploadData.append('image', file);
+                const uploadRes = await apiRequest('/upload', 'POST', uploadData, true); // true = isFormData
+                imageUrl = uploadRes.imageUrl;
+            }
+
+            // 2. Формируем JSON товара
+            const productPayload = {
+                title: formData.get('title'),
+                price: Number(formData.get('price')),
+                category: formData.get('category'),
+                desc: formData.get('desc'),
+                imageUrl: imageUrl, // Ссылка с сервера или старая
+                // Доп поля
+                place: 'Якутия', 
+                promoted: false
+            };
+
+            // 3. Создаем или Обновляем
+            if (productId) {
+                 await apiRequest(`/products/${productId}`, 'PUT', productPayload);
+                 showToast('Товар обновлен');
+            } else {
+                 await apiRequest('/products', 'POST', productPayload);
+                 showToast('Товар создан');
+            }
+
+            closeModal();
+            loadSellerProducts(); // Перезагрузить таблицу
+
+        } catch (err) {
+            console.error(err);
+            showToast('Ошибка сохранения: ' + err.message, 'error');
+        } finally {
+            btn.textContent = 'Сохранить';
+            btn.disabled = false;
+        }
+    });
+}
+
+function openModal() {
+    modal.hidden = false;
+    setTimeout(() => modal.classList.add('modal--open'), 10);
+}
+
+function closeModal() {
     modal.classList.remove('modal--open');
-  }
+    setTimeout(() => modal.hidden = true, 300);
 }
 
-/**
- * Утилита экранирования HTML.
- * @param {string} value
- * @returns {string}
- */
-function escapeHtml(value) {
-  if (!value) return '';
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+// Глобальные функции для кнопок в HTML (Edit/Delete)
+window.editProduct = function(id) {
+    const product = window.loadedProducts.find(p => p.id === id);
+    if (!product) return;
+
+    form.elements.id.value = product.id;
+    form.elements.title.value = product.title;
+    form.elements.price.value = product.price;
+    form.elements.category.value = product.category || 'other';
+    form.elements.desc.value = product.desc || '';
+    
+    if (product.imageUrl) {
+        preview.src = product.imageUrl;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+
+    document.getElementById('modal-title').textContent = 'Редактирование';
+    openModal();
+};
+
+window.deleteProduct = async function(id) {
+    if(!confirm('Удалить этот товар?')) return;
+    try {
+        await apiRequest(`/products/${id}`, 'DELETE');
+        showToast('Товар удален');
+        loadSellerProducts();
+    } catch(e) {
+        showToast(e.message, 'error');
+    }
+};
+
+// --- УТИЛИТЫ ---
+
+async function loadStats() {
+    const container = document.getElementById('stats-container');
+    // В реальном проекте тут был бы запрос /api/stats
+    // Мы сымитируем подсчет
+    try {
+        const products = await apiRequest('/products');
+        const myProducts = products.filter(p => p.sellerId === CURRENT_USER.id);
+        
+        container.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-card__value">${myProducts.length}</div>
+                <div class="stat-card__label">Активных товаров</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__value">0 ₽</div>
+                <div class="stat-card__label">Продажи за месяц</div>
+            </div>
+        `;
+    } catch (e) {
+        container.innerHTML = 'Ошибка загрузки статистики';
+    }
 }
 
-document.addEventListener('DOMContentLoaded', initCabinetPage);
+async function loadOrders() {
+    const list = document.getElementById('orders-list-container');
+    list.innerHTML = 'Загрузка...';
+    try {
+        const orders = await apiRequest('/orders');
+        if(!orders.length) {
+            list.innerHTML = '<p style="color:#666">Список заказов пуст.</p>';
+            return;
+        }
+        list.innerHTML = orders.map(o => `
+            <div style="background:white; padding:15px; margin-bottom:10px; border:1px solid #eee; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <b>Заказ #${o.id}</b>
+                    <span class="badge badge--success">${o.status}</span>
+                </div>
+                <div>Сумма: <b>${o.total} ₽</b></div>
+                <div style="font-size:0.9rem; color:#666">${new Date(o.createdAt).toLocaleString()}</div>
+            </div>
+        `).join('');
+    } catch (e) {
+        list.innerHTML = 'Ошибка: ' + e.message;
+    }
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.background = type === 'error' ? '#ef4444' : '#333';
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
