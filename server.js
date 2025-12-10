@@ -1,79 +1,103 @@
+// server.js — простой сервер для Yakutia Local
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 10000;
-const PRODUCTS_FILE = path.join(__dirname, 'products.json');
+const PORT = 3000;
 
-// чтобы Express умел читать JSON из тела запросов
+// путь к файлу с товарами
+const DATA_FILE = path.join(__dirname, 'products.json');
+
+// парсим JSON в body
 app.use(express.json());
 
-// раздача статических файлов из папки public
+// раздаём статические файлы из папки public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --------- API товаров ----------
-
-// получить все товары
+// GET /api/products — отдать все товары/объявления
 app.get('/api/products', (req, res) => {
-  fs.readFile(PRODUCTS_FILE, 'utf8', (err, data) => {
+  fs.readFile(DATA_FILE, 'utf8', (err, data) => {
     if (err) {
-      // если файла ещё нет, просто вернуть пустой массив
-      return res.json([]);
+      if (err.code === 'ENOENT') {
+        // файла ещё нет — вернём пустой массив
+        return res.json([]);
+      }
+      console.error('Read error:', err);
+      return res.status(500).json({ error: 'read_error' });
     }
+
     try {
-      const items = JSON.parse(data || '[]');
-      res.json(items);
+      const products = JSON.parse(data || '[]');
+      res.json(products);
     } catch (e) {
+      console.error('JSON parse error:', e);
       res.json([]);
     }
   });
 });
 
-// добавить товар из личного кабинета
+// POST /api/products — добавить новый товар/объявление
 app.post('/api/products', (req, res) => {
-  fs.readFile(PRODUCTS_FILE, 'utf8', (err, data) => {
-    let items = [];
+  const {
+    title,
+    price,
+    type,
+    desc,
+    place,
+    category,
+    oldPrice,
+    discount,
+    season,
+    promoted,
+    isSale,
+    popularity
+  } = req.body || {};
+
+  if (!title || !price) {
+    return res.status(400).json({ error: 'title_and_price_required' });
+  }
+
+  fs.readFile(DATA_FILE, 'utf8', (err, data) => {
+    let products = [];
     if (!err && data) {
       try {
-        items = JSON.parse(data);
+        products = JSON.parse(data);
       } catch {
-        items = [];
+        products = [];
       }
     }
 
-    const body = req.body || {};
-    const item = {
+    const product = {
       id: Date.now(),
-      type: 'market',
-      title: body.title || '',
-      desc: body.desc || '',
-      price: Number(body.price || 0),
-      oldPrice: body.oldPrice ? Number(body.oldPrice) : '',
-      discount: body.discount ? Number(body.discount) : '',
-      place: body.place || 'Якутия',
-      category: body.category || '',
-      brand: body.brand || 'Малый бизнес Якутии',
-      season: body.season || '',
-      promoted: !!body.promoted,
-      isSale: !!body.isSale,
-      isLocal: true,
-      popularity: 1
+      title,
+      price,
+      type: type || 'market',
+      desc: desc || '',
+      place: place || 'Якутия',
+      category: category || 'other',
+      oldPrice: oldPrice || null,
+      discount: discount || null,
+      season: season || null,
+      promoted: !!promoted,
+      isSale: !!isSale,
+      popularity: popularity || 0
     };
 
-    items.push(item);
+    products.push(product);
 
-    fs.writeFile(PRODUCTS_FILE, JSON.stringify(items, null, 2), (writeErr) => {
-      if (writeErr) {
-        return res.status(500).json({ ok: false });
+    fs.writeFile(DATA_FILE, JSON.stringify(products, null, 2), (err2) => {
+      if (err2) {
+        console.error('Write error:', err2);
+        return res.status(500).json({ error: 'write_error' });
       }
-      res.json({ ok: true, item });
+      res.status(201).json(product);
     });
   });
 });
 
-// --------- запуск сервера ----------
-
+// запуск сервера
 app.listen(PORT, () => {
-  console.log('Server started on port', PORT);
+  console.log(`Server started: http://localhost:${PORT}`);
 });
