@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Страница не найдена</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; font-family: 'Outfit', sans-serif; background: #0f172a; color: white;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+            text-align: center; overflow: hidden;
+        }
+        .container { z-index: 2; }
+        h1 { font-size: 10rem; margin: 0; background: linear-gradient(45deg, #4f46e5, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: glitch 1s infinite; }
+        p { font-size: 1.5rem; margin: 20px 0; opacity: 0.8; }
+        .btn { padding: 15px 40px; background: #4f46e5; color: white; text-decoration: none; border-radius: 50px; font-weight: 700; transition: 0.3s; display: inline-block; margin-top: 20px; }
+        .btn:hover { transform: scale(1.1); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.5); }
+        
+        @keyframes glitch { 0%, 100% { transform: translate(0); } 20% { transform: translate(-5px, 5px); } 40% { transform: translate(-5px, -5px); } 60% { transform: translate(5px, 5px); } 80% { transform: translate(5px, -5px); } }
+        
+        .blob { position: absolute; width: 400px; height: 400px; background: #4f46e5; filter: blur(150px); opacity: 0.3; animation: float 8s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, -50px); } }
+    </style>
+</head>
+<body>
+    <div class="blob" style="top: -100px; left: -100px;"></div>
+    <div class="blob" style="bottom: -100px; right: -100px; animation-delay: 2s;"></div>
+    
+    <div class="container">
+        <h1>404</h1>
+        <p>Упс! Эта страница улетела в тайгу... 🌲</p>
+        <a href="index.html" class="btn">Вернуться на главную</a>
+    </div>
+</body>
+</html>
