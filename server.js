@@ -54,7 +54,7 @@ function readJson(filePath) {
       // Если файла нет — вернём пустой массив
       if (err) {
         if (err.code === 'ENOENT') {
-          return resolve(Array.isArrayPlaceholder(filePath) ? [] : []);
+          return resolve([]);
         }
         console.error('Read error:', err);
         return resolve([]);
