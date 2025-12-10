@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Личный кабинет — Made in Yakutia</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Made in Yakutia — Кабинет</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -13,7 +13,6 @@
       color: #111;
     }
     a { color: inherit; text-decoration: none; }
-
     header {
       background: #00a86b;
       color: #fff;
@@ -29,16 +28,24 @@
       justify-content: space-between;
       padding: 8px 0;
     }
-    .logo { font-weight: 700; font-size: 18px; text-transform: uppercase; }
-
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      text-transform: uppercase;
+    }
     main {
       max-width: 1100px;
       margin: 0 auto;
       padding: 16px;
     }
-    h1 { margin: 0 0 12px; font-size: 22px; }
-    h2 { margin: 0 0 8px; font-size: 16px; }
-
+    h1 {
+      margin: 0 0 12px;
+      font-size: 22px;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
     .grid {
       display: grid;
       grid-template-columns: 2fr 3fr;
@@ -47,7 +54,6 @@
     @media (max-width: 800px) {
       .grid { grid-template-columns: 1fr; }
     }
-
     .card {
       background: #fff;
       border-radius: 12px;
@@ -55,7 +61,6 @@
       padding: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
-
     label {
       display: block;
       font-size: 13px;
@@ -69,11 +74,15 @@
       border: 1px solid #d0d4de;
       margin-bottom: 8px;
     }
-    textarea { min-height: 70px; resize: vertical; }
-
-    .row { display: flex; gap: 8px; }
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+    }
     .row > div { flex: 1; }
-
     .checkbox-line {
       display: flex;
       align-items: center;
@@ -81,7 +90,6 @@
       font-size: 13px;
       margin-bottom: 6px;
     }
-
     .primary-btn {
       border: none;
       background: #00a86b;
@@ -91,7 +99,6 @@
       font-size: 13px;
       cursor: pointer;
     }
-
     .list {
       display: grid;
       gap: 8px;
@@ -105,7 +112,8 @@
       font-size: 13px;
       position: relative;
     }
-    .badge-top, .badge-sale {
+    .badge-top,
+    .badge-sale {
       position: absolute;
       left: 8px;
       top: 8px;
@@ -114,182 +122,263 @@
       border-radius: 999px;
       color: #fff;
     }
-    .badge-top { background:#ff9800; }
-    .badge-sale { top: 26px; background:#e91e63; }
-
+    .badge-top { background: #ff9800; }
+    .badge-sale { top: 26px; background: #e91e63; }
     .item-title { font-weight: 600; margin-bottom: 2px; }
-    .item-price { font-weight: 600; color:#e91e63; }
-    .item-meta { font-size:11px; color:#777; margin-top:2px; }
+    .item-price { font-weight: 600; color: #e91e63; }
+    .item-meta {
+      font-size: 11px;
+      color: #777;
+      margin-top: 2px;
+    }
+    .item-actions {
+      margin-top: 6px;
+      font-size: 11px;
+      display: flex;
+      gap: 8px;
+    }
+    .item-actions button {
+      border: none;
+      background: #eef1f6;
+      border-radius: 999px;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-<header>
-  <div class="container header-top">
-    <div class="logo">Made in Yakutia</div>
-    <a href="index.html">← На главную</a>
-  </div>
-</header>
-
-<main>
-  <h1>Личный кабинет продавца</h1>
-
-  <div class="grid">
-    <!-- Форма -->
-    <div class="card">
-      <h2>Добавить товар</h2>
-      <form id="product-form">
-        <label>Название товара</label>
-        <input name="title" required>
-
-        <label>Краткое описание</label>
-        <textarea name="desc" placeholder="Например: колбаса из конины, 1 кг"></textarea>
-
-        <div class="row">
-          <div>
-            <label>Цена, ₽</label>
-            <input name="price" type="number" min="0" required>
-          </div>
-          <div>
-            <label>Старая цена, ₽ (если есть)</label>
-            <input name="oldPrice" type="number" min="0">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Категория</label>
-            <select name="category">
-              <option value="">Выбрать…</option>
-              <option value="food">Продовольствие</option>
-              <option value="clothes">Одежда и мех</option>
-              <option value="souvenirs">Сувениры</option>
-              <option value="cosmetics">Косметика и БАДы</option>
-              <option value="industrial">Промтовары</option>
-            </select>
-          </div>
-          <div>
-            <label>Бренд / мастерская</label>
-            <input name="brand" placeholder="Например: ферма «Туймаада»">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Сезонность</label>
-            <select name="season">
-              <option value="">Круглый год</option>
-              <option value="winter">Зима</option>
-              <option value="spring">Весна</option>
-              <option value="summer">Лето</option>
-              <option value="autumn">Осень</option>
-            </select>
-          </div>
-          <div>
-            <label>Город / улус</label>
-            <input name="place" placeholder="Якутск, Нерюнгри…">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Скидка, %</label>
-            <input name="discount" type="number" min="0" max="90">
-          </div>
-        </div>
-
-        <div class="checkbox-line">
-          <input type="checkbox" id="promoted" name="promoted">
-          <label for="promoted">Продвижение в ТОП за 1500 ₽</label>
-        </div>
-        <div class="checkbox-line">
-          <input type="checkbox" id="isSale" name="isSale">
-          <label for="isSale">Участвует в акции</label>
-        </div>
-
-        <button type="submit" class="primary-btn">Опубликовать</button>
-        <span id="form-status" style="font-size:12px;margin-left:8px;"></span>
-      </form>
+  <header>
+    <div class="container header-top">
+      <div class="logo">Made in Yakutia</div>
+      <a href="index.html">← На главную</a>
     </div>
+  </header>
 
-    <!-- Список объявлений -->
-    <div class="card">
-      <h2>Мои объявления</h2>
-      <div id="ads-list" class="list"></div>
+  <main>
+    <h1>Личный кабинет продавца</h1>
+
+    <div class="grid">
+      <!-- Левая колонка: форма -->
+      <div class="card">
+        <h2>Добавить товар / бренд</h2>
+        <form id="product-form">
+          <label>Название товара</label>
+          <input name="title" required />
+
+          <label>Краткое описание</label>
+          <textarea name="desc" placeholder="Например: колбаса из конины, 1 кг"></textarea>
+
+          <div class="row">
+            <div>
+              <label>Цена, ₽</label>
+              <input name="price" type="number" min="0" required />
+            </div>
+            <div>
+              <label>Старая цена, ₽ (если есть)</label>
+              <input name="oldPrice" type="number" min="0" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Категория</label>
+              <select name="category">
+                <option value="">Выбрать…</option>
+                <option value="food">Продовольствие</option>
+                <option value="clothes">Одежда и мех</option>
+                <option value="souvenirs">Сувениры</option>
+                <option value="cosmetics">Косметика и БАДы</option>
+                <option value="industrial">Промтовары</option>
+              </select>
+            </div>
+            <div>
+              <label>Тип записи</label>
+              <select name="type">
+                <option value="market" selected>Товар / бренд</option>
+                <option value="ads">Объявление</option>
+                <option value="events">Событие / ярмарка</option>
+              </select>
+            </div>
+          </div>
+
+          <label>Бренд / мастерская</label>
+          <input name="brand" placeholder="Например: Якутские продукты" />
+
+          <div class="row">
+            <div>
+              <label>Сезонность</label>
+              <select name="season">
+                <option value="">Круглый год</option>
+                <option value="winter">Зима</option>
+                <option value="spring">Весна</option>
+                <option value="summer">Лето</option>
+                <option value="autumn">Осень</option>
+              </select>
+            </div>
+            <div>
+              <label>Город / улус</label>
+              <input name="place" placeholder="Например: Якутск" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Скидка, %</label>
+              <input name="discount" type="number" min="0" max="90" />
+            </div>
+          </div>
+
+          <div class="checkbox-line">
+            <input type="checkbox" id="promoted" name="promoted" />
+            <label for="promoted">Продвижение в ТОП за 1500 ₽</label>
+          </div>
+
+          <div class="checkbox-line">
+            <input type="checkbox" id="isSale" name="isSale" />
+            <label for="isSale">Участвует в акции</label>
+          </div>
+
+          <button type="submit" class="primary-btn">Опубликовать</button>
+          <span id="form-status" style="font-size:12px;margin-left:8px;"></span>
+        </form>
+      </div>
+
+      <!-- Правая колонка: превью + список -->
+      <div class="card">
+        <h2>Превью карточки</h2>
+        <div id="preview-card" class="item">
+          <div class="item-title">Название появится здесь</div>
+          <div class="item-price">0 ₽</div>
+          <div class="item-meta">Бренд · Место</div>
+        </div>
+
+        <h2 style="margin-top:16px;">Мои объявления</h2>
+        <div id="ads-list" class="list"></div>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<script>
-  const form = document.getElementById('product-form');
-  const statusEl = document.getElementById('form-status');
-  const listEl = document.getElementById('ads-list');
+  <script>
+    const form = document.getElementById("product-form");
+    const statusEl = document.getElementById("form-status");
+    const listEl = document.getElementById("ads-list");
 
-  async function loadProducts() {
-    try {
-      const res = await fetch('/api/products');
-      const items = await res.json();
-      renderList(items);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  function renderList(items) {
-    listEl.innerHTML = '';
-    items
-      .filter(p => p.type === 'market')
-      .forEach(p => {
-        const el = document.createElement('div');
-        el.className = 'item';
-        el.innerHTML = `
-          ${p.promoted ? '<div class="badge-top">ТОП</div>' : ''}
-          ${p.isSale ? '<div class="badge-sale">Акция</div>' : ''}
-          <div class="item-title">${p.title}</div>
-          <div class="item-price">
-            ${p.price} ₽
-            ${p.oldPrice ? '<span style="text-decoration:line-through;color:#999;font-size:11px;margin-left:4px;">'+p.oldPrice+' ₽</span>' : ''}
-          </div>
-          <div class="item-meta">
-            ${(p.brand || 'Малый бизнес Якутии')} • ${(p.place || 'Якутия')}
-          </div>
-        `;
-        listEl.appendChild(el);
-      });
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
-    data.price = Number(data.price || 0);
-    data.oldPrice = data.oldPrice ? Number(data.oldPrice) : '';
-    data.discount = data.discount ? Number(data.discount) : '';
-    data.promoted = fd.get('promoted') === 'on';
-    data.isSale = fd.get('isSale') === 'on';
-
-    statusEl.textContent = 'Отправка…';
-
-    try {
-      const res = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const json = await res.json();
-      if (json.ok) {
-        statusEl.textContent = 'Сохранено!';
-        form.reset();
-        loadProducts();
-      } else {
-        statusEl.textContent = 'Ошибка сохранения';
+    async function loadProducts() {
+      try {
+        const res = await fetch("/api/products");
+        const items = await res.json();
+        renderList(items);
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-      statusEl.textContent = 'Ошибка сети';
     }
-  });
 
-  loadProducts();
-</script>
+    function renderList(items) {
+      listEl.innerHTML = "";
+      items
+        .filter((p) => p.type === "market")
+        .forEach((p) => {
+          const el = document.createElement("div");
+          el.className = "item";
+          el.innerHTML = `
+            ${p.promoted ? '<div class="badge-top">ТОП</div>' : ""}
+            ${p.isSale ? '<div class="badge-sale">Акция</div>' : ""}
+            <div class="item-title">${p.title}</div>
+            <div class="item-price">
+              ${Number(p.price || 0).toLocaleString("ru-RU")} ₽
+              ${
+                p.oldPrice
+                  ? '<span style="text-decoration:line-through;color:#999;font-size:11px;margin-left:4px">' +
+                    Number(p.oldPrice).toLocaleString("ru-RU") +
+                    " ₽</span>"
+                  : ""
+              }
+            </div>
+            <div class="item-meta">
+              ${(p.brand || "Без бренда")} · ${(p.place || "Место не указано")}
+            </div>
+            <div class="item-actions">
+              <button type="button" disabled>Редактирование (демо)</button>
+              <button type="button" disabled>Скрыть (демо)</button>
+            </div>
+          `;
+          listEl.appendChild(el);
+        });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries());
+
+      data.price = Number(data.price || 0);
+      data.oldPrice = data.oldPrice ? Number(data.oldPrice) : undefined;
+      data.discount = data.discount ? Number(data.discount) : undefined;
+      data.promoted = fd.get("promoted") === "on";
+      data.isSale = fd.get("isSale") === "on";
+      if (!data.type) data.type = "market";
+      if (data.promoted) data.popularity = 100;
+
+      statusEl.textContent = "Сохраняем...";
+
+      try {
+        const res = await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        if (json.ok) {
+          statusEl.textContent = "Готово";
+          form.reset();
+          updatePreview();
+          loadProducts();
+        } else {
+          statusEl.textContent = "Ошибка сохранения";
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Ошибка сети";
+      }
+    });
+
+    // Превью карточки
+    const titleInput = form.querySelector('input[name="title"]');
+    const priceInput = form.querySelector('input[name="price"]');
+    const oldPriceInput = form.querySelector('input[name="oldPrice"]');
+    const brandInput = form.querySelector('input[name="brand"]');
+    const placeInput = form.querySelector('input[name="place"]');
+    const previewCard = document.getElementById("preview-card");
+
+    function updatePreview() {
+      if (!previewCard) return;
+      const title = titleInput.value || "Название появится здесь";
+      const price = Number(priceInput.value || 0);
+      const oldPrice = Number(oldPriceInput.value || 0);
+      const brand = brandInput.value || "Бренд";
+      const place = placeInput.value || "Место";
+
+      previewCard.innerHTML = `
+        <div class="item-title">${title}</div>
+        <div class="item-price">
+          ${price.toLocaleString("ru-RU")} ₽
+          ${
+            oldPrice > 0
+              ? '<span style="text-decoration:line-through;color:#999;font-size:11px;margin-left:4px">' +
+                oldPrice.toLocaleString("ru-RU") +
+                " ₽</span>"
+              : ""
+          }
+        </div>
+        <div class="item-meta">${brand} · ${place}</div>
+      `;
+    }
+
+    [titleInput, priceInput, oldPriceInput, brandInput, placeInput]
+      .forEach((el) => el && el.addEventListener("input", updatePreview));
+
+    updatePreview();
+    loadProducts();
+  </script>
 </body>
 </html>
