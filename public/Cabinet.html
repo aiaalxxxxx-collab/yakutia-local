@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Made in Yakutia — Кабинет</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Личный кабинет — Якутия Локальная</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     * { box-sizing: border-box; }
     body {
@@ -13,8 +13,14 @@
       color: #111;
     }
     a { color: inherit; text-decoration: none; }
+
+    :root {
+      --accent: #00a86b;
+      --accent-dark: #008055;
+    }
+
     header {
-      background: #00a86b;
+      background: var(--accent);
       color: #fff;
     }
     .container {
@@ -31,354 +37,348 @@
     .logo {
       font-weight: 700;
       font-size: 18px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
+    .back-link {
+      font-size: 13px;
+    }
+
     main {
       max-width: 1100px;
       margin: 0 auto;
       padding: 16px;
     }
-    h1 {
-      margin: 0 0 12px;
-      font-size: 22px;
+
+    .lk-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
     }
-    h2 {
-      margin: 0 0 8px;
-      font-size: 16px;
+    .lk-tab {
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: #e4e7ec;
     }
-    .grid {
+    .lk-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .section-title {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+
+    .lk-grid {
       display: grid;
-      grid-template-columns: 2fr 3fr;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr);
       gap: 16px;
+      align-items: flex-start;
     }
-    @media (max-width: 800px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: #fff;
+
+    .box {
+      background: #ffffff;
       border-radius: 12px;
       border: 1px solid #e0e0e0;
       padding: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      font-size: 13px;
+    }
+    .box h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 8px;
+      gap: 3px;
     }
     label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
+      font-size: 12px;
+      color: #555;
     }
-    input, select, textarea {
-      width: 100%;
-      padding: 6px 8px;
+    input, textarea, select {
       font: inherit;
+      padding: 6px 8px;
       border-radius: 8px;
-      border: 1px solid #d0d4de;
-      margin-bottom: 8px;
+      border: 1px solid #d0d0d0;
+      background: #fafafa;
     }
-    textarea {
-      min-height: 70px;
-      resize: vertical;
-    }
-    .row {
-      display: flex;
-      gap: 8px;
-    }
-    .row > div { flex: 1; }
-    .checkbox-line {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-    .primary-btn {
-      border: none;
-      background: #00a86b;
-      color: #fff;
+    textarea { resize: vertical; min-height: 48px; }
+
+    .btn {
+      display: inline-block;
       padding: 8px 14px;
       border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
       font-size: 13px;
       cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
     }
-    .list {
+    .hint {
+      font-size: 11px;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    .grid-cards {
       display: grid;
-      gap: 8px;
-      margin-top: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
     }
-    .item {
+    .card {
+      background: #ffffff;
       border-radius: 10px;
       border: 1px solid #e0e0e0;
       padding: 8px;
-      background: #fff;
       font-size: 13px;
-      position: relative;
     }
-    .badge-top,
-    .badge-sale {
-      position: absolute;
-      left: 8px;
-      top: 8px;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      color: #fff;
-    }
-    .badge-top { background: #ff9800; }
-    .badge-sale { top: 26px; background: #e91e63; }
-    .item-title { font-weight: 600; margin-bottom: 2px; }
-    .item-price { font-weight: 600; color: #e91e63; }
-    .item-meta {
-      font-size: 11px;
-      color: #777;
-      margin-top: 2px;
-    }
-    .item-actions {
-      margin-top: 6px;
-      font-size: 11px;
-      display: flex;
-      gap: 8px;
-    }
-    .item-actions button {
-      border: none;
-      background: #eef1f6;
-      border-radius: 999px;
-      padding: 3px 8px;
-      cursor: pointer;
+    .card-title { font-weight: 500; margin-bottom: 4px; }
+    .card-price { font-weight: 600; margin-bottom: 2px; }
+    .card-meta { font-size: 11px; color: #777; }
+
+    @media (max-width: 800px) {
+      .lk-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="container header-top">
-      <div class="logo">Made in Yakutia</div>
-      <a href="index.html">← На главную</a>
-    </div>
-  </header>
 
-  <main>
-    <h1>Личный кабинет продавца</h1>
+<header>
+  <div class="container header-top">
+    <div class="logo">Личный кабинет</div>
+    <div class="back-link"><a href="index.html" style="color:#fff;">← На главную</a></div>
+  </div>
+</header>
 
-    <div class="grid">
-      <!-- Левая колонка: форма -->
-      <div class="card">
-        <h2>Добавить товар / бренд</h2>
-        <form id="product-form">
-          <label>Название товара</label>
-          <input name="title" required />
+<main>
+  <div class="lk-tabs">
+    <div class="lk-tab active" data-tab="profile">Профиль</div>
+    <div class="lk-tab" data-tab="my-ads">Мои объявления</div>
+  </div>
 
-          <label>Краткое описание</label>
-          <textarea name="desc" placeholder="Например: колбаса из конины, 1 кг"></textarea>
-
-          <div class="row">
-            <div>
-              <label>Цена, ₽</label>
-              <input name="price" type="number" min="0" required />
-            </div>
-            <div>
-              <label>Старая цена, ₽ (если есть)</label>
-              <input name="oldPrice" type="number" min="0" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Категория</label>
-              <select name="category">
-                <option value="">Выбрать…</option>
-                <option value="food">Продовольствие</option>
-                <option value="clothes">Одежда и мех</option>
-                <option value="souvenirs">Сувениры</option>
-                <option value="cosmetics">Косметика и БАДы</option>
-                <option value="industrial">Промтовары</option>
-              </select>
-            </div>
-            <div>
-              <label>Тип записи</label>
-              <select name="type">
-                <option value="market" selected>Товар / бренд</option>
-                <option value="ads">Объявление</option>
-                <option value="events">Событие / ярмарка</option>
-              </select>
-            </div>
-          </div>
-
-          <label>Бренд / мастерская</label>
-          <input name="brand" placeholder="Например: Якутские продукты" />
-
-          <div class="row">
-            <div>
-              <label>Сезонность</label>
-              <select name="season">
-                <option value="">Круглый год</option>
-                <option value="winter">Зима</option>
-                <option value="spring">Весна</option>
-                <option value="summer">Лето</option>
-                <option value="autumn">Осень</option>
-              </select>
-            </div>
-            <div>
-              <label>Город / улус</label>
-              <input name="place" placeholder="Например: Якутск" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Скидка, %</label>
-              <input name="discount" type="number" min="0" max="90" />
-            </div>
-          </div>
-
-          <div class="checkbox-line">
-            <input type="checkbox" id="promoted" name="promoted" />
-            <label for="promoted">Продвижение в ТОП за 1500 ₽</label>
-          </div>
-
-          <div class="checkbox-line">
-            <input type="checkbox" id="isSale" name="isSale" />
-            <label for="isSale">Участвует в акции</label>
-          </div>
-
-          <button type="submit" class="primary-btn">Опубликовать</button>
-          <span id="form-status" style="font-size:12px;margin-left:8px;"></span>
-        </form>
-      </div>
-
-      <!-- Правая колонка: превью + список -->
-      <div class="card">
-        <h2>Превью карточки</h2>
-        <div id="preview-card" class="item">
-          <div class="item-title">Название появится здесь</div>
-          <div class="item-price">0 ₽</div>
-          <div class="item-meta">Бренд · Место</div>
+  <!-- Профиль -->
+  <section id="profile-section">
+    <h1 class="section-title">Профиль продавца</h1>
+    <div class="lk-grid">
+      <div class="box">
+        <h2>Ваши данные</h2>
+        <div class="form-row">
+          <label>Имя / название бренда</label>
+          <input placeholder="Например: Мастерская «Якутский свет»">
         </div>
-
-        <h2 style="margin-top:16px;">Мои объявления</h2>
-        <div id="ads-list" class="list"></div>
+        <div class="form-row">
+          <label>Телефон</label>
+          <input placeholder="+7...">
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input placeholder="you@example.com">
+        </div>
+        <div class="form-row">
+          <label>О себе / о бренде</label>
+          <textarea placeholder="Кратко расскажите, чем занимаетесь."></textarea>
+        </div>
+        <button class="btn" type="button">Сохранить профиль (заглушка)</button>
+      </div>
+      <div class="box">
+        <h2>Статистика (макет)</h2>
+        <p>Заказы: 0</p>
+        <p>Опубликовано объявлений: <span id="ads-count">0</span></p>
+        <p>В избранном у покупателей: 0</p>
+        <p class="hint">В реальной системе здесь была бы живая аналитика по вашим товарам и заказам.</p>
       </div>
     </div>
-  </main>
+  </section>
 
-  <script>
-    const form = document.getElementById("product-form");
-    const statusEl = document.getElementById("form-status");
-    const listEl = document.getElementById("ads-list");
+  <!-- Мои объявления -->
+  <section id="my-ads-section" style="display:none;">
+    <h1 class="section-title">Мои объявления</h1>
+    <div class="lk-grid">
+      <div class="box">
+        <h2>Добавить объявление / товар</h2>
 
-    async function loadProducts() {
-      try {
-        const res = await fetch("/api/products");
-        const items = await res.json();
-        renderList(items);
-      } catch (e) {
-        console.error(e);
-      }
-    }
+        <div class="form-row">
+          <label for="a-title">Заголовок</label>
+          <input id="a-title" placeholder="Например: Браслет «Полярная звезда»">
+        </div>
+        <div class="form-row">
+          <label for="a-price">Цена, ₽</label>
+          <input id="a-price" type="number" min="1" placeholder="Например: 3500">
+        </div>
+        <div class="form-row">
+          <label for="a-oldprice">Старая цена, ₽ (для акций)</label>
+          <input id="a-oldprice" type="number" min="1" placeholder="Например: 4200">
+        </div>
+        <div class="form-row">
+          <label for="a-type">Тип</label>
+          <select id="a-type">
+            <option value="market">Товар маркетплейса</option>
+            <option value="ads">Частное объявление</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="a-season">Сезон</label>
+          <select id="a-season">
+            <option value="">Всегда</option>
+            <option value="winter">Зима</option>
+            <option value="spring">Весна</option>
+            <option value="summer">Лето</option>
+            <option value="autumn">Осень</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="a-desc">Краткое описание</label>
+          <textarea id="a-desc" placeholder="Материал, состояние, особенности"></textarea>
+        </div>
+        <div class="form-row">
+          <label for="a-place">Город / район</label>
+          <input id="a-place" placeholder="Якутск, центр">
+        </div>
+        <div class="form-row">
+          <label>
+            <input type="checkbox" id="a-promoted">
+            Продвинуть в ТОП‑выдачу за 1500 ₽
+          </label>
+        </div>
+        <div class="form-row">
+          <label>
+            <input type="checkbox" id="a-sale">
+            Отметить как акцию (бейдж «Акция»)
+          </label>
+        </div>
+        <button class="btn" type="button" onclick="addMyAd()">Опубликовать</button>
+        <p class="hint">В прототипе оплата за продвижение не списывается, но карточка будет отмечена как ТОП.</p>
+      </div>
 
-    function renderList(items) {
-      listEl.innerHTML = "";
-      items
-        .filter((p) => p.type === "market")
-        .forEach((p) => {
-          const el = document.createElement("div");
-          el.className = "item";
-          el.innerHTML = `
-            ${p.promoted ? '<div class="badge-top">ТОП</div>' : ""}
-            ${p.isSale ? '<div class="badge-sale">Акция</div>' : ""}
-            <div class="item-title">${p.title}</div>
-            <div class="item-price">
-              ${Number(p.price || 0).toLocaleString("ru-RU")} ₽
-              ${
-                p.oldPrice
-                  ? '<span style="text-decoration:line-through;color:#999;font-size:11px;margin-left:4px">' +
-                    Number(p.oldPrice).toLocaleString("ru-RU") +
-                    " ₽</span>"
-                  : ""
-              }
-            </div>
-            <div class="item-meta">
-              ${(p.brand || "Без бренда")} · ${(p.place || "Место не указано")}
-            </div>
-            <div class="item-actions">
-              <button type="button" disabled>Редактирование (демо)</button>
-              <button type="button" disabled>Скрыть (демо)</button>
-            </div>
-          `;
-          listEl.appendChild(el);
-        });
-    }
+      <div class="box">
+        <h2>Опубликованные</h2>
+        <div class="grid-cards" id="my-ads-list"></div>
+      </div>
+    </div>
+  </section>
+</main>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fd = new FormData(form);
-      const data = Object.fromEntries(fd.entries());
+<script>
+  // Переключение вкладок ЛК
+  const lkTabs = document.querySelectorAll('.lk-tab');
+  const profileSection = document.getElementById('profile-section');
+  const adsSection = document.getElementById('my-ads-section');
 
-      data.price = Number(data.price || 0);
-      data.oldPrice = data.oldPrice ? Number(data.oldPrice) : undefined;
-      data.discount = data.discount ? Number(data.discount) : undefined;
-      data.promoted = fd.get("promoted") === "on";
-      data.isSale = fd.get("isSale") === "on";
-      if (!data.type) data.type = "market";
-      if (data.promoted) data.popularity = 100;
-
-      statusEl.textContent = "Сохраняем...";
-
-      try {
-        const res = await fetch("/api/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        const json = await res.json();
-        if (json.ok) {
-          statusEl.textContent = "Готово";
-          form.reset();
-          updatePreview();
-          loadProducts();
-        } else {
-          statusEl.textContent = "Ошибка сохранения";
-        }
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "Ошибка сети";
+  lkTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      lkTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const t = tab.dataset.tab;
+      if (t === 'profile') {
+        profileSection.style.display = '';
+        adsSection.style.display = 'none';
+      } else {
+        profileSection.style.display = 'none';
+        adsSection.style.display = '';
       }
     });
+  });
 
-    // Превью карточки
-    const titleInput = form.querySelector('input[name="title"]');
-    const priceInput = form.querySelector('input[name="price"]');
-    const oldPriceInput = form.querySelector('input[name="oldPrice"]');
-    const brandInput = form.querySelector('input[name="brand"]');
-    const placeInput = form.querySelector('input[name="place"]');
-    const previewCard = document.getElementById("preview-card");
+  // загрузка объявлений/товаров с сервера
+  async function loadMyAds() {
+    try {
+      const res = await fetch('/api/products');
+      const products = await res.json();
+      const list = document.getElementById('my-ads-list');
+      list.innerHTML = '';
+      products.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-title">${p.title}</div>
+          <div class="card-price">${p.price} ₽</div>
+          <div class="card-meta">
+            ${(p.type === 'market' ? 'Товар маркетплейса' : 'Частное объявление')} • ${p.place || 'Якутия'}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+      const countEl = document.getElementById('ads-count');
+      if (countEl) countEl.textContent = products.length;
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-    function updatePreview() {
-      if (!previewCard) return;
-      const title = titleInput.value || "Название появится здесь";
-      const price = Number(priceInput.value || 0);
-      const oldPrice = Number(oldPriceInput.value || 0);
-      const brand = brandInput.value || "Бренд";
-      const place = placeInput.value || "Место";
+  // отправка нового объявления на сервер
+  async function addMyAd() {
+    const title = document.getElementById('a-title').value.trim();
+    const price = document.getElementById('a-price').value.trim();
+    const oldPrice = document.getElementById('a-oldprice').value.trim();
+    const type = document.getElementById('a-type').value;
+    const season = document.getElementById('a-season').value;
+    const desc = document.getElementById('a-desc').value.trim();
+    const place = document.getElementById('a-place').value.trim();
+    const promoted = document.getElementById('a-promoted').checked;
+    const isSale = document.getElementById('a-sale').checked;
 
-      previewCard.innerHTML = `
-        <div class="item-title">${title}</div>
-        <div class="item-price">
-          ${price.toLocaleString("ru-RU")} ₽
-          ${
-            oldPrice > 0
-              ? '<span style="text-decoration:line-through;color:#999;font-size:11px;margin-left:4px">' +
-                oldPrice.toLocaleString("ru-RU") +
-                " ₽</span>"
-              : ""
-          }
-        </div>
-        <div class="item-meta">${brand} · ${place}</div>
-      `;
+    if (!title || !price) {
+      alert('Нужно указать хотя бы заголовок и цену.');
+      return;
     }
 
-    [titleInput, priceInput, oldPriceInput, brandInput, placeInput]
-      .forEach((el) => el && el.addEventListener("input", updatePreview));
+    let discount = null;
+    if (oldPrice && Number(oldPrice) > Number(price)) {
+      discount = Math.round((1 - Number(price) / Number(oldPrice)) * 100);
+    }
 
-    updatePreview();
-    loadProducts();
-  </script>
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          price,
+          oldPrice: oldPrice || null,
+          discount,
+          type,
+          desc,
+          place,
+          promoted,
+          isSale,
+          season,
+          popularity: 0
+        })
+      });
+      if (!res.ok) {
+        alert('Ошибка сохранения на сервере');
+        return;
+      }
+      await loadMyAds();
+
+      document.getElementById('a-title').value = '';
+      document.getElementById('a-price').value = '';
+      document.getElementById('a-oldprice').value = '';
+      document.getElementById('a-desc').value = '';
+      document.getElementById('a-place').value = '';
+      document.getElementById('a-promoted').checked = false;
+      document.getElementById('a-sale').checked = false;
+      document.getElementById('a-season').value = '';
+    } catch (e) {
+      console.error(e);
+      alert('Не удалось отправить данные на сервер');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadMyAds);
+</script>
+
 </body>
 </html>
