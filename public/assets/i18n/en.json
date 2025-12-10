@@ -1,0 +1,30 @@
+{
+  "header": {
+    "logo": "Yakutia Local",
+    "searchPlaceholder": "Search for products...",
+    "cart": "Cart",
+    "orders": "My orders",
+    "cabinet": "Account",
+    "login": "Log in",
+    "register": "Sign up"
+  },
+  "filters": {
+    "title": "Find Yakutia products for your needs",
+    "subtitle": "Choose category, price and delivery format.",
+    "category": "Category",
+    "category_all": "All categories",
+    "category_meat": "Meat & fish",
+    "category_milk": "Dairy products",
+    "category_berries": "Berries & wild plants",
+    "category_ready": "Ready meals",
+    "priceRange": "Price range",
+    "onlySale": "Only with discount",
+    "onlyPopular": "Most popular",
+    "apply": "Apply"
+  },
+  "bot": {
+    "help": "Need help?",
+    "placeholder": "Ask about a product...",
+    "send": "Send"
+  }
+}
