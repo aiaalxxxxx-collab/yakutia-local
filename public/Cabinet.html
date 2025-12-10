@@ -589,79 +589,71 @@
     </div>
 </div>
 
-<!-- ========== ВИДЖЕТ ИИ-БОТА ========== -->
-<div class="bot-widget">
-    <button
-        id="bot-toggle"
-        class="bot-widget__button"
-        data-i18n="bot.help"
-    >
-        Нужна помощь?
-    </button>
-    <div
-        id="bot-panel"
-        class="bot-widget__panel"
-        hidden
-    >
+    <!-- ========== ВИДЖЕТ ИИ-БОТА ========== -->
+    <div class="bot-widget">
+        <button
+            id="bot-toggle"
+            class="bot-widget__button"
+            data-i18n="bot.help"
+        >
+            Нужна помощь?
+        </button>
         <div
-            id="bot-messages"
-            class="bot-widget__messages"
-        ></div>
-        <div class="bot-widget__footer">
-            <input
-                type="text"
-                id="bot-input"
-                class="bot-widget__input"
-                placeholder="Спросите о настройке кабинета..."
-                data-i18n-placeholder="bot.placeholderCabinet"
-            />
-            <button
-                id="bot-send"
-                class="bot-widget__send"
-                data-i18n="bot.send"
-            >
-                ▶
-            </button>
+            id="bot-panel"
+            class="bot-widget__panel"
+            hidden
+        >
+            <div
+                id="bot-messages"
+                class="bot-widget__messages"
+            ></div>
+            <div class="bot-widget__footer">
+                <input
+                    type="text"
+                    id="bot-input"
+                    class="bot-widget__input"
+                    placeholder="Спросите о настройке кабинета..."
+                    data-i18n-placeholder="bot.placeholderCabinet"
+                />
+                <button
+                    id="bot-send"
+                    class="bot-widget__send"
+                    data-i18n="bot.send"
+                >
+                    ▶
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<footer class="footer">
-    <div class="footer__inner">
-        <span data-i18n="footer.copy">
-            © Yakutia Local. Все права защищены.
-        </span>
-        <a
-            href="#"
-            class="footer__link"
-            data-i18n="footer.about"
-        >
-            О проекте
-        </a>
-        <a
-            href="#"
-            class="footer__link"
-            data-i18n="footer.contacts"
-        >
-            Контакты
-        </a>
-    </div>
-</footer>
+    <!-- ========== ПОДВАЛ ========== -->
+    <footer class="footer">
+        <div class="footer__inner">
+            <span data-i18n="footer.copy">
+                © Yakutia Local. Все права защищены.
+            </span>
+            <a
+                href="#"
+                class="footer__link"
+                data-i18n="footer.about"
+            >
+                О проекте
+            </a>
+            <a
+                href="#"
+                class="footer__link"
+                data-i18n="footer.contacts"
+            >
+                Контакты
+            </a>
+        </div>
+    </footer>
 
-<!-- СКРИПТЫ -->
-<script src="./assets/js/modules/state.js"></script>
-<script src="./assets/js/modules/i18n.js"></script>
-<script src="./assets/js/api/apiClient.js"></script>
-<script src="./assets/js/api/productsApi.js"></script>
-<script src="./assets/js/api/usersApi.js"></script>
-<script src="./assets/js/api/ordersApi.js"></script>
-<script src="./assets/js/api/favoritesApi.js"></script>
-<script src="./assets/js/modules/cart.js"></script>
-<script src="./assets/js/modules/orders.js"></script>
-<script src="./assets/js/modules/favorites.js"></script>
-<script src="./assets/js/modules/chat.js"></script>
-<script src="./assets/js/modules/bot.js"></script>
-<script src="./assets/js/modules/auth.js"></script>
-<script src="./assets/js/pages/cabinetPage.js"></script>
+    <!-- ========== СКРИПТЫ ДЛЯ КАБИНЕТА ========== -->
+    <script src="./assets/js/api/apiClient.js"></script>
+    <script src="./assets/js/api/productsApi.js"></script>
+    <script src="./assets/js/api/usersApi.js"></script>
+    <script src="./assets/js/pages/cabinetPage.js"></script>
 </body>
 </html>
+
