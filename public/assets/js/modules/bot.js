@@ -1,110 +1,84 @@
-// bot.js — простой rule-based помощник (ИИ-бот) на фронте
-// Использует виджет с id="bot-toggle", "bot-panel", "bot-input", "bot-messages", "bot-send".
-
 /**
- * Инициализация виджета бота.
+ * bot.js — Умный помощник (Smart Helper)
  */
 function initBotWidget() {
-  const toggleBtn = document.getElementById('bot-toggle');
-  const panel = document.getElementById('bot-panel');
-  const input = document.getElementById('bot-input');
-  const sendBtn = document.getElementById('bot-send');
+    const toggleBtn = document.getElementById('bot-toggle');
+    const panel = document.getElementById('bot-panel');
+    const input = document.getElementById('bot-input');
+    const sendBtn = document.getElementById('bot-send');
 
-  if (!toggleBtn || !panel || !input || !sendBtn) return;
+    if (!toggleBtn || !panel) return;
 
-  toggleBtn.addEventListener('click', () => {
-    const isHidden = panel.hasAttribute('hidden');
-    if (isHidden) {
-      panel.removeAttribute('hidden');
-      input.focus();
-    } else {
-      panel.setAttribute('hidden', 'true');
-    }
-  });
+    toggleBtn.addEventListener('click', () => {
+        panel.hidden = !panel.hidden;
+        if(!panel.hidden) input.focus();
+    });
 
-  sendBtn.addEventListener('click', () => {
-    sendBotMessage();
-  });
+    const sendMessage = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        
+        addMessage('user', text);
+        input.value = '';
 
-  input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      sendBotMessage();
-    }
-  });
+        // Имитация мышления ИИ
+        showTypingIndicator();
+        
+        setTimeout(() => {
+            removeTypingIndicator();
+            const reply = generateSmartReply(text);
+            addMessage('bot', reply);
+        }, 800);
+    };
+
+    sendBtn.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
 }
 
-/**
- * Отправить сообщение боту из инпута.
- */
-function sendBotMessage() {
-  const input = document.getElementById('bot-input');
-  if (!input) return;
-
-  const text = input.value.trim();
-  if (!text) return;
-
-  appendBotMessage('user', text);
-  input.value = '';
-
-  // Имитация "подумал"
-  setTimeout(() => {
-    const reply = getBotReply(text);
-    appendBotMessage('bot', reply);
-  }, 300);
+function addMessage(sender, text) {
+    const container = document.getElementById('bot-messages');
+    const div = document.createElement('div');
+    div.className = `bot-msg bot-msg--${sender}`;
+    div.innerHTML = `<div class="bot-msg__bubble">${text}</div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
 }
 
-/**
- * Добавить сообщение в окно бота.
- * @param {'user'|'bot'} author
- * @param {string} text
- */
-function appendBotMessage(author, text) {
-  const box = document.getElementById('bot-messages');
-  if (!box) return;
-
-  const row = document.createElement('div');
-  row.className = 'bot-msg bot-msg--' + author;
-
-  const bubble = document.createElement('div');
-  bubble.className = 'bot-msg__bubble';
-  bubble.textContent = text;
-
-  row.appendChild(bubble);
-  box.appendChild(row);
-  box.scrollTop = box.scrollHeight;
+function showTypingIndicator() {
+    const container = document.getElementById('bot-messages');
+    const div = document.createElement('div');
+    div.id = 'bot-typing';
+    div.className = 'bot-msg bot-msg--bot';
+    div.innerHTML = '<div class="bot-msg__bubble">...</div>';
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
 }
 
-/**
- * Простейшая "ИИ"-логика по ключевым словам.
- * @param {string} text
- * @returns {string}
- */
-function getBotReply(text) {
-  const q = text.toLowerCase();
-
-  if (q.includes('доставка') || q.includes('курьер')) {
-    return 'Доставка организуется продавцом или курьером. Сроки и стоимость зависят от локации, спросите об этом в чате с продавцом.';
-  }
-
-  if (q.includes('скидк') || q.includes('акци')) {
-    return 'Товары со скидкой отмечены бейджем "Sale" и фильтруются чекбоксом "Только со скидкой". Также вы можете уточнить индивидуальные условия у продавца.';
-  }
-
-  if (q.includes('минимальн') && q.includes('заказ')) {
-    return 'Минимальная сумма заказа зависит от продавца. Используйте фильтры по цене, чтобы подобрать нужный объём, и смотрите описание товара.';
-  }
-
-  if (q.includes('категор') || q.includes('что купить')) {
-    return 'Выберите категорию (мясо, молочные продукты, ягоды, готовые блюда) и задайте диапазон цены. Я рекомендую начинать с самых популярных позиций в каталоге.';
-  }
-
-  if (q.includes('профил') || q.includes('кабинет')) {
-    return 'В личном кабинете вы можете заполнить профиль, управлять объявлениями и отслеживать заказы. Переключайте роли "Покупатель / Продавец / Курьер" во вкладках.';
-  }
-
-  return 'Я бот-помощник Yakutia Local. Могу подсказать про доставку, скидки, категории и работу кабинета. Сформулируйте вопрос чуть подробнее.';
+function removeTypingIndicator() {
+    const el = document.getElementById('bot-typing');
+    if(el) el.remove();
 }
 
-// Запуск бота после загрузки DOM
+// "МОЗГИ" БОТА
+function generateSmartReply(text) {
+    const q = text.toLowerCase();
+    
+    if (q.includes('привет') || q.includes('здравствуй')) 
+        return 'Привет! Я виртуальный помощник Якутии. Чем могу помочь?';
+    
+    if (q.includes('доставк') || q.includes('курьер')) 
+        return 'У нас работает доставка курьерами (авто/пешие) или самовывоз. Выберите опцию при оформлении заказа.';
+    
+    if (q.includes('продав') || q.includes('торгова')) 
+        return 'Чтобы стать продавцом, зарегистрируйтесь и в личном кабинете выберите роль "Продавец". Это бесплатно!';
+    
+    if (q.includes('скидк') || q.includes('акци')) 
+        return 'Ищите товары с красным бейджиком "Sale". Сейчас скидки на ягоды и рыбу!';
+    
+    if (q.includes('хакатон') || q.includes('команд')) 
+        return 'Наша команда настроена на победу! Мы реализовали чат, корзину, админку и мультиязычность. Мы молодцы!';
+
+    return 'Я пока учусь и не понял вопрос. Попробуйте спросить про доставку, товары или скидки.';
+}
+
 document.addEventListener('DOMContentLoaded', initBotWidget);
