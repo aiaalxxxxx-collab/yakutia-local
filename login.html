@@ -2,37 +2,257 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход — Yakutia Local</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="auth-page">
-    <div class="auth-card">
-        <h2 style="text-align:center; color: var(--primary); margin-bottom: 30px;">Yakutia Local</h2>
-        
-        <div style="display:flex; border-bottom:1px solid #eee; margin-bottom:20px;">
-            <div style="flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; border-bottom:2px solid var(--primary);" onclick="showLogin()">Вход</div>
-            <div style="flex:1; text-align:center; padding:10px; cursor:pointer; color:#888;" onclick="showRegister()">Регистрация</div>
-        </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему | Yakutia Local</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <form id="login-form">
-            <div style="margin-bottom:15px;">
-                <label style="display:block; margin-bottom:5px; font-size:0.9rem;">Email</label>
-                <input type="email" name="email" class="input-field" style="width:100%" required>
-            </div>
-            <div style="margin-bottom:20px;">
-                <label style="display:block; margin-bottom:5px; font-size:0.9rem;">Пароль</label>
-                <input type="password" name="password" class="input-field" style="width:100%" required>
-            </div>
-            <button type="submit" class="button button--primary" style="width:100%">Войти</button>
-        </form>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --accent: #06b6d4;
+            --bg: #0f172a;
+            --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1000px; /* Для 3D эффекта */
+        }
+
+        /* --- ANIMATED BACKGROUND --- */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 10s infinite ease-in-out;
+        }
+        .blob-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; left: -100px; }
+        .blob-2 { width: 300px; height: 300px; background: var(--accent); bottom: -50px; right: -50px; animation-delay: 2s; }
+        .blob-3 { width: 200px; height: 200px; background: #ec4899; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 4s; opacity: 0.4; }
+
+        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(30px, -50px) rotate(10deg); } 66% { transform: translate(-20px, 20px) rotate(-5deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
+
+        /* --- GLASS CARD --- */
+        .container {
+            width: 400px;
+            min-height: 500px;
+            position: relative;
+            transform-style: preserve-3d; /* Важно для 3D */
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s; /* Плавность наклона */
+        }
+
+        /* Shine effect */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+        .glass-card:hover::before { left: 100%; }
+
+        h2 { margin-bottom: 10px; font-size: 2rem; font-weight: 700; letter-spacing: 1px; }
+        p { color: rgba(255,255,255,0.6); margin-bottom: 30px; font-size: 0.9rem; }
+
+        /* --- FORMS --- */
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5); font-size: 1.1rem; }
         
-        <a href="index.html" style="display:block; text-align:center; margin-top:20px; color:#888; text-decoration:none;">На главную</a>
+        input, select {
+            width: 100%;
+            padding: 15px 15px 15px 45px; /* Место под иконку */
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Custom Select styling */
+        select { appearance: none; cursor: pointer; }
+        select option { background: #1e293b; color: white; }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.5);
+        }
+
+        .switch-text { margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+        .switch-text span { color: var(--accent); cursor: pointer; font-weight: 700; text-decoration: underline; }
+        
+        .back-link { position: absolute; top: 20px; left: 20px; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .back-link:hover { color: white; transform: translateX(-5px); }
+
+        /* --- TOGGLE FORMS --- */
+        #register-form { display: none; }
+        
+        /* Fade animation */
+        .fade-in { animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+
+    <div class="container" id="tilt-card">
+        <div class="glass-card">
+            
+            <!-- FORM: LOGIN -->
+            <div id="login-box" class="fade-in">
+                <h2>С возвращением! 👋</h2>
+                <p>Введите свои данные для входа</p>
+                
+                <form id="login-form">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="Ваш Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Ваш Пароль" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Войти <i class="fas fa-rocket"></i></button>
+                </form>
+
+                <div class="switch-text">
+                    Нет аккаунта? <span onclick="toggleForm()">Создать сейчас</span>
+                </div>
+            </div>
+
+            <!-- FORM: REGISTER -->
+            <div id="register-box" class="hidden fade-in" style="display: none;">
+                <h2>Создать аккаунт 🚀</h2>
+                <p>Присоединяйтесь к Yakutia Local</p>
+                
+                <form id="register-form-real">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="name" placeholder="Ваше Имя" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Пароль" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-briefcase"></i>
+                        <select name="role">
+                            <option value="buyer">👤 Я Покупатель</option>
+                            <option value="seller">🏪 Я Продавец</option>
+                            <option value="courier">🚚 Я Курьер</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn" style="background: linear-gradient(45deg, #ec4899, #8b5cf6);">Регистрация</button>
+                </form>
+
+                <div class="switch-text">
+                    Уже есть аккаунт? <span onclick="toggleForm()" style="color: #ec4899;">Войти</span>
+                </div>
+            </div>
+
+        </div>
     </div>
+
+    <script src="assets/js/auth.js"></script> <!-- Твоя логика (оставь старую, она работает) -->
     
-    <script src="assets/js/auth.js"></script>
     <script>
-        function showLogin() { alert('Переключение вкладок пока просто для демо'); }
-        function showRegister() { window.location.href = 'login.html'; } // Тут можно докрутить логику
+        // --- 1. 3D TILT EFFECT LOGIC ---
+        const card = document.getElementById('tilt-card');
+        const glass = document.querySelector('.glass-card');
+
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset on mouse leave
+        document.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+
+        // --- 2. TOGGLE FORMS ---
+        function toggleForm() {
+            const loginBox = document.getElementById('login-box');
+            const regBox = document.getElementById('register-box');
+
+            if (loginBox.style.display === 'none') {
+                loginBox.style.display = 'block';
+                regBox.style.display = 'none';
+                loginBox.classList.add('fade-in');
+            } else {
+                loginBox.style.display = 'none';
+                regBox.style.display = 'block';
+                regBox.classList.add('fade-in');
+            }
+        }
+
+        // Подключаем старые обработчики к новым ID, если нужно
+        // (Твой auth.js должен искать формы по id="login-form" и "register-form-real")
+        // Если в auth.js id другие - поправь их там или тут.
     </script>
 </body>
 </html>
