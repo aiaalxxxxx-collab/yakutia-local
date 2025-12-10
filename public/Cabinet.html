@@ -3,175 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный кабинет | Yakutia Local</title>
+    <title>Dashboard | Yakutia Local</title>
     
-    <!-- СТИЛИ -->
-    <!-- Убедись, что файлы лежат в папке assets/css/ -->
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <!-- FONTS & ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #818cf8;
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        body {
+            margin: 0; font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text);
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--surface); border-right: 1px solid var(--border);
+            padding: 30px; display: flex; flex-direction: column; transition: 0.3s;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 50px;
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+        }
+        .logo i { font-size: 1.8rem; }
+
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .nav-item {
+            padding: 15px 20px; border-radius: 12px; color: var(--text-light); cursor: pointer;
+            font-weight: 500; display: flex; align-items: center; gap: 15px; transition: 0.3s;
+        }
+        .nav-item:hover { background: #f8fafc; color: var(--primary); transform: translateX(5px); }
+        .nav-item.active { background: #e0e7ff; color: var(--primary); font-weight: 700; }
+        .nav-item i { font-size: 1.2rem; width: 20px; text-align: center; }
+
+        .user-profile {
+            margin-top: auto; padding: 15px; background: #f8fafc; border-radius: 12px;
+            display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s;
+        }
+        .user-profile:hover { background: #e2e8f0; }
+        .avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .user-info div:first-child { font-weight: 700; font-size: 0.9rem; }
+        .user-info div:last-child { font-size: 0.8rem; color: var(--text-light); }
+
+        /* --- MAIN CONTENT --- */
+        .main { flex: 1; padding: 40px; overflow-y: auto; position: relative; }
+        
+        .header-dash { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .header-dash h1 { font-size: 2rem; margin: 0; }
+        .date-badge { background: white; padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border); color: var(--text-light); font-size: 0.9rem; }
+
+        /* --- STATS CARDS --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        
+        .stat-card {
+            background: var(--surface); padding: 25px; border-radius: var(--radius);
+            box-shadow: var(--shadow); position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 12px; background: #e0e7ff; color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px;
+        }
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 5px; }
+        .stat-label { color: var(--text-light); font-size: 0.9rem; }
+        .stat-trend { position: absolute; top: 25px; right: 25px; font-size: 0.9rem; font-weight: 700; color: var(--success); display: flex; align-items: center; gap: 5px; }
+        
+        /* Gradient Card (Special) */
+        .stat-card.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .stat-card.primary .stat-icon { background: rgba(255,255,255,0.2); color: white; }
+        .stat-card.primary .stat-value, .stat-card.primary .stat-label { color: white; }
+        .stat-card.primary .stat-trend { color: rgba(255,255,255,0.8); }
+
+        /* --- TABLE --- */
+        .table-container { background: var(--surface); border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-add:hover { background: #4338ca; transform: scale(1.05); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--text-light); font-weight: 500; padding: 15px; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        
+        .product-img-mini { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-draft { background: #f3f4f6; color: #4b5563; }
+
+        .action-btn { width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px; transition: 0.2s; }
+        .btn-edit { background: #e0e7ff; color: var(--primary); }
+        .btn-del { background: #fee2e2; color: #ef4444; }
+        .action-btn:hover { transform: scale(1.1); }
+
+        /* --- ANIMATIONS --- */
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MOBILE TOGGLE --- */
+        .mobile-toggle { display: none; position: fixed; top: 20px; left: 20px; z-index: 200; background: white; border: none; padding: 10px; border-radius: 8px; box-shadow: var(--shadow); }
+        
+        @media (max-width: 1024px) {
+            .sidebar { position: fixed; left: -280px; height: 100%; }
+            .sidebar.open { left: 0; box-shadow: 0 0 50px rgba(0,0,0,0.2); }
+            .mobile-toggle { display: block; }
+            .main { padding: 20px; padding-top: 70px; }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- 1. КНОПКА МОБИЛЬНОГО МЕНЮ (Гамбургер) -->
-    <!-- Она должна быть здесь, внутри body -->
-    <button id="sidebar-toggle" class="mobile-menu-btn">☰</button>
+    <!-- MOBILE MENU BTN -->
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <!-- 2. ОСНОВНАЯ РАЗМЕТКА (Сайдбар + Контент) -->
-    <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="index.html" class="logo">
+            <i class="fas fa-snowflake"></i> Yakutia Admin
+        </a>
         
-        <!-- БОКОВАЯ ПАНЕЛЬ (САЙДБАР) -->
-        <aside class="sidebar">
-            <a href="index.html" class="sidebar__logo">Yakutia Local</a>
-            
-            <nav class="sidebar__nav" id="sidebar-menu">
-                <!-- Пункты меню генерируются через JS (cabinetPage.js) -->
-                <div class="nav-item active" data-tab="overview">Загрузка меню...</div>
-            </nav>
-
-            <!-- Профиль снизу слева -->
-            <div class="user-profile-mini">
-                <div class="avatar-circle">👤</div>
-                <div style="flex:1; overflow:hidden;">
-                    <div id="user-name-display" style="font-weight:bold;">...</div>
-                    <div id="user-role-display" style="font-size:0.8rem; color:#666;">...</div>
-                </div>
-                <button id="logout-btn" title="Выйти" style="border:none; background:none; cursor:pointer;">🚪</button>
+        <nav class="nav-menu" id="sidebar-menu">
+            <div class="nav-item active" data-tab="overview">
+                <i class="fas fa-chart-pie"></i> Обзор
             </div>
-        </aside>
+            <!-- Динамические пункты добавятся JS -->
+            <div class="nav-item loading-item" style="opacity: 0.5;">Загрузка меню...</div>
+        </nav>
 
-        <!-- ЦЕНТРАЛЬНАЯ ЧАСТЬ -->
-        <main class="main-content">
-            
-            <!-- Секция: ОБЗОР (Видна всем) -->
-            <section id="view-overview" class="view-section">
-                <div class="page-header">
-                    <h2>Сводка</h2>
+        <div class="user-profile">
+            <div class="avatar" id="user-avatar">Y</div>
+            <div class="user-info">
+                <div id="user-name-display">User Name</div>
+                <div id="user-role-display">Role</div>
+            </div>
+            <div style="margin-left: auto;">
+                <button id="logout-btn" style="border:none; background:none; cursor:pointer; color:#ef4444;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        
+        <!-- SECTION: OVERVIEW -->
+        <section id="view-overview" class="view-section fade-in" style="animation-delay: 0.1s;">
+            <div class="header-dash">
+                <div>
+                    <h1>С возвращением, <span id="welcome-name">Друг</span>! 👋</h1>
+                    <p style="color:var(--text-light); margin-top:5px;">Вот что происходит в твоем магазине сегодня.</p>
+                </div>
+                <div class="date-badge"><i class="far fa-calendar-alt"></i> Сегодня</div>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid" id="stats-container">
+                <div class="stat-card primary">
+                    <div class="stat-trend"><i class="fas fa-arrow-up"></i> +12%</div>
+                    <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                    <div class="stat-value">0 ₽</div>
+                    <div class="stat-label">Общая выручка</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-trend"><i class="fas fa-arrow-up"></i> +5%</div>
+                    <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="stat-value" id="stats-count">0</div>
+                    <div class="stat-label">Активных заказов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-value">4.9</div>
+                    <div class="stat-label">Рейтинг продавца</div>
+                </div>
+            </div>
+
+            <!-- CHART (Fake Image for Demo) -->
+            <div class="table-container fade-in" style="animation-delay: 0.2s; height: 300px; display: flex; align-items: center; justify-content: center; background: white; margin-bottom: 30px;">
+                <p style="color: #cbd5e1; font-weight: 500; font-size: 1.2rem;">📈 График активности (Demo)</p>
+            </div>
+        </section>
+
+        <!-- SECTION: PRODUCTS (Seller Only) -->
+        <section id="view-products" class="view-section hidden fade-in">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>📦 Мои Товары</h2>
+                    <button class="btn-add" id="btn-add-product">
+                        <i class="fas fa-plus"></i> Добавить товар
+                    </button>
                 </div>
                 
-                <div class="stats-grid" id="stats-container">
-                    <!-- Сюда JS вставит цифры -->
-                    <div class="stat-card">
-                        <div class="stat-card__value">...</div>
-                        <div class="stat-card__label">Загрузка данных...</div>
-                    </div>
-                </div>
+                <table id="products-table">
+                    <thead>
+                        <tr>
+                            <th>Фото</th>
+                            <th>Название</th>
+                            <th>Цена</th>
+                            <th>Категория</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- JS Render -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                <h3>Последние уведомления</h3>
-                <div class="card-panel">
-                    <p style="color:#666">Новых уведомлений нет.</p>
-                </div>
-            </section>
-
-            <!-- Секция: МОИ ТОВАРЫ (Только для Продавца) -->
-            <section id="view-products" class="view-section" hidden>
-                <div class="page-header">
-                    <h2>Управление товарами</h2>
-                    <button class="button button--primary" id="btn-add-product">+ Добавить товар</button>
-                </div>
-                
-                <div style="overflow-x:auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Фото</th>
-                                <th>Название</th>
-                                <th>Цена</th>
-                                <th>Категория</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="products-table-body">
-                            <!-- Сюда JS вставит список товаров -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Секция: ЗАКАЗЫ (Покупки или Продажи) -->
-            <section id="view-orders" class="view-section" hidden>
-                <div class="page-header">
-                    <h2>Заказы</h2>
-                </div>
+        <!-- SECTION: ORDERS -->
+        <section id="view-orders" class="view-section hidden fade-in">
+             <div class="table-container">
+                <div class="table-header"><h2>🚚 История Заказов</h2></div>
                 <div id="orders-list-container">
-                    <p>Загрузка списка заказов...</p>
+                    <p style="padding: 20px; text-align: center; color: var(--text-light);">Заказов пока нет</p>
                 </div>
-            </section>
+             </div>
+        </section>
 
-             <!-- Секция: ИЗБРАННОЕ (Для покупателя) -->
-             <section id="view-favorites" class="view-section" hidden>
-                <div class="page-header">
-                    <h2>Избранное</h2>
-                </div>
-                <div id="favorites-list-container">
-                    <p>Список избранного пуст.</p>
-                </div>
-            </section>
+         <!-- SECTION: FAVORITES -->
+         <section id="view-favorites" class="view-section hidden fade-in">
+            <div class="table-container">
+               <div class="table-header"><h2>❤️ Избранное</h2></div>
+               <div id="favorites-list-container"></div>
+            </div>
+       </section>
 
-        </main>
-    </div>
+    </main>
 
-    <!-- 3. МОДАЛЬНЫЕ ОКНА (Скрыты по умолчанию) -->
-    
-    <!-- Модалка редактирования товара -->
-    <div id="product-modal" class="modal" hidden>
-        <div class="modal__overlay"></div>
-        <div class="modal__content">
-            <button class="modal__close" id="modal-close-btn">&times;</button>
-            <h2 id="modal-title">Товар</h2>
-            
+    <!-- MODAL: PRODUCT EDIT -->
+    <div id="product-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:flex; justify-content:center; align-items:center;" hidden>
+        <div style="background:white; padding:30px; border-radius:20px; width:500px; max-width:90%;">
+            <h2 id="modal-title" style="margin-bottom:20px;">Редактировать</h2>
             <form id="product-form">
-                <input type="hidden" name="id" />
+                <input type="hidden" name="id">
+                <input type="text" name="title" placeholder="Название" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;" required>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="number" name="price" placeholder="Цена" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;" required>
+                    <select name="category" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <option value="meat">Мясо</option>
+                        <option value="fish">Рыба</option>
+                        <option value="berries">Ягоды</option>
+                    </select>
+                </div>
+                <input type="file" name="imageFile" id="product-file-input" style="margin-bottom:10px;">
+                <img id="image-preview" style="height:50px; display:block; margin-bottom:10px;">
                 
-                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" name="title" required class="input-field" />
-                </div>
-
-                <div class="form-row" style="display:flex; gap:15px;">
-                    <div class="form-group" style="flex:1">
-                        <label>Цена (₽)</label>
-                        <input type="number" name="price" required class="input-field" />
-                    </div>
-                    <div class="form-group" style="flex:1">
-                        <label>Категория</label>
-                        <select name="category" class="input-field">
-                            <option value="meat">Мясо</option>
-                            <option value="fish">Рыба</option>
-                            <option value="milk">Молочка</option>
-                            <option value="berries">Ягоды</option>
-                            <option value="ready">Готовая еда</option>
-                            <option value="other">Другое</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Фотография</label>
-                    <input type="file" name="imageFile" id="product-file-input" accept="image/*" />
-                    <div style="margin-top:10px;">
-                        <img id="image-preview" src="" style="max-height:100px; display:none; border-radius:4px;">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea name="desc" rows="3" class="input-field"></textarea>
-                </div>
-
-                <div class="modal__actions">
-                    <button type="button" class="button button--secondary" id="modal-cancel-btn">Отмена</button>
-                    <button type="submit" class="button button--primary" id="modal-save-btn">Сохранить</button>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" id="modal-cancel-btn" style="flex:1; padding:10px; border:1px solid #ddd; background:white; border-radius:8px; cursor:pointer;">Отмена</button>
+                    <button type="submit" id="modal-save-btn" style="flex:1; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">Сохранить</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Контейнер для всплывающих уведомлений -->
-    <div id="toast-container"></div>
+    <!-- TOASTS -->
+    <div id="toast-container" style="position:fixed; bottom:30px; right:30px; z-index:3000;"></div>
 
-    <!-- 4. СКРИПТЫ (В самом низу) -->
-    <!-- Подключаем только cabinetPage.js, так как всю логику мы собрали в нем -->
-    <script src="assets/js/cabinetPage.js"></script>
-
+    <!-- SCRIPTS -->
+    <script src="assets/js/cabinetPage.js"></script> <!-- Твой старый добрый JS, он подойдет -->
+    
+    <script>
+        // Небольшой хак для меню, чтобы работало с новым HTML
+        document.addEventListener('DOMContentLoaded', () => {
+            // Переключатель вкладок
+            document.body.addEventListener('click', (e) => {
+                const item = e.target.closest('.nav-item');
+                if (item && item.dataset.tab) {
+                    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    document.querySelectorAll('.view-section').forEach(el => {
+                        el.hidden = true;
+                        el.classList.remove('fade-in'); // Reset anim
+                    });
+                    
+                    const target = document.getElementById('view-' + item.dataset.tab);
+                    if(target) {
+                        target.hidden = false;
+                        setTimeout(() => target.classList.add('fade-in'), 10);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
