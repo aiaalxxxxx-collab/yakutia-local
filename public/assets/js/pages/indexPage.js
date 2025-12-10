@@ -1,51 +1,56 @@
 /**
- * indexPage.js — Главный контроллер главной страницы
- * Включает: Загрузку товаров, Живой поиск, Корзину, Оформление заказа
+ * indexPage.js — Главный контроллер
+ * Версия: FINAL (Хакатон Edition)
  */
 
 const API_URL = 'http://localhost:3000/api'; // Адрес твоего Python сервера
-let allProducts = []; // Здесь будем хранить загруженные товары
+let allProducts = []; // Кэш товаров
 
+// =========================================================
+// ГЛАВНАЯ ТОЧКА ВХОДА (ИНИЦИАЛИЗАЦИЯ)
+// =========================================================
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Index Page Loaded');
+    console.log('🚀 App Initialized');
     
-    // 1. Инициализация Корзины (Модалка + Кнопки)
+    // 1. Инициализация UI Корзины
     initCartLogic();
 
-    // 2. Загрузка товаров с сервера
-    await loadProducts();
+    // 2. Загрузка данных с сервера (параллельно для скорости)
+    await Promise.all([
+        loadProducts(),
+        loadBrands()
+    ]);
 
-    // 3. Инициализация Поиска
+    // 3. Инициализация Поиска и Фильтров
     initSearch();
-
-    // 4. Инициализация Фильтров (Кнопка "Применить")
-    const filterBtn = document.querySelector('.filter-btn'); // Если есть кнопка фильтра
+    
+    // Кнопка фильтра
+    const filterBtn = document.querySelector('.filter-btn');
     if (filterBtn) {
         filterBtn.addEventListener('click', applyFilters);
     }
 });
 
 // =========================================================
-// 1. ЛОГИКА ТОВАРОВ (ЗАГРУЗКА И РЕНДЕР)
+// 1. ТОВАРЫ (Load & Render)
 // =========================================================
 
 async function loadProducts() {
     const container = document.getElementById('products-list');
     if (!container) return;
 
-    container.innerHTML = '<p style="padding:20px;">Загрузка товаров...</p>';
+    container.innerHTML = '<div style="padding:20px; text-align:center">⏳ Загрузка свежих продуктов...</div>';
 
     try {
         const res = await fetch(`${API_URL}/products`);
-        if (!res.ok) throw new Error('Ошибка сервера');
+        if (!res.ok) throw new Error('Server Error');
         
         allProducts = await res.json();
         renderProducts(allProducts);
         
     } catch (e) {
         console.error(e);
-        // Если сервер недоступен, выведем заглушку или очистим
-        container.innerHTML = '<p style="padding:20px; color:red;">Не удалось загрузить товары. Проверьте запущен ли server.js (main.py)</p>';
+        container.innerHTML = '<div style="padding:20px; color:red; text-align:center">Ошибка подключения к серверу.<br>Убедитесь, что запущен uvicorn main:app</div>';
     }
 }
 
@@ -54,20 +59,22 @@ function renderProducts(products) {
     if (!container) return;
 
     if (!products || products.length === 0) {
-        container.innerHTML = '<p style="padding:20px;">Товары не найдены.</p>';
+        container.innerHTML = '<p style="text-align:center; padding:20px;">Товары не найдены 😔</p>';
         return;
     }
 
-    // Генерация HTML
     const html = products.map(p => {
         const image = p.imageUrl || 'assets/img/products/demo_placeholder.jpg';
+        // Если есть старая цена, показываем зачеркнутую
         const oldPriceHtml = p.oldPrice ? `<span class="product-card__old-price">${p.oldPrice} ₽</span>` : '';
-        
+        // Бейджик
+        const badge = p.isSale ? '<span class="product-card__badge product-card__badge--sale">Sale</span>' : '';
+
         return `
         <article class="product-card">
             <div class="product-card__image-wrapper">
                 <img src="${image}" alt="${p.title}" class="product-card__image" loading="lazy">
-                ${p.isSale ? '<span class="product-card__badge product-card__badge--sale">Sale</span>' : ''}
+                ${badge}
             </div>
             <div class="product-card__content">
                 <div class="product-card__price">
@@ -78,9 +85,16 @@ function renderProducts(products) {
                 <div class="product-card__meta">
                     <span class="product-card__place">📍 ${p.place || 'Якутия'}</span>
                 </div>
-                <button class="button button--primary product-card__add-btn" onclick="addToCartHandler(${p.id})">
-                    В корзину
-                </button>
+                
+                <div class="product-card__actions">
+                    <button class="button button--primary product-card__add-btn" onclick="addToCartHandler(${p.id})">
+                        В корзину
+                    </button>
+                    <!-- Кнопка чата (вызывает функцию из realChat.js) -->
+                    <button class="button button--secondary button--sm" onclick="openChatWithSeller(${p.id}, '${p.title}')" title="Написать продавцу">
+                        💬
+                    </button>
+                </div>
             </div>
         </article>
         `;
@@ -89,29 +103,39 @@ function renderProducts(products) {
     container.innerHTML = html;
 }
 
-// Глобальная функция для кнопки "В корзину" (чтобы работала из HTML строки)
-window.addToCartHandler = function(productId) {
-    // Используем функцию из cart.js (предполагаем, что она подключена)
-    if (typeof addToCart === 'function') {
-        addToCart(productId);
+// =========================================================
+// 2. БРЕНДЫ (Крупные поставщики)
+// =========================================================
+
+async function loadBrands() {
+    const container = document.getElementById('brands-grid');
+    if (!container) return;
+
+    try {
+        const res = await fetch(`${API_URL}/brands`);
+        const brands = await res.json();
         
-        // Маленькая анимация или уведомление
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = '✓ Добавлено';
-        btn.classList.add('button--success');
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.classList.remove('button--success');
-        }, 1000);
-        
-    } else {
-        console.error('Функция addToCart не найдена! Проверьте подключение cart.js');
+        if (!brands || brands.length === 0) {
+            container.innerHTML = '<p>Список производителей загружается...</p>';
+            return;
+        }
+
+        container.innerHTML = brands.map(b => `
+            <div class="brand-card">
+                <div class="brand-card__icon">🏭</div>
+                <h4>${b.name}</h4>
+                <p>${b.category || 'Местное производство'}</p>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.warn('Бренды не загружены (возможно, нет brands.json)');
+        // Не показываем ошибку юзеру, просто оставляем пусто
+        if(container) container.innerHTML = '<p class="text-muted">Производители обновляются...</p>';
     }
-};
+}
 
 // =========================================================
-// 2. ЖИВОЙ ПОИСК
+// 3. ПОИСК И ФИЛЬТРЫ
 // =========================================================
 
 function initSearch() {
@@ -123,29 +147,51 @@ function initSearch() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             const query = e.target.value.toLowerCase().trim();
-            const filtered = allProducts.filter(p => p.title.toLowerCase().includes(query));
+            
+            // Фильтрация в памяти (клиентская)
+            const filtered = allProducts.filter(p => 
+                p.title.toLowerCase().includes(query) || 
+                (p.desc && p.desc.toLowerCase().includes(query))
+            );
             renderProducts(filtered);
-        }, 300); // Задержка 300мс
+        }, 300); // 300ms debounce
     });
 }
 
 function applyFilters() {
-    // Простейшая фильтрация по категории (пример)
+    // 1. Категория
     const catSelect = document.querySelector('select[name="category"]');
-    if (!catSelect) return;
+    // 2. Цена
+    const priceFrom = document.querySelector('input[name="price_from"]');
+    const priceTo = document.querySelector('input[name="price_to"]');
     
-    const category = catSelect.value;
     let filtered = allProducts;
-    
-    if (category && category !== 'Все категории') {
-        filtered = filtered.filter(p => p.category === category);
+
+    // Фильтр по категории
+    if (catSelect && catSelect.value && catSelect.value !== 'Все категории') {
+        const catMap = {
+            'Мясо': 'meat', 'Рыба': 'fish', 'Ягоды': 'berries', 'Молочные продукты': 'milk', 'Готовая еда': 'ready'
+        };
+        // Если в value русское название, мапим, если английское - оставляем
+        const targetCat = catMap[catSelect.value] || catSelect.value;
+        
+        // Упрощенная проверка (если категории в базе 'meat', 'fish' и т.д.)
+        filtered = filtered.filter(p => p.category === targetCat || p.category === catSelect.value);
     }
-    
+
+    // Фильтр по цене
+    if (priceFrom && priceFrom.value) {
+        filtered = filtered.filter(p => p.price >= Number(priceFrom.value));
+    }
+    if (priceTo && priceTo.value) {
+        filtered = filtered.filter(p => p.price <= Number(priceTo.value));
+    }
+
     renderProducts(filtered);
 }
 
 // =========================================================
-// 3. КОРЗИНА (МОДАЛКА + ЗАКАЗ)
+// 4. ЛОГИКА КОРЗИНЫ
 // =========================================================
 
 function initCartLogic() {
@@ -153,31 +199,20 @@ function initCartLogic() {
     const openBtn = document.getElementById('cart-button'); // Кнопка в шапке
     const closeBtn = document.getElementById('cart-close-x'); // Крестик
     const overlay = document.getElementById('cart-overlay');
-    
-    // Кнопка "Оформить" внутри корзины
-    // Ищем кнопку по классу или ID. Лучше добавь id="cart-checkout-btn" в HTML, но найдем и так
-    const checkoutBtn = modal ? modal.querySelector('.button--primary') : null;
+    const checkoutBtn = document.getElementById('cart-checkout-btn') || (modal ? modal.querySelector('.button--primary') : null);
 
-    // --- ОТКРЫТИЕ ---
-    if (openBtn) {
-        openBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            renderCartItemsInModal(); // Отрисовать содержимое
-            openCartModal();
-        });
-    }
+    // Обработчики
+    if (openBtn) openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        renderCartItemsInModal();
+        openCartModal();
+    });
 
-    // --- ЗАКРЫТИЕ (Крестик) ---
     if (closeBtn) closeBtn.addEventListener('click', closeCartModal);
-    // --- ЗАКРЫТИЕ (Фон) ---
     if (overlay) overlay.addEventListener('click', closeCartModal);
+    if (checkoutBtn) checkoutBtn.addEventListener('click', submitOrder);
 
-    // --- ОФОРМЛЕНИЕ ЗАКАЗА ---
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', submitOrder);
-    }
-
-    // Хелперы открытия/закрытия
+    // Функции открытия/закрытия
     function openCartModal() {
         if (!modal) return;
         modal.hidden = false;
@@ -191,39 +226,37 @@ function initCartLogic() {
     }
 }
 
-// Отрисовка товаров ВНУТРИ корзины
+// Отрисовка
 function renderCartItemsInModal() {
     const listContainer = document.getElementById('cart-items-list');
     const totalEl = document.getElementById('cart-total-price');
     if (!listContainer) return;
 
-    // Берем данные из localStorage (через cart.js)
+    // Берем из cart.js
     const cartItems = typeof getCartItems === 'function' ? getCartItems() : [];
     
     if (cartItems.length === 0) {
-        listContainer.innerHTML = '<p>Корзина пуста</p>';
+        listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888">Ваша корзина пуста 🛒</div>';
         if(totalEl) totalEl.textContent = '0';
         return;
     }
 
     let totalPrice = 0;
     
-    // Собираем HTML
     const html = cartItems.map(item => {
-        // Находим полную инфу о товаре из загруженных allProducts
         const product = allProducts.find(p => p.id == item.productId);
-        if (!product) return ''; // Если товар удален, пропускаем
+        if (!product) return ''; // Товар мог быть удален
 
         const sum = product.price * item.quantity;
         totalPrice += sum;
 
         return `
-        <div class="cart-item" style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
-            <div>
-                <div style="font-weight:bold;">${product.title}</div>
-                <div style="font-size:0.8rem; color:#666;">${item.quantity} шт. x ${product.price} ₽</div>
+        <div class="cart-item">
+            <div class="cart-item__info">
+                <div class="cart-item__title">${product.title}</div>
+                <div class="cart-item__meta">${item.quantity} шт. × ${product.price} ₽</div>
             </div>
-            <div style="font-weight:bold;">${sum} ₽</div>
+            <div class="cart-item__price">${sum} ₽</div>
         </div>
         `;
     }).join('');
@@ -232,12 +265,16 @@ function renderCartItemsInModal() {
     if (totalEl) totalEl.textContent = totalPrice;
 }
 
-// ОТПРАВКА ЗАКАЗА НА СЕРВЕР
+// =========================================================
+// 5. ОФОРМЛЕНИЕ ЗАКАЗА
+// =========================================================
+
 async function submitOrder() {
     const token = localStorage.getItem('token');
     
     if (!token) {
-        alert('Пожалуйста, войдите в аккаунт, чтобы оформить заказ.');
+        alert('⚠️ Для оформления заказа нужно войти в аккаунт!');
+        // Тут можно вызвать модалку логина
         return;
     }
 
@@ -247,20 +284,20 @@ async function submitOrder() {
         return;
     }
     
-    // Считаем сумму (грубо, лучше на сервере пересчитывать, но для прототипа сойдет)
+    // Считаем сумму
     let total = 0;
     cartItems.forEach(item => {
         const p = allProducts.find(prod => prod.id == item.productId);
         if(p) total += p.price * item.quantity;
     });
 
-    // Отправка
-    try {
-        const btn = document.querySelector('#cart-modal .button--primary');
-        const oldText = btn.textContent;
-        btn.textContent = 'Оформление...';
+    const btn = document.querySelector('#cart-modal .button--primary');
+    if(btn) {
+        btn.textContent = 'Оформляем...';
         btn.disabled = true;
+    }
 
+    try {
         const res = await fetch(`${API_URL}/orders`, {
             method: 'POST',
             headers: {
@@ -274,26 +311,51 @@ async function submitOrder() {
         });
 
         if (res.ok) {
-            alert('Заказ успешно создан! Спасибо.');
-            localStorage.removeItem('yakutia_cart'); // Очистить
+            alert('✅ Заказ успешно оформлен! Продавец свяжется с вами.');
+            localStorage.removeItem('yakutia_cart'); // Очистка
             
-            // Закрыть окно
+            // Закрываем модалку
             const modal = document.getElementById('cart-modal');
             modal.classList.remove('modal--open');
             setTimeout(() => modal.hidden = true, 300);
             
-            // Обновить счетчик в шапке (если есть код в cart.js)
-            location.reload(); 
+            // Перезагрузка для обновления счетчиков
+            window.location.reload(); 
         } else {
             const err = await res.json();
-            alert('Ошибка: ' + (err.detail || 'Не удалось создать заказ'));
+            alert('Ошибка заказа: ' + (err.detail || 'Неизвестная ошибка'));
         }
-        
-        btn.textContent = oldText;
-        btn.disabled = false;
 
     } catch (e) {
         console.error(e);
-        alert('Ошибка сети');
+        alert('Ошибка сети. Проверьте интернет.');
+    } finally {
+        if(btn) {
+            btn.textContent = 'Оформить заказ';
+            btn.disabled = false;
+        }
     }
 }
+
+// =========================================================
+// ХЕЛПЕРЫ
+// =========================================================
+
+// Функция для кнопки "В корзину" (глобальная)
+window.addToCartHandler = function(productId) {
+    if (typeof addToCart === 'function') {
+        addToCart(productId);
+        
+        // Визуальный эффект на кнопке
+        const btn = event.target;
+        const originalText = btn.textContent;
+        
+        btn.textContent = '✓ Добавлено';
+        btn.style.background = '#22c55e'; // Green
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = ''; // Reset
+        }, 1000);
+    }
+};
