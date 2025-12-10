@@ -1,14 +1,14 @@
-// catalog.js — рендер списка товаров на главной странице
+// catalog.js — рендер списка товаров на главной странице и обработка кнопок
 
 /**
  * Тип товара.
  * @typedef {Object} Product
- * @property {number|string} id - Идентификатор товара.
- * @property {string} title - Название товара.
- * @property {number} price - Цена.
- * @property {string} [desc] - Описание.
- * @property {string} [place] - Место/локация.
- * @property {string} [category] - Категория.
+ * @property {number|string} id
+ * @property {string} title
+ * @property {number} price
+ * @property {string} [desc]
+ * @property {string} [place]
+ * @property {string} [category]
  * @property {number|null} [oldPrice]
  * @property {number|null} [discount]
  * @property {boolean} [promoted]
@@ -16,15 +16,20 @@
  * @property {string|null} [imageUrl]
  */
 
+/** @type {Product[]} */
+let currentProducts = [];
+
 /**
  * Отрисовать список товаров в контейнере #products-list.
- * @param {Product[]} products - Массив товаров.
+ * @param {Product[]} products
  */
 function renderProducts(products) {
+  currentProducts = Array.isArray(products) ? products : [];
+
   const container = document.getElementById('products-list');
   if (!container) return;
 
-  if (!products || products.length === 0) {
+  if (!currentProducts.length) {
     container.innerHTML = `
       <p style="grid-column: 1 / -1; font-size: 0.9rem; color: #6b7280;">
         Пока нет товаров по выбранным фильтрам.
@@ -33,16 +38,19 @@ function renderProducts(products) {
     return;
   }
 
-  const cardsHtml = products
+  const cardsHtml = currentProducts
     .map((p) => createProductCardHtml(p))
     .join('');
 
   container.innerHTML = cardsHtml;
+
+  // После вставки HTML навешиваем обработчики на кнопки
+  bindProductCardEvents(container);
 }
 
 /**
  * Сгенерировать HTML одной карточки товара.
- * @param {Product} p - Товар.
+ * @param {Product} p
  * @returns {string}
  */
 function createProductCardHtml(p) {
@@ -54,6 +62,7 @@ function createProductCardHtml(p) {
     : '';
 
   const imageUrl = p.imageUrl || './assets/img/products/demo_placeholder.jpg';
+  const favClass = isFavorite(p.id) ? ' product-card__button--fav-active' : '';
 
   return `
     <article class="product-card" data-product-id="${p.id}" data-category="${p.category || 'other'}">
@@ -93,7 +102,7 @@ function createProductCardHtml(p) {
           В корзину
         </button>
         <button
-          class="product-card__button js-add-to-favorites"
+          class="product-card__button js-add-to-favorites${favClass}"
         >
           ❤ В избранное
         </button>
@@ -120,8 +129,65 @@ function createProductCardHtml(p) {
 }
 
 /**
- * Простейший escape HTML, чтобы защититься от опасных символов.
- * @param {string} value - Входная строка.
+ * Навесить обработчики на кнопки внутри контейнера с карточками.
+ * @param {HTMLElement} container
+ */
+function bindProductCardEvents(container) {
+  // Делегирование событий по клику
+  container.addEventListener('click', (event) => {
+    const target = /** @type {HTMLElement} */ (event.target);
+    const card = target.closest('.product-card');
+    if (!card) return;
+
+    const productIdAttr = card.getAttribute('data-product-id');
+    const productId = Number(productIdAttr);
+    const product = currentProducts.find((p) => p.id === productId);
+    if (!product) return;
+
+    // В корзину
+    if (target.closest('.js-add-to-cart')) {
+      addToCart(product.id);
+      alert('Товар добавлен в корзину');
+      return;
+    }
+
+    // Избранное
+    if (target.closest('.js-add-to-favorites')) {
+      const isNowFav = toggleFavorite(product.id);
+      if (isNowFav) {
+        target.classList.add('product-card__button--fav-active');
+      } else {
+        target.classList.remove('product-card__button--fav-active');
+      }
+      return;
+    }
+
+    // Чат
+    if (target.closest('.js-open-chat')) {
+      // Здесь позже откроем модалку чата c продуктом
+      alert('Тут откроется чат с продавцом по этому товару.');
+      return;
+    }
+
+    // Редактировать
+    if (target.closest('.js-edit-product')) {
+      alert('Редактирование товара: нужно открыть форму в кабинете продавца.');
+      return;
+    }
+
+    // Удалить
+    if (target.closest('.js-delete-product')) {
+      const confirmed = confirm('Удалить это объявление?');
+      if (!confirmed) return;
+      alert('В боевой версии здесь вызовем API удаления товара.');
+      return;
+    }
+  }, { once: true });
+}
+
+/**
+ * Простейший escape HTML.
+ * @param {string} value
  * @returns {string}
  */
 function escapeHtml(value) {
