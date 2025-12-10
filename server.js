@@ -17,7 +17,7 @@ const jwt = require('jsonwebtoken'); // для простых токенов а�
 const multer = require('multer'); // для загрузки картинок товаров
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // СЕКРЕТ для JWT (в проде — в env)
 const JWT_SECRET = 'yakutia-local-secret';
