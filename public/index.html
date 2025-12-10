@@ -199,6 +199,10 @@
       font-size: 12px;
       cursor: pointer;
     }
+    .brand-card.active {
+      border-color: var(--accent);
+      background: #e6f7ef;
+    }
     .brand-name {
       font-weight: 600;
       margin-bottom: 3px;
@@ -362,12 +366,12 @@
 <header>
   <div class="container header-top">
     <div>
-      <div class="logo">Made in Yakutia</div>
-      <div class="logo-sub">Маркетплейс местных производителей</div>
+      <div class="logo" data-i18n="logo">Made in Yakutia</div>
+      <div class="logo-sub" data-i18n="logo_sub">Маркетплейс местных производителей</div>
     </div>
     <div class="search">
-      <input type="text" placeholder="Искать товары, бренды, мастеров…">
-      <button type="button">Найти</button>
+      <input type="text" data-i18n-placeholder="search_placeholder" placeholder="Искать товары, бренды, мастеров…">
+      <button type="button" data-i18n="btn_search">Найти</button>
     </div>
     <div class="header-right">
       <select class="lang-select" id="lang-select">
@@ -386,14 +390,14 @@
 
 <div class="tabs-bar">
   <div class="container tabs-inner">
-    <div class="tab-btn active" data-tab="market">Маркетплейс</div>
-    <div class="tab-btn" data-tab="ads">Объявления</div>
-    <div class="tab-btn" data-tab="events">Афиша</div>
+    <div class="tab-btn active" data-tab="market" data-i18n="tab_market">Маркетплейс</div>
+    <div class="tab-btn" data-tab="ads" data-i18n="tab_ads">Объявления</div>
+    <div class="tab-btn" data-tab="events" data-i18n="tab_events">Афиша</div>
   </div>
 </div>
 
 <main>
-  <h1 class="section-title" id="section-title">Товары местных производителей Якутии</h1>
+  <h1 class="section-title" id="section-title" data-i18n="title_market">Товары местных производителей Якутии</h1>
 
   <!-- Категории -->
   <section id="categories-section">
@@ -440,18 +444,16 @@
       </div>
       <div style="font-size:11px;color:#777;">Нажми на бренд, чтобы отфильтровать товары</div>
     </div>
-    <div class="brands-list" id="brands-list">
-      <!-- заполняется из JS -->
-    </div>
+    <div class="brands-list" id="brands-list"></div>
   </section>
 
   <!-- Доп. фильтры -->
   <div class="subfilters" id="subfilters">
-    <button class="subfilter-btn active" data-filter="all">Все</button>
-    <button class="subfilter-btn" data-filter="sale">Акции</button>
-    <button class="subfilter-btn" data-filter="popular">Популярное</button>
-    <button class="subfilter-btn" data-filter="season">По сезонам</button>
-    <button class="subfilter-btn" data-filter="local">Малый бизнес</button>
+    <button class="subfilter-btn active" data-filter="all" data-i18n="filter_all">Все</button>
+    <button class="subfilter-btn" data-filter="sale" data-i18n="filter_sales">Акции</button>
+    <button class="subfilter-btn" data-filter="popular" data-i18n="filter_popular">Популярное</button>
+    <button class="subfilter-btn" data-filter="season" data-i18n="filter_season">По сезонам</button>
+    <button class="subfilter-btn" data-filter="local" data-i18n="filter_local">Малый бизнес</button>
   </div>
 
   <!-- Маркетплейс -->
@@ -487,7 +489,7 @@
 </main>
 
 <script>
-  // ----- переключение основных вкладок -----
+  // ----- переключение вкладок -----
   const tabs = document.querySelectorAll('.tab-btn');
   const blocks = {
     market: document.getElementById('tab-market'),
@@ -506,17 +508,12 @@
       Object.keys(blocks).forEach(key => {
         blocks[key].style.display = key === tab ? 'grid' : 'none';
       });
-      if (tab === 'market') {
-        titleEl.textContent = 'Товары местных производителей Якутии';
-      }
-      if (tab === 'ads') {
-        titleEl.textContent = 'Объявления жителей Якутии';
-      }
-      if (tab === 'events') {
-        titleEl.textContent = 'События и афиша';
-      }
+      if (tab === 'market') titleEl.dataset.i18n = 'title_market';
+      if (tab === 'ads') titleEl.textContent = 'Объявления жителей Якутии';
+      if (tab === 'events') titleEl.textContent = 'События и афиша';
       categoriesSection.style.display = tab === 'market' ? 'block' : 'none';
       subfilters.style.display = tab === 'market' ? 'flex' : 'none';
+      applyTranslations();
     });
   });
 
@@ -526,20 +523,20 @@
     { name: 'Мясокомбинат «Якутский»', desc: 'Широкий ассортимент мясной продукции', category: 'food' },
     { name: '«Чочур Муран»', desc: 'Колбасная и молочная продукция', category: 'food' },
     { name: '«Туймаада»', desc: 'Молочная продукция: молоко, кефир, сливки', category: 'food' },
-    { name: '«Сахабулт»', desc: 'Хлеб, булочная и кондитерская продукция', category: 'food' },
-    { name: 'Кондитерская фабрика «Ситэ»', desc: 'Конфеты, вафли, зефир', category: 'food' },
+    { name: '«Сахабулт»', desc: 'Хлеб и кондитерские изделия', category: 'food' },
+    { name: '«Ситэ»', desc: 'Конфеты, вафли, зефир', category: 'food' },
     { name: 'Якутская птицефабрика', desc: 'Свежие яйца и куриное мясо', category: 'food' },
 
-    { name: '«Сардана»', desc: 'Национальная и современная одежда из меха и сукна', category: 'clothes' },
-    { name: '«Эверский» (Ever Sky)', desc: 'Современная одежда, унты, аксессуары', category: 'clothes' },
-    { name: '«Сай Сарын»', desc: 'Женская одежда и аксессуары из меха и бисера', category: 'clothes' },
+    { name: '«Сардана»', desc: 'Одежда из меха и сукна', category: 'clothes' },
+    { name: '«Эверский» (Ever Sky)', desc: 'Современная этно‑одежда и унты', category: 'clothes' },
+    { name: '«Сай Сарын»', desc: 'Женская одежда и аксессуары из меха', category: 'clothes' },
 
-    { name: '«Кудай Бахсы»', desc: 'Сувениры и украшения из мамонтовой кости и бивня', category: 'souvenirs' },
-    { name: '«Алмаз-Эпистиль»', desc: 'Ювелирные изделия с якутскими алмазами и серебром', category: 'souvenirs' },
-    { name: 'ГК «Мамонт»', desc: 'Сувениры из мамонтовой кости, рога, кожи и меха', category: 'souvenirs' },
+    { name: '«Кудай Бахсы»', desc: 'Сувениры из мамонтовой кости', category: 'souvenirs' },
+    { name: '«Алмаз-Эпистиль»', desc: 'Ювелирные изделия с якутскими алмазами', category: 'souvenirs' },
+    { name: 'ГК «Мамонт»', desc: 'Сувениры из кости, меха и рога', category: 'souvenirs' },
 
-    { name: '«Сахафарм»', desc: 'Бальзамы «Таёжный доктор», БАДы и фитопродукция', category: 'cosmetics' },
-    { name: 'Arctic Natural / «Якутские травы»', desc: 'Натуральная косметика и чаи на основе северных растений', category: 'cosmetics' },
+    { name: '«Сахафарм»', desc: 'Бальзамы «Таёжный доктор», БАДы', category: 'cosmetics' },
+    { name: 'Arctic Natural / «Якутские травы»', desc: 'Косметика и чаи на основе северных растений', category: 'cosmetics' },
 
     { name: '«Сахамебель»', desc: 'Корпусная и мягкая мебель', category: 'industrial' }
   ];
@@ -553,7 +550,7 @@
     el.innerHTML = `
       <div class="brand-name">${brand.name}</div>
       <div class="brand-desc">${brand.desc}</div>
-      <div class="brand-tag">Нажмите, чтобы отфильтровать</div>
+      <div class="brand-tag">Фильтр по бренду</div>
     `;
     el.addEventListener('click', () => {
       if (currentBrand === brand.name) {
@@ -597,9 +594,8 @@
     try {
       const res = await fetch('/api/products');
       const products = await res.json();
-      // если товары без категорий/бренда — можно частично подставить
       productsCache = products.map(p => ({
-        category: '', // по умолчанию
+        category: '',
         brand: 'Малый бизнес Якутии',
         isLocal: true,
         ...p
@@ -616,23 +612,17 @@
 
     let products = [...productsCache];
 
-    // фильтр по категории
     if (currentCategory) {
       products = products.filter(p => p.category === currentCategory);
     }
-
-    // фильтр по бренду
     if (currentBrand) {
       products = products.filter(p => p.brand === currentBrand);
     }
 
-    // доп. фильтры
     if (currentFilter === 'sale') {
       products = products.filter(p => p.isSale);
     } else if (currentFilter === 'popular') {
-      products = products
-        .slice()
-        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+      products = products.slice().sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
     } else if (currentFilter === 'season') {
       const month = new Date().getMonth();
       const season = (month === 11 || month <= 1) ? 'winter'
@@ -670,6 +660,77 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     loadMarketFromServer();
+    applyTranslations();
+  });
+
+  // ----- переводы -----
+  const translations = {
+    ru: {
+      logo: 'Made in Yakutia',
+      logo_sub: 'Маркетплейс местных производителей',
+      search_placeholder: 'Искать товары, бренды, мастеров…',
+      btn_search: 'Найти',
+      tab_market: 'Маркетплейс',
+      tab_ads: 'Объявления',
+      tab_events: 'Афиша',
+      title_market: 'Товары местных производителей Якутии',
+      filter_all: 'Все',
+      filter_sales: 'Акции',
+      filter_popular: 'Популярное',
+      filter_season: 'По сезонам',
+      filter_local: 'Малый бизнес'
+    },
+    en: {
+      logo: 'Made in Yakutia',
+      logo_sub: 'Marketplace of local producers',
+      search_placeholder: 'Search products, brands, makers…',
+      btn_search: 'Search',
+      tab_market: 'Marketplace',
+      tab_ads: 'Listings',
+      tab_events: 'Events',
+      title_market: 'Local products from Yakutia',
+      filter_all: 'All',
+      filter_sales: 'Deals',
+      filter_popular: 'Popular',
+      filter_season: 'Seasonal',
+      filter_local: 'Small business'
+    },
+    zh: {
+      logo: '雅库茨克本地制造',
+      logo_sub: '本地生产者市集',
+      search_placeholder: '搜索商品、品牌、手工艺人…',
+      btn_search: '搜索',
+      tab_market: '市集',
+      tab_ads: '公告',
+      tab_events: '活动',
+      title_market: '雅库茨克本地生产的商品',
+      filter_all: '全部',
+      filter_sales: '优惠',
+      filter_popular: '热门',
+      filter_season: '应季',
+      filter_local: '小型商家'
+    }
+  };
+
+  const langSelect = document.getElementById('lang-select');
+  let currentLang = 'ru';
+
+  function applyTranslations() {
+    const dict = translations[currentLang];
+    if (!dict) return;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (dict[key]) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (dict[key]) el.placeholder = dict[key];
+    });
+  }
+
+  langSelect.addEventListener('change', () => {
+    currentLang = langSelect.value;
+    applyTranslations();
   });
 </script>
 
