@@ -1,773 +1,707 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Yakutia Local — маркетплейс</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f2f4f7;
-      color: #111;
-    }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+    <title data-i18n="title.main">Yakutia Local — Маркетплейс Якутии</title>
 
-    :root {
-      --accent: #00a86b;
-      --accent-dark: #008055;
-    }
-
-    header {
-      background: var(--accent);
-      color: #fff;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 8px 0;
-      flex-wrap: wrap;
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .search {
-      flex: 1 1 260px;
-      display: flex;
-      background: #fff;
-      border-radius: 999px;
-      padding: 4px 10px;
-      gap: 6px;
-    }
-    .search input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font: inherit;
-      font-size: 13px;
-    }
-    .search button {
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .header-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      font-size: 13px;
-    }
-    .header-links {
-      display: flex;
-      gap: 10px;
-    }
-    .header-links a {
-      color: #fff;
-    }
-    .lang-select {
-      padding: 3px 6px;
-      border-radius: 999px;
-      border: none;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .tabs-bar {
-      background: #ffffff;
-      border-bottom: 1px solid #d0d4de;
-    }
-    .tabs-inner {
-      display: flex;
-      gap: 10px;
-      padding: 8px 0;
-      font-size: 14px;
-    }
-    .tab-btn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      border: 1px solid transparent;
-    }
-    .tab-btn.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .section-title {
-      font-size: 18px;
-      margin: 0 0 6px;
-    }
-
-    #category-stats {
-      font-size: 12px;
-      color: #555;
-      margin: 4px 0 10px;
-    }
-
-    .subfilters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-      font-size: 13px;
-      flex-wrap: wrap;
-    }
-    .subfilter-btn {
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid #d0d4de;
-      cursor: pointer;
-      background: #fff;
-    }
-    .subfilter-btn.active {
-      background: #e6f7ef;
-      border-color: var(--accent);
-      color: #055c36;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      font-size: 13px;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-    }
-    .card-like {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      color: #999;
-    }
-    .badge-top {
-      position: absolute;
-      left: 8px;
-      top: 8px;
-      background: #ff9800;
-      color: #fff;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-    }
-    .badge-sale {
-      position: absolute;
-      left: 8px;
-      top: 28px;
-      background: #e91e63;
-      color: #fff;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-    }
-    .card-img {
-      height: 180px;
-      border-radius: 10px;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 8px;
-      text-align: center;
-      padding: 4px;
-    }
-    .card-price {
-      margin-top: 4px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #e91e63;
-    }
-    .card-price-old {
-      font-size: 11px;
-      color: #999;
-      text-decoration: line-through;
-      margin-left: 6px;
-    }
-    .card-discount {
-      font-size: 11px;
-      color: #388e3c;
-      margin-left: 4px;
-    }
-    .card-title {
-      margin-top: 4px;
-      font-size: 13px;
-      line-height: 1.3;
-    }
-    .card-meta {
-      margin-top: 4px;
-      font-size: 11px;
-      color: #777;
-    }
-
-    .card-ads,
-    .card-event {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-      padding: 8px;
-      font-size: 13px;
-    }
-    .ads-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-    .ads-price {
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .ads-meta {
-      font-size: 11px;
-      color: #777;
-    }
-    .event-date {
-      font-size: 11px;
-      color: #555;
-      margin-bottom: 2px;
-    }
-    .event-title {
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .event-place {
-      font-size: 11px;
-      color: #777;
-    }
-
-    /* блок крупных брендов */
-    .brands-section {
-      margin-top: 32px;
-      padding: 16px;
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      font-size: 13px;
-    }
-    .brands-title {
-      font-size: 16px;
-      margin: 0 0 8px;
-    }
-    .brands-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 12px;
-    }
-    .brand-card {
-      padding: 10px;
-      border-radius: 10px;
-      background: #f8fafc;
-      border: 1px solid #e0e7ff;
-    }
-    .brand-name {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    @media (max-width: 800px) {
-      .header-top {
-        align-items: flex-start;
-      }
-    }
-  </style>
+    <!-- Базовые стили -->
+    <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
 <body>
-<header>
-  <div class="container header-top">
-    <div class="logo" data-i18n="logo">Yakutia Local</div>
-    <div class="search">
-      <input id="search-input" type="text"
-             data-i18n-placeholder="searchplaceholder"
-             placeholder="Поиск по товарам, объявлениям, событиям" />
-      <button id="search-btn" type="button" data-i18n="btnsearch">Найти</button>
+    <!-- ========== ШАПКА ========== -->
+    <header class="header">
+        <div class="header__left">
+            <!-- Логотип / название -->
+            <a href="./index.html" class="header__logo" data-i18n="header.logo">
+                Yakutia Local
+            </a>
+
+            <!-- Поиск по товарам -->
+            <div class="header__search">
+                <input
+                    type="text"
+                    id="search-input"
+                    class="header__search-input"
+                    placeholder="Поиск по товарам..."
+                    data-i18n-placeholder="header.searchPlaceholder"
+                />
+            </div>
+        </div>
+
+        <div class="header__right">
+            <!-- Переключатель языка -->
+            <select
+                id="language-select"
+                class="header__lang-select"
+                aria-label="Выбор языка"
+            >
+                <option value="ru">RU</option>
+                <option value="en">EN</option>
+            </select>
+
+            <!-- Кнопки корзины и заказов -->
+            <button
+                id="cart-button"
+                class="header__icon-button"
+                data-i18n="header.cart"
+            >
+                Корзина
+            </button>
+            <button
+                id="orders-button"
+                class="header__icon-button"
+                data-i18n="header.orders"
+            >
+                Мои заказы
+            </button>
+
+            <!-- Кабинет (роль зависит от авторизации) -->
+            <button
+                id="cabinet-button"
+                class="header__icon-button"
+                data-i18n="header.cabinet"
+            >
+                Кабинет
+            </button>
+
+            <!-- Блок авторизации -->
+            <div id="auth-block" class="header__auth">
+                <!-- Версия гостя -->
+                <button
+                    id="login-button"
+                    class="header__auth-button"
+                    data-i18n="header.login"
+                >
+                    Вход
+                </button>
+                <button
+                    id="register-button"
+                    class="header__auth-button header__auth-button--primary"
+                    data-i18n="header.register"
+                >
+                    Регистрация
+                </button>
+                <!--
+                    Комментарий:
+                    После авторизации JS заменит блок на что‑то вроде:
+                    <span class="header__user-name">Иван (продавец)</span>
+                    <button id="logout-button">Выйти</button>
+                -->
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== ОСНОВНОЙ КОНТЕНТ ========== -->
+    <main class="main">
+        <!-- ===== ФИЛЬТРЫ / НАСТРОЙКИ СУММЫ ===== -->
+        <section class="filters" aria-labelledby="filters-title">
+            <h1
+                id="filters-title"
+                class="filters__title"
+                data-i18n="filters.title"
+            >
+                Найдите продукты Якутии под свои задачи
+            </h1>
+            <p class="filters__subtitle" data-i18n="filters.subtitle">
+                Задайте категорию, цену и формат поставки. Сверху — частные мастера и малый бизнес, снизу — крупные поставщики по тем же категориям.
+            </p>
+
+            <div class="filters__row">
+                <!-- Категория -->
+                <div class="filters__group">
+                    <label
+                        for="category-select"
+                        class="filters__label"
+                        data-i18n="filters.category"
+                    >
+                        Категория
+                    </label>
+                    <select
+                        id="category-select"
+                        class="filters__select"
+                    >
+                        <option
+                            value="all"
+                            data-i18n="filters.category_all"
+                        >
+                            Все категории
+                        </option>
+                        <option value="meat" data-i18n="filters.category_meat">
+                            Мясо и рыба
+                        </option>
+                        <option value="milk" data-i18n="filters.category_milk">
+                            Молочные продукты
+                        </option>
+                        <option value="berries" data-i18n="filters.category_berries">
+                            Ягоды и дикоросы
+                        </option>
+                        <option value="ready" data-i18n="filters.category_ready">
+                            Готовые блюда
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Диапазон цены -->
+                <div class="filters__group">
+                    <span
+                        class="filters__label"
+                        data-i18n="filters.priceRange"
+                    >
+                        Диапазон цены
+                    </span>
+                    <div class="filters__price-range">
+                        <input
+                            type="number"
+                            id="price-min"
+                            class="filters__number-input"
+                            placeholder="от"
+                            min="0"
+                        />
+                        <span class="filters__price-separator">—</span>
+                        <input
+                            type="number"
+                            id="price-max"
+                            class="filters__number-input"
+                            placeholder="до"
+                            min="0"
+                        />
+                    </div>
+                </div>
+
+                <!-- Чекбоксы -->
+                <div class="filters__group filters__group--checkboxes">
+                    <label class="filters__checkbox-label">
+                        <input type="checkbox" id="only-sale" />
+                        <span data-i18n="filters.onlySale">
+                            Только со скидкой
+                        </span>
+                    </label>
+                    <label class="filters__checkbox-label">
+                        <input type="checkbox" id="only-popular" />
+                        <span data-i18n="filters.onlyPopular">
+                            Самое популярное
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Кнопка применить -->
+                <div class="filters__group">
+                    <button
+                        id="apply-filters"
+                        class="filters__apply-button"
+                        data-i18n="filters.apply"
+                    >
+                        Применить
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== КАТАЛОГ ЧАСТНЫХ МАСТЕРОВ ===== -->
+        <section
+            class="catalog"
+            aria-labelledby="catalog-title"
+        >
+            <h2
+                id="catalog-title"
+                class="catalog__title"
+                data-i18n="catalog.title"
+            >
+                Объявления частных мастеров и малого бизнеса
+            </h2>
+            <p
+                class="catalog__subtitle"
+                data-i18n="catalog.subtitle"
+            >
+                Выше — объявления частных мастеров и малого бизнеса. Ниже — ориентир по крупным брендам Якутии в тех же категориях.
+            </p>
+
+            <!-- Список товаров -->
+            <div
+                id="products-list"
+                class="catalog__grid"
+            >
+                <!--
+                    Демонстрационные карточки.
+                    Комментарий: в боевой версии JS сначала подгружает список из /api/products,
+                    а если сервер не отвечает — может показать эти примеры как fallback.
+                -->
+
+                <!-- Карточка товара 1 (пример) -->
+                <article
+                    class="product-card"
+                    data-product-id="demo-1"
+                    data-category="meat"
+                >
+                    <div class="product-card__image-wrapper">
+                        <img
+                            src="./assets/img/products/demo_meat.jpg"
+                            alt="Мороженое мясо оленя"
+                            class="product-card__image"
+                        />
+                        <span class="product-card__badge product-card__badge--sale">
+                            -10%
+                        </span>
+                    </div>
+                    <div class="product-card__body">
+                        <h3 class="product-card__title">
+                            Мороженое мясо оленя, 1 кг
+                        </h3>
+                        <p class="product-card__seller">
+                            Продавец: <span>ИП Петров</span>
+                        </p>
+                        <p class="product-card__place">
+                            Якутск, самовывоз / доставка
+                        </p>
+                        <p class="product-card__desc">
+                            Оленина шоковой заморозки, фермерское хозяйство из района Кобяйский.
+                        </p>
+                        <div class="product-card__prices">
+                            <span class="product-card__price-current">
+                                900 ₽
+                            </span>
+                            <span class="product-card__price-old">
+                                1000 ₽
+                            </span>
+                        </div>
+                    </div>
+                    <div class="product-card__footer">
+                        <!-- Кнопки для покупателей -->
+                        <button
+                            class="product-card__button product-card__button--primary js-add-to-cart"
+                        >
+                            В корзину
+                        </button>
+                        <button
+                            class="product-card__button js-add-to-favorites"
+                        >
+                            ❤ В избранное
+                        </button>
+                        <button
+                            class="product-card__button js-open-chat"
+                        >
+                            Написать продавцу
+                        </button>
+
+                        <!-- Кнопки для продавца (показываются, если авторизован как продавец) -->
+                        <div class="product-card__owner-actions">
+                            <button
+                                class="product-card__link js-edit-product"
+                            >
+                                Редактировать
+                            </button>
+                            <button
+                                class="product-card__link product-card__link--danger js-delete-product"
+                            >
+                                Удалить
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Карточка товара 2 (пример) -->
+                <article
+                    class="product-card"
+                    data-product-id="demo-2"
+                    data-category="berries"
+                >
+                    <div class="product-card__image-wrapper">
+                        <img
+                            src="./assets/img/products/demo_berries.jpg"
+                            alt="Смесь северных ягод"
+                            class="product-card__image"
+                        />
+                        <span class="product-card__badge">
+                            Хит
+                        </span>
+                    </div>
+                    <div class="product-card__body">
+                        <h3 class="product-card__title">
+                            Смесь северных ягод, 1 кг
+                        </h3>
+                        <p class="product-card__seller">
+                            Продавец: <span>ООО «СеверЯгода»</span>
+                        </p>
+                        <p class="product-card__place">
+                            Якутск, отправка по России
+                        </p>
+                        <p class="product-card__desc">
+                            Брусника, голубика, морошка. Собрано вручную, быстрая заморозка.
+                        </p>
+                        <div class="product-card__prices">
+                            <span class="product-card__price-current">
+                                1200 ₽
+                            </span>
+                        </div>
+                    </div>
+                    <div class="product-card__footer">
+                        <button
+                            class="product-card__button product-card__button--primary js-add-to-cart"
+                        >
+                            В корзину
+                        </button>
+                        <button
+                            class="product-card__button js-add-to-favorites"
+                        >
+                            ❤ В избранное
+                        </button>
+                        <button
+                            class="product-card__button js-open-chat"
+                        >
+                            Написать продавцу
+                        </button>
+                        <div class="product-card__owner-actions">
+                            <button
+                                class="product-card__link js-edit-product"
+                            >
+                                Редактировать
+                            </button>
+                            <button
+                                class="product-card__link product-card__link--danger js-delete-product"
+                            >
+                                Удалить
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- При реальной работе все карточки будут добавляться JS из /api/products -->
+            </div>
+        </section>
+
+        <!-- ===== КРУПНЫЕ ПРОИЗВОДИТЕЛИ / БРЕНДЫ ===== -->
+        <section
+            class="brands"
+            aria-labelledby="brands-title"
+        >
+            <h2
+                id="brands-title"
+                class="brands__title"
+                data-i18n="brands.title"
+            >
+                Крупные производители Якутии
+            </h2>
+            <p
+                class="brands__subtitle"
+                data-i18n="brands.subtitle"
+            >
+                Ниже — ориентир по крупным поставщикам продуктов и брендам Якутии в тех же категориях.
+            </p>
+
+            <div
+                id="brands-list"
+                class="brands__grid"
+            >
+                <!-- Бренд 1 (пример) -->
+                <article
+                    class="brand-card"
+                    data-brand-id="demo-brand-1"
+                >
+                    <div class="brand-card__logo-wrapper">
+                        <img
+                            src="./assets/img/brands/demo_brand_meat.png"
+                            alt="Логотип «ЯкутМясо»"
+                            class="brand-card__logo"
+                        />
+                    </div>
+                    <div class="brand-card__body">
+                        <h3 class="brand-card__title">
+                            ООО «ЯкутМясо»
+                        </h3>
+                        <p class="brand-card__categories">
+                            Категории: мясо, полуфабрикаты
+                        </p>
+                        <p class="brand-card__desc">
+                            Крупный поставщик мяса и мясных изделий по всей Якутии.
+                        </p>
+                        <button
+                            class="brand-card__button js-open-brand"
+                        >
+                            Подробнее о производителе
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Бренд 2 (пример) -->
+                <article
+                    class="brand-card"
+                    data-brand-id="demo-brand-2"
+                >
+                    <div class="brand-card__logo-wrapper">
+                        <img
+                            src="./assets/img/brands/demo_brand_milk.png"
+                            alt="Логотип «СеверМолоко»"
+                            class="brand-card__logo"
+                        />
+                    </div>
+                    <div class="brand-card__body">
+                        <h3 class="brand-card__title">
+                            АО «СеверМолоко»
+                        </h3>
+                        <p class="brand-card__categories">
+                            Категории: молочные продукты
+                        </p>
+                        <p class="brand-card__desc">
+                            Молочные продукты из сырья местных фермеров.
+                        </p>
+                        <button
+                            class="brand-card__button js-open-brand"
+                        >
+                            Подробнее о производителе
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== МОДАЛКИ ========== -->
+
+    <!-- Корзина -->
+    <div
+        id="cart-modal"
+        class="modal"
+        aria-hidden="true"
+    >
+        <div
+            class="modal__overlay"
+            data-modal-close
+        ></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h3
+                    class="modal__title"
+                    data-i18n="cart.title"
+                >
+                    Моя корзина
+                </h3>
+                <button
+                    class="modal__close-button"
+                    data-modal-close
+                >
+                    &times;
+                </button>
+            </header>
+            <div
+                id="cart-items"
+                class="modal__body"
+            >
+                <!-- Список товаров в корзине -->
+            </div>
+            <footer class="modal__footer">
+                <div class="modal__footer-row">
+                    <span data-i18n="cart.total">
+                        Итого:
+                    </span>
+                    <span id="cart-total-amount">0 ₽</span>
+                </div>
+                <button
+                    id="cart-checkout"
+                    class="modal__primary-button"
+                    data-i18n="cart.checkout"
+                >
+                    Оформить заказ
+                </button>
+            </footer>
+        </div>
     </div>
-    <div class="header-right">
-      <div class="header-links">
-        <a href="Cabinet.html" data-i18n="linklogin">Войти</a>
-        <a href="#" data-i18n="linkorders">Мои заказы</a>
-        <a href="#" data-i18n="linkcart">Корзина</a>
-      </div>
-      <select class="lang-select" id="lang-select">
-        <option value="ru">RU</option>
-        <option value="en">EN</option>
-        <option value="zh">中文</option>
-      </select>
-    </div>
-  </div>
-</header>
 
-<div class="tabs-bar">
-  <div class="container tabs-inner">
-    <div class="tab-btn active" data-tab="market" data-i18n="tabmarket">Маркетплейс</div>
-    <div class="tab-btn" data-tab="ads" data-i18n="tabads">Объявления</div>
-    <div class="tab-btn" data-tab="events" data-i18n="tabevents">Афиша</div>
-  </div>
-</div>
-
-<main>
-  <!-- МАЛЫЙ БИЗНЕС: маркетплейс -->
-  <h1 class="section-title" id="section-title" data-i18n="titlemarket">Товары местных производителей (малый бизнес)</h1>
-  <p id="category-stats">Загрузка статистики по категориям…</p>
-
-  <div class="subfilters" id="subfilters">
-    <button class="subfilter-btn active" data-filter="all" data-i18n="filterall">Все</button>
-    <button class="subfilter-btn" data-filter="sale" data-i18n="filtersales">Акции</button>
-    <button class="subfilter-btn" data-filter="popular" data-i18n="filterpopular">Популярное</button>
-    <button class="subfilter-btn" data-filter="season" data-i18n="filterseason">По сезонам</button>
-
-    <button class="subfilter-btn" data-category="food">🥩🍯 Продовольственные</button>
-    <button class="subfilter-btn" data-category="clothes">🧥🧤 Одежда и обувь</button>
-    <button class="subfilter-btn" data-category="souvenirs">🎁 Сувениры и интерьер</button>
-    <button class="subfilter-btn" data-category="cosmetics">🧴 Косметика и БАДы</button>
-    <button class="subfilter-btn" data-category="industrial">🧱 Стройматериалы</button>
-  </div>
-
-  <div class="grid" id="tab-market"></div>
-
-  <div class="grid" id="tab-ads" style="display:none;">
-    <article class="card-ads">
-      <div class="ads-title">Продам шкуры оленя</div>
-      <div class="ads-price">12 000 ₽</div>
-      <div class="ads-meta">Якутск • Частное объявление • Сегодня</div>
-    </article>
-    <article class="card-ads">
-      <div class="ads-title">Сдам в аренду мастерскую</div>
-      <div class="ads-price">25 000 ₽ / месяц</div>
-      <div class="ads-meta">Центр • Для ремесленников и мастеров</div>
-    </article>
-  </div>
-
-  <div class="grid" id="tab-events" style="display:none;">
-    <article class="card-event">
-      <div class="event-date">12 декабря, 19:00</div>
-      <div class="event-title">Фестиваль локальных брендов «Сделано в Якутии»</div>
-      <div class="event-place">ТРЦ • Билеты онлайн</div>
-    </article>
-    <article class="card-event">
-      <div class="event-date">20 декабря, 18:30</div>
-      <div class="event-title">Мастер‑класс по резьбе по кости</div>
-      <div class="event-place">Дом ремёсел • Запись обязательна</div>
-    </article>
-  </div>
-
-  <!-- КРУПНЫЙ БИЗНЕС: отдельный раздел -->
-  <section class="brands-section">
-    <h2 class="brands-title">Крупный бизнес по категориям</h2>
-    <p style="font-size:12px;color:#555;margin:0 0 10px;">
-      Выше — объявления частных мастеров и малого бизнеса. Ниже — ориентир по крупным брендам Якутии в тех же категориях.
-    </p>
-
-    <!-- Продовольственные товары -->
-    <h3 class="brands-title" style="margin-top:10px;">🥩🍯 Продовольственные товары (крупные бренды)</h3>
-    <div class="brands-grid">
-      <div class="brand-card">
-        <div class="brand-name">«Якутские продукты» / ТД «Якутия»</div>
-        <div>Колбасы, полуфабрикаты и деликатесы из конины, оленины, говядины.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Мясокомбинат «Якутский»</div>
-        <div>Крупный мясопереработчик с широким ассортиментом мясной продукции.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Чочур Муран»</div>
-        <div>Колбасная и молочная продукция: сметана, творог и другие кисломолочные продукты.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Туймаада»</div>
-        <div>Молоко, кефир, сливки и другая молочная продукция.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Сахабулт»</div>
-        <div>Хлебобулочные и кондитерские изделия.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Кондитерская фабрика «Ситэ»</div>
-        <div>Конфеты, вафли, зефир и другая кондитерская продукция.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Якутская птицефабрика»</div>
-        <div>Свежие яйца и куриное мясо.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Частные фермерские хозяйства</div>
-        <div>Экологичные мясо, рыба, ягоды. Хештеги: #фермерыякутии, #якутскаяпродукция.</div>
-      </div>
+    <!-- Заказы -->
+    <div
+        id="orders-modal"
+        class="modal"
+        aria-hidden="true"
+    >
+        <div
+            class="modal__overlay"
+            data-modal-close
+        ></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h3
+                    class="modal__title"
+                    data-i18n="orders.title"
+                >
+                    Мои заказы
+                </h3>
+                <button
+                    class="modal__close-button"
+                    data-modal-close
+                >
+                    &times;
+                </button>
+            </header>
+            <div
+                id="orders-list"
+                class="modal__body"
+            >
+                <!-- Список заказов -->
+            </div>
+        </div>
     </div>
 
-    <!-- Одежда и аксессуары -->
-    <h3 class="brands-title" style="margin-top:18px;">🧥🧤 Одежда, обувь и аксессуары</h3>
-    <div class="brands-grid">
-      <div class="brand-card">
-        <div class="brand-name">«Сардана»</div>
-        <div>Национальная и современная одежда из меха (камус, норка, песец) и сукна.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Эверский» (Ever Sky)</div>
-        <div>Современная одежда с этническими мотивами, унты, аксессуары.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Сай Сарын»</div>
-        <div>Женская одежда и аксессуары из меха и бисера.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Частные мастера-дизайнеры</div>
-        <div>Шубы, шапки, рукавицы, сумки. Хештеги: #якутскиешубы, #уницитыякутия, #якутскийдизайн, #мастераякутии.</div>
-      </div>
+    <!-- Чат с продавцом -->
+    <div
+        id="chat-modal"
+        class="modal"
+        aria-hidden="true"
+    >
+        <div
+            class="modal__overlay"
+            data-modal-close
+        ></div>
+        <div class="modal__content modal__content--chat">
+            <header class="modal__header">
+                <h3
+                    class="modal__title"
+                    data-i18n="chat.title"
+                >
+                    Чат с продавцом
+                </h3>
+                <button
+                    class="modal__close-button"
+                    data-modal-close
+                >
+                    &times;
+                </button>
+            </header>
+            <div
+                id="chat-messages"
+                class="chat"
+            >
+                <!-- Сообщения -->
+            </div>
+            <footer class="modal__footer modal__footer--chat">
+                <input
+                    type="text"
+                    id="chat-input"
+                    class="chat__input"
+                    placeholder="Напишите сообщение..."
+                    data-i18n-placeholder="chat.placeholder"
+                />
+                <button
+                    id="chat-send"
+                    class="chat__send-button"
+                    data-i18n="chat.send"
+                >
+                    Отправить
+                </button>
+            </footer>
+        </div>
     </div>
 
-    <!-- Сувениры, украшения, интерьер -->
-    <h3 class="brands-title" style="margin-top:18px;">🎁 Сувениры, украшения, предметы интерьера</h3>
-    <div class="brands-grid">
-      <div class="brand-card">
-        <div class="brand-name">«Кудай Бахсы»</div>
-        <div>Мастерская по обработке мамонтовой кости и бивня, сувениры и украшения.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Алмаз-Эпистиль»</div>
-        <div>Ювелирные изделия с якутскими алмазами и серебром.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Группа компаний «Мамонт»</div>
-        <div>Сувениры из мамонтовой кости, рога оленя, кожи и меха.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Дом дружбы народов им. А.Е. Кулаковского</div>
-        <div>Ярмарки народных мастеров и ремесленников.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Музеи и сувенирные магазины</div>
-        <div>Магазины при музеях с этническими сувенирами (музей музыки и фольклора, музей им. Ярославского).</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Частные мастера</div>
-        <div>Косторезы, юргинщики, вышивальщицы. Хештеги: #якутскиеукрашения, #косторезнаяякутия, #якутскийсувенир.</div>
-      </div>
+    <!-- Информация о бренде -->
+    <div
+        id="brand-modal"
+        class="modal"
+        aria-hidden="true"
+    >
+        <div
+            class="modal__overlay"
+            data-modal-close
+        ></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h3
+                    id="brand-modal-title"
+                    class="modal__title"
+                ></h3>
+                <button
+                    class="modal__close-button"
+                    data-modal-close
+                >
+                    &times;
+                </button>
+            </header>
+            <div
+                id="brand-modal-body"
+                class="modal__body"
+            >
+                <!-- Описание бренда -->
+            </div>
+        </div>
     </div>
 
-    <!-- Косметика и БАДы -->
-    <h3 class="brands-title" style="margin-top:18px;">🧴 Косметика и БАДы на основе местных растений</h3>
-    <div class="brands-grid">
-      <div class="brand-card">
-        <div class="brand-name">«Сахафарм»</div>
-        <div>Бальзамы и косметика на основе якутских трав и продуктов пчеловодства.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Arctic Natural» / «Якутские травы»</div>
-        <div>Натуральная косметика и чаи из чаги, брусники, голубики и других местных растений.</div>
-      </div>
+    <!-- ========== ВИДЖЕТ ИИ-БОТА ========== -->
+    <div class="bot-widget">
+        <button
+            id="bot-toggle"
+            class="bot-widget__button"
+            data-i18n="bot.help"
+        >
+            Нужна помощь?
+        </button>
+        <div
+            id="bot-panel"
+            class="bot-widget__panel"
+            hidden
+        >
+            <div
+                id="bot-messages"
+                class="bot-widget__messages"
+            >
+                <!-- Диалог с ботом -->
+            </div>
+            <div class="bot-widget__footer">
+                <input
+                    type="text"
+                    id="bot-input"
+                    class="bot-widget__input"
+                    placeholder="Спросите о товаре..."
+                    data-i18n-placeholder="bot.placeholder"
+                />
+                <button
+                    id="bot-send"
+                    class="bot-widget__send"
+                    data-i18n="bot.send"
+                >
+                    ▶
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Промышленные и строительные материалы -->
-    <h3 class="brands-title" style="margin-top:18px;">🧱 Промышленные и строительные материалы</h3>
-    <div class="brands-grid">
-      <div class="brand-card">
-        <div class="brand-name">«Якутский газоперерабатывающий завод»</div>
-        <div>Производство и поставка сжиженного газа.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">Завод строительных материалов</div>
-        <div>Бетон, ЖБИ и другие строительные материалы.</div>
-      </div>
-      <div class="brand-card">
-        <div class="brand-name">«Сахамебель»</div>
-        <div>Корпусная и мягкая мебель местного производства.</div>
-      </div>
-    </div>
-  </section>
-</main>
+    <!-- ========== ПОДВАЛ ========== -->
+    <footer class="footer">
+        <div class="footer__inner">
+            <span data-i18n="footer.copy">
+                © Yakutia Local. Все права защищены.
+            </span>
+            <a
+                href="#"
+                class="footer__link"
+                data-i18n="footer.about"
+            >
+                О проекте
+            </a>
+            <a
+                href="#"
+                class="footer__link"
+                data-i18n="footer.contacts"
+            >
+                Контакты
+            </a>
+        </div>
+    </footer>
 
-<script>
-  const tabs = document.querySelectorAll('.tab-btn');
-  const blocks = {
-    market: document.getElementById('tab-market'),
-    ads: document.getElementById('tab-ads'),
-    events: document.getElementById('tab-events')
-  };
-  const titleEl = document.getElementById('section-title');
-  const subfilters = document.getElementById('subfilters');
-
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      tabs.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      Object.keys(blocks).forEach(key => {
-        blocks[key].style.display = key === tab ? 'grid' : 'none';
-      });
-
-      if (tab === 'market') {
-        titleEl.dataset.i18n = 'titlemarket';
-        titleEl.textContent = translations[currentLang].titlemarket;
-      } else if (tab === 'ads') {
-        titleEl.dataset.i18n = 'titleads';
-        titleEl.textContent = translations[currentLang].titleads;
-      } else if (tab === 'events') {
-        titleEl.dataset.i18n = 'titleevents';
-        titleEl.textContent = translations[currentLang].titleevents;
-      }
-
-      applyTranslations();
-      subfilters.style.display = tab === 'market' ? 'flex' : 'none';
-    });
-  });
-
-  let productsCache = [];
-  let currentFilter = 'all';
-  let currentCategory = 'all';
-  let searchQuery = '';
-
-  document.querySelectorAll('.subfilter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const filter = btn.dataset.filter;
-      const category = btn.dataset.category;
-
-      document.querySelectorAll('.subfilter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      if (filter) {
-        currentFilter = filter;
-        currentCategory = 'all';
-      }
-      if (category) {
-        currentCategory = category;
-        currentFilter = 'all';
-      }
-
-      renderProducts();
-    });
-  });
-
-  const searchInput = document.getElementById('search-input');
-  const searchBtn = document.getElementById('search-btn');
-
-  searchBtn.addEventListener('click', () => {
-    searchQuery = searchInput.value.trim().toLowerCase();
-    renderProducts();
-  });
-
-  searchInput.addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') {
-      searchQuery = searchInput.value.trim().toLowerCase();
-      renderProducts();
-    }
-  });
-
-  async function loadMarketFromServer() {
-    try {
-      const res = await fetch('/api/products');
-      const products = await res.json();
-      productsCache = products;
-      renderProducts();
-      updateCategoryStats(productsCache);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  function renderProducts() {
-    const container = document.getElementById('tab-market');
-    container.innerHTML = '';
-
-    let products = [...productsCache];
-
-    if (currentFilter === 'sale') {
-      products = products.filter(p => p.isSale);
-    } else if (currentFilter === 'popular') {
-      products = products
-        .slice()
-        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-    } else if (currentFilter === 'season') {
-      const month = new Date().getMonth();
-      const season =
-        month === 11 || month <= 1 ? 'winter' :
-        month >= 2 && month <= 4 ? 'spring' :
-        month >= 5 && month <= 7 ? 'summer' :
-        'autumn';
-      products = products.filter(p => !p.season || p.season === season);
-    }
-
-    if (currentCategory !== 'all') {
-      products = products.filter(p => p.category === currentCategory);
-    }
-
-    if (searchQuery) {
-      products = products.filter(p => {
-        const t = (p.title || '').toLowerCase();
-        const d = (p.desc || '').toLowerCase();
-        const pl = (p.place || '').toLowerCase();
-        return t.includes(searchQuery) || d.includes(searchQuery) || pl.includes(searchQuery);
-      });
-    }
-
-    products
-      .filter(p => p.type === 'market')
-      .sort((a, b) => (b.promoted === true) - (a.promoted === true))
-      .forEach(p => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          ${p.promoted ? '<div class="badge-top">ТОП</div>' : ''}
-          ${p.isSale ? '<div class="badge-sale">Скидка</div>' : ''}
-          <div class="card-like">♡</div>
-          <div class="card-img">${p.desc || 'Локальный продукт Якутии'}</div>
-          <div class="card-price">
-            ${p.price} ₽
-            ${p.oldPrice ? `<span class="card-price-old">${p.oldPrice} ₽</span>` : ''}
-            ${p.discount ? `<span class="card-discount">-${p.discount}%</span>` : ''}
-          </div>
-          <div class="card-title">${p.title}</div>
-          <div class="card-meta">${p.place || 'Якутия'}</div>
-        `;
-        container.appendChild(card);
-      });
-  }
-
-  function updateCategoryStats(allProducts) {
-    const statsEl = document.getElementById('category-stats');
-    if (!statsEl || !allProducts) return;
-
-    const counts = {
-      food: 0,
-      clothes: 0,
-      souvenirs: 0,
-      cosmetics: 0,
-      industrial: 0
-    };
-
-    allProducts
-      .filter(p => p.type === 'market')
-      .forEach(p => {
-        if (counts[p.category] !== undefined) {
-          counts[p.category]++;
-        }
-      });
-
-    statsEl.textContent =
-      'Сейчас на площадке: ' +
-      `🥩 ${counts.food} продовольственных, ` +
-      `🧥 ${counts.clothes} товаров из кожи и меха, ` +
-      `🎁 ${counts.souvenirs} сувениров, ` +
-      `🧴 ${counts.cosmetics} косметики и БАДов, ` +
-      `🧱 ${counts.industrial} промышленных и строительных товаров.`;
-  }
-
-  const translations = {
-    ru: {
-      logo: 'Yakutia Local',
-      searchplaceholder: 'Поиск по товарам, объявлениям, событиям',
-      btnsearch: 'Найти',
-      linklogin: 'Войти',
-      linkorders: 'Мои заказы',
-      linkcart: 'Корзина',
-      tabmarket: 'Маркетплейс',
-      tabads: 'Объявления',
-      tabevents: 'Афиша',
-      titlemarket: 'Товары местных производителей (малый бизнес)',
-      titleads: 'Объявления от местных жителей',
-      titleevents: 'События и активностей',
-      filterall: 'Все',
-      filtersales: 'Акции',
-      filterpopular: 'Популярное',
-      filterseason: 'По сезонам'
-    },
-    en: {
-      logo: 'Yakutia Local',
-      searchplaceholder: 'Search products, listings, events',
-      btnsearch: 'Search',
-      linklogin: 'Sign in',
-      linkorders: 'My orders',
-      linkcart: 'Cart',
-      tabmarket: 'Marketplace',
-      tabads: 'Listings',
-      tabevents: 'Events',
-      titlemarket: 'Local products (small business)',
-      titleads: 'Listings from locals',
-      titleevents: 'Events & activities',
-      filterall: 'All',
-      filtersales: 'Deals',
-      filterpopular: 'Popular',
-      filterseason: 'Seasonal'
-    },
-    zh: {
-      logo: '雅库特本地',
-      searchplaceholder: '搜索商品、广告和活动',
-      btnsearch: '搜索',
-      linklogin: '登录',
-      linkorders: '我的订单',
-      linkcart: '购物车',
-      tabmarket: '商城',
-      tabads: '广告',
-      tabevents: '活动',
-      titlemarket: '本地生产商品（小型业务）',
-      titleads: '本地居民发布的广告',
-      titleevents: '本地活动',
-      filterall: '全部',
-      filtersales: '优惠',
-      filterpopular: '热门',
-      filterseason: '季节'
-    }
-  };
-
-  const langSelect = document.getElementById('lang-select');
-  let currentLang = 'ru';
-
-  function applyTranslations() {
-    const dict = translations[currentLang];
-    if (!dict) return;
-
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      if (dict[key]) el.textContent = dict[key];
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.dataset.i18nPlaceholder;
-      if (dict[key]) el.placeholder = dict[key];
-    });
-  }
-
-  langSelect.addEventListener('change', () => {
-    currentLang = langSelect.value;
-    applyTranslations();
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    applyTranslations();
-    loadMarketFromServer();
-  });
-</script>
+    <!-- ========== СКРИПТЫ ========== -->
+    <script src="./assets/js/modules/state.js"></script>
+    <script src="./assets/js/modules/i18n.js"></script>
+    <script src="./assets/js/api/apiClient.js"></script>
+    <script src="./assets/js/api/productsApi.js"></script>
+    <script src="./assets/js/api/brandsApi.js"></script>
+    <script src="./assets/js/modules/catalog.js"></script>
+    <script src="./assets/js/modules/brands.js"></script>
+    <script src="./assets/js/modules/cart.js"></script>
+    <script src="./assets/js/modules/orders.js"></script>
+    <script src="./assets/js/modules/favorites.js"></script>
+    <script src="./assets/js/modules/chat.js"></script>
+    <script src="./assets/js/modules/bot.js"></script>
+    <script src="./assets/js/modules/auth.js"></script>
+    <script src="./assets/js/pages/indexPage.js"></script>
 </body>
 </html>
