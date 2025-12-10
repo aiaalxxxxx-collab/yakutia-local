@@ -1,0 +1,30 @@
+{
+  "header": {
+    "logo": "雅库特本地市场",
+    "searchPlaceholder": "搜索商品…",
+    "cart": "购物车",
+    "orders": "我的订单",
+    "cabinet": "个人中心",
+    "login": "登录",
+    "register": "注册"
+  },
+  "filters": {
+    "title": "按需求查找雅库特商品",
+    "subtitle": "选择类别、价格和配送方式。",
+    "category": "类别",
+    "category_all": "所有类别",
+    "category_meat": "肉类和鱼类",
+    "category_milk": "乳制品",
+    "category_berries": "浆果和野生植物",
+    "category_ready": "熟食",
+    "priceRange": "价格区间",
+    "onlySale": "仅显示有折扣",
+    "onlyPopular": "最受欢迎",
+    "apply": "应用"
+  },
+  "bot": {
+    "help": "需要帮助吗？",
+    "placeholder": "询问商品相关问题…",
+    "send": "发送"
+  }
+}
