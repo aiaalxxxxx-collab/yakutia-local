@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Yakutia Local — Маркетплейс</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Yakutia Local — маркетплейс</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -77,8 +77,9 @@
       display: flex;
       gap: 10px;
     }
-    .header-links a { color:#fff; }
-
+    .header-links a {
+      color: #fff;
+    }
     .lang-select {
       padding: 3px 6px;
       border-radius: 999px;
@@ -117,10 +118,15 @@
 
     .section-title {
       font-size: 18px;
-      margin: 0 0 10px;
+      margin: 0 0 6px;
     }
 
-    /* дополнительные фильтры: Акции / Популярное / По сезонам */
+    #category-stats {
+      font-size: 12px;
+      color: #555;
+      margin: 4px 0 10px;
+    }
+
     .subfilters {
       display: flex;
       gap: 8px;
@@ -227,17 +233,7 @@
       color: #777;
     }
 
-    .card-ads {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-      padding: 8px;
-      font-size: 13px;
-    }
-    .ads-title { font-weight: 500; margin-bottom: 4px; }
-    .ads-price { font-weight: 600; margin-bottom: 2px; }
-    .ads-meta { font-size: 11px; color: #777; }
-
+    .card-ads,
     .card-event {
       background: #ffffff;
       border-radius: 10px;
@@ -245,58 +241,89 @@
       padding: 8px;
       font-size: 13px;
     }
-    .event-date { font-size: 11px; color: #555; margin-bottom: 2px; }
-    .event-title { font-weight: 600; margin-bottom: 2px; }
-    .event-place { font-size: 11px; color: #777; }
+    .ads-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .ads-price {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .ads-meta {
+      font-size: 11px;
+      color: #777;
+    }
+    .event-date {
+      font-size: 11px;
+      color: #555;
+      margin-bottom: 2px;
+    }
+    .event-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .event-place {
+      font-size: 11px;
+      color: #777;
+    }
+
+    @media (max-width: 800px) {
+      .header-top {
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
-
 <header>
   <div class="container header-top">
-    <div class="logo" data-i18n="logo">Якутия Локальная</div>
+    <div class="logo" data-i18n="logo">Yakutia Local</div>
     <div class="search">
-      <input type="text" data-i18n-placeholder="search_placeholder" placeholder="Искать товары, объявления, события…">
-      <button type="button" data-i18n="btn_search">Найти</button>
+      <input type="text" data-i18n-placeholder="searchplaceholder" placeholder="Поиск по товарам, объявлениям, событиям" />
+      <button type="button" data-i18n="btnsearch">Найти</button>
     </div>
     <div class="header-right">
+      <div class="header-links">
+        <a href="Cabinet.html" data-i18n="linklogin">Войти</a>
+        <a href="#" data-i18n="linkorders">Мои заказы</a>
+        <a href="#" data-i18n="linkcart">Корзина</a>
+      </div>
       <select class="lang-select" id="lang-select">
         <option value="ru">RU</option>
         <option value="en">EN</option>
         <option value="zh">中文</option>
       </select>
-      <div class="header-links">
-        <a href="cabinet.html" data-i18n="link_login">Войти</a>
-        <span data-i18n="link_orders">Мои заказы</span>
-        <span data-i18n="link_cart">Корзина</span>
-      </div>
     </div>
   </div>
 </header>
 
 <div class="tabs-bar">
   <div class="container tabs-inner">
-    <div class="tab-btn active" data-tab="market" data-i18n="tab_market">Маркетплейс</div>
-    <div class="tab-btn" data-tab="ads" data-i18n="tab_ads">Объявления</div>
-    <div class="tab-btn" data-tab="events" data-i18n="tab_events">Афиша</div>
+    <div class="tab-btn active" data-tab="market" data-i18n="tabmarket">Маркетплейс</div>
+    <div class="tab-btn" data-tab="ads" data-i18n="tabads">Объявления</div>
+    <div class="tab-btn" data-tab="events" data-i18n="tabevents">Афиша</div>
   </div>
 </div>
 
 <main>
-  <h1 class="section-title" id="section-title" data-i18n="title_market">Товары местных производителей</h1>
+  <h1 class="section-title" id="section-title" data-i18n="titlemarket">Товары местных производителей</h1>
+  <p id="category-stats">Загрузка статистики по категориям…</p>
 
-  <!-- Дополнительные фильтры -->
   <div class="subfilters" id="subfilters">
-    <button class="subfilter-btn active" data-filter="all" data-i18n="filter_all">Все</button>
-    <button class="subfilter-btn" data-filter="sale" data-i18n="filter_sales">Акции</button>
-    <button class="subfilter-btn" data-filter="popular" data-i18n="filter_popular">Популярное</button>
-    <button class="subfilter-btn" data-filter="season" data-i18n="filter_season">По сезонам</button>
+    <button class="subfilter-btn active" data-filter="all" data-i18n="filterall">Все</button>
+    <button class="subfilter-btn" data-filter="sale" data-i18n="filtersales">Акции</button>
+    <button class="subfilter-btn" data-filter="popular" data-i18n="filterpopular">Популярное</button>
+    <button class="subfilter-btn" data-filter="season" data-i18n="filterseason">По сезонам</button>
+
+    <button class="subfilter-btn" data-category="food">🥩🍯 Продовольственные</button>
+    <button class="subfilter-btn" data-category="clothes">🧥🧤 Одежда и обувь</button>
+    <button class="subfilter-btn" data-category="souvenirs">🎁 Сувениры и интерьер</button>
+    <button class="subfilter-btn" data-category="cosmetics">🧴 Косметика и БАДы</button>
+    <button class="subfilter-btn" data-category="industrial">🧱 Стройматериалы</button>
   </div>
 
-  <!-- Маркетплейс -->
   <div class="grid" id="tab-market"></div>
 
-  <!-- Объявления -->
   <div class="grid" id="tab-ads" style="display:none;">
     <article class="card-ads">
       <div class="ads-title">Продам шкуры оленя</div>
@@ -310,7 +337,6 @@
     </article>
   </div>
 
-  <!-- Афиша -->
   <div class="grid" id="tab-events" style="display:none;">
     <article class="card-event">
       <div class="event-date">12 декабря, 19:00</div>
@@ -326,7 +352,6 @@
 </main>
 
 <script>
-  // Переключение основных вкладок
   const tabs = document.querySelectorAll('.tab-btn');
   const blocks = {
     market: document.getElementById('tab-market'),
@@ -341,42 +366,59 @@
       const tab = btn.dataset.tab;
       tabs.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+
       Object.keys(blocks).forEach(key => {
         blocks[key].style.display = key === tab ? 'grid' : 'none';
       });
+
       if (tab === 'market') {
-        titleEl.dataset.i18n = 'title_market';
+        titleEl.dataset.i18n = 'titlemarket';
+        titleEl.textContent = translations[currentLang].titlemarket;
+      } else if (tab === 'ads') {
+        titleEl.dataset.i18n = 'titleads';
+        titleEl.textContent = translations[currentLang].titleads;
+      } else if (tab === 'events') {
+        titleEl.dataset.i18n = 'titleevents';
+        titleEl.textContent = translations[currentLang].titleevents;
       }
-      if (tab === 'ads') {
-        titleEl.dataset.i18n = 'title_ads';
-      }
-      if (tab === 'events') {
-        titleEl.dataset.i18n = 'title_events';
-      }
+
       applyTranslations();
       subfilters.style.display = tab === 'market' ? 'flex' : 'none';
     });
   });
 
-  // Фильтры "Все / Акции / Популярное / По сезонам"
+  let productsCache = [];
   let currentFilter = 'all';
+  let currentCategory = 'all';
+
   document.querySelectorAll('.subfilter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
+      const filter = btn.dataset.filter;
+      const category = btn.dataset.category;
+
       document.querySelectorAll('.subfilter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      renderProducts(); // перерисуем товары с фильтром
+
+      if (filter) {
+        currentFilter = filter;
+        currentCategory = 'all';
+      }
+      if (category) {
+        currentCategory = category;
+        currentFilter = 'all';
+      }
+
+      renderProducts();
     });
   });
 
-  // Загрузка товаров с сервера
-  let productsCache = [];
   async function loadMarketFromServer() {
     try {
       const res = await fetch('/api/products');
       const products = await res.json();
       productsCache = products;
       renderProducts();
+      updateCategoryStats(productsCache);
     } catch (e) {
       console.error(e);
     }
@@ -388,7 +430,6 @@
 
     let products = [...productsCache];
 
-    // фильтрация
     if (currentFilter === 'sale') {
       products = products.filter(p => p.isSale);
     } else if (currentFilter === 'popular') {
@@ -396,12 +437,17 @@
         .slice()
         .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
     } else if (currentFilter === 'season') {
-      const month = new Date().getMonth(); // 0-11
-      const season = (month === 11 || month <= 1) ? 'winter'
-                    : (month >= 2 && month <= 4) ? 'spring'
-                    : (month >= 5 && month <= 7) ? 'summer'
-                    : 'autumn';
+      const month = new Date().getMonth();
+      const season =
+        month === 11 || month <= 1 ? 'winter' :
+        month >= 2 && month <= 4 ? 'spring' :
+        month >= 5 && month <= 7 ? 'summer' :
+        'autumn';
       products = products.filter(p => !p.season || p.season === season);
+    }
+
+    if (currentCategory !== 'all') {
+      products = products.filter(p => p.category === currentCategory);
     }
 
     products
@@ -412,13 +458,13 @@
         card.className = 'card';
         card.innerHTML = `
           ${p.promoted ? '<div class="badge-top">ТОП</div>' : ''}
-          ${p.isSale ? '<div class="badge-sale">Акция</div>' : ''}
+          ${p.isSale ? '<div class="badge-sale">Скидка</div>' : ''}
           <div class="card-like">♡</div>
-          <div class="card-img">${p.desc || 'Фото товара'}</div>
+          <div class="card-img">${p.desc || 'Локальный продукт Якутии'}</div>
           <div class="card-price">
             ${p.price} ₽
-            ${p.oldPrice ? '<span class="card-price-old">'+p.oldPrice+' ₽</span>' : ''}
-            ${p.discount ? '<span class="card-discount">'+p.discount+'%</span>' : ''}
+            ${p.oldPrice ? `<span class="card-price-old">${p.oldPrice} ₽</span>` : ''}
+            ${p.discount ? `<span class="card-discount">-${p.discount}%</span>` : ''}
           </div>
           <div class="card-title">${p.title}</div>
           <div class="card-meta">${p.place || 'Якутия'}</div>
@@ -427,66 +473,89 @@
       });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadMarketFromServer();
-    applyTranslations();
-  });
+  function updateCategoryStats(allProducts) {
+    const statsEl = document.getElementById('category-stats');
+    if (!statsEl || !allProducts) return;
 
-  // Простейшая система переводов (RU / EN / ZH)
+    const counts = {
+      food: 0,
+      clothes: 0,
+      souvenirs: 0,
+      cosmetics: 0,
+      industrial: 0
+    };
+
+    allProducts
+      .filter(p => p.type === 'market')
+      .forEach(p => {
+        if (counts[p.category] !== undefined) {
+          counts[p.category]++;
+        }
+      });
+
+    statsEl.textContent =
+      'Сейчас на площадке: ' +
+      `🥩 ${counts.food} продовольственных, ` +
+      `🧥 ${counts.clothes} товаров из кожи и меха, ` +
+      `🎁 ${counts.souvenirs} сувениров, ` +
+      `🧴 ${counts.cosmetics} косметики и БАДов, ` +
+      `🧱 ${counts.industrial} промышленных и строительных товаров.`;
+  }
+
   const translations = {
     ru: {
-      logo: 'Якутия Локальная',
-      search_placeholder: 'Искать товары, объявления, события…',
-      btn_search: 'Найти',
-      link_login: 'Войти',
-      link_orders: 'Мои заказы',
-      link_cart: 'Корзина',
-      tab_market: 'Маркетплейс',
-      tab_ads: 'Объявления',
-      tab_events: 'Афиша',
-      title_market: 'Товары местных производителей',
-      title_ads: 'Объявления жителей Якутии',
-      title_events: 'События и афиша',
-      filter_all: 'Все',
-      filter_sales: 'Акции',
-      filter_popular: 'Популярное',
-      filter_season: 'По сезонам'
+      logo: 'Yakutia Local',
+      searchplaceholder: 'Поиск по товарам, объявлениям, событиям',
+      btnsearch: 'Найти',
+      linklogin: 'Войти',
+      linkorders: 'Мои заказы',
+      linkcart: 'Корзина',
+      tabmarket: 'Маркетплейс',
+      tabads: 'Объявления',
+      tabevents: 'Афиша',
+      titlemarket: 'Товары местных производителей',
+      titleads: 'Объявления от местных жителей',
+      titleevents: 'События и активностей',
+      filterall: 'Все',
+      filtersales: 'Акции',
+      filterpopular: 'Популярное',
+      filterseason: 'По сезонам'
     },
     en: {
       logo: 'Yakutia Local',
-      search_placeholder: 'Search products, listings, events…',
-      btn_search: 'Search',
-      link_login: 'Sign in',
-      link_orders: 'My orders',
-      link_cart: 'Cart',
-      tab_market: 'Marketplace',
-      tab_ads: 'Listings',
-      tab_events: 'Events',
-      title_market: 'Local products',
-      title_ads: 'Listings from locals',
-      title_events: 'Events & activities',
-      filter_all: 'All',
-      filter_sales: 'Deals',
-      filter_popular: 'Popular',
-      filter_season: 'Seasonal'
+      searchplaceholder: 'Search products, listings, events',
+      btnsearch: 'Search',
+      linklogin: 'Sign in',
+      linkorders: 'My orders',
+      linkcart: 'Cart',
+      tabmarket: 'Marketplace',
+      tabads: 'Listings',
+      tabevents: 'Events',
+      titlemarket: 'Local products',
+      titleads: 'Listings from locals',
+      titleevents: 'Events & activities',
+      filterall: 'All',
+      filtersales: 'Deals',
+      filterpopular: 'Popular',
+      filterseason: 'Seasonal'
     },
     zh: {
-      logo: '雅库茨克本地市集',
-      search_placeholder: '搜索商品、公告、活动…',
-      btn_search: '搜索',
-      link_login: '登录',
-      link_orders: '我的订单',
-      link_cart: '购物车',
-      tab_market: '市集',
-      tab_ads: '公告',
-      tab_events: '活动',
-      title_market: '本地生产者的商品',
-      title_ads: '当地居民的公告',
-      title_events: '活动与演出',
-      filter_all: '全部',
-      filter_sales: '优惠',
-      filter_popular: '热门',
-      filter_season: '应季'
+      logo: '雅库特本地',
+      searchplaceholder: '搜索商品、广告和活动',
+      btnsearch: '搜索',
+      linklogin: '登录',
+      linkorders: '我的订单',
+      linkcart: '购物车',
+      tabmarket: '商城',
+      tabads: '广告',
+      tabevents: '活动',
+      titlemarket: '本地生产商品',
+      titleads: '本地居民发布的广告',
+      titleevents: '本地活动',
+      filterall: '全部',
+      filtersales: '优惠',
+      filterpopular: '热门',
+      filterseason: '季节'
     }
   };
 
@@ -512,8 +581,11 @@
     currentLang = langSelect.value;
     applyTranslations();
   });
-</script>
 
+  document.addEventListener('DOMContentLoaded', () => {
+    applyTranslations();
+    loadMarketFromServer();
+  });
+</script>
 </body>
 </html>
-   
