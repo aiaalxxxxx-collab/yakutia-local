@@ -301,7 +301,16 @@
                     }
                 }
             });
-        });
+        // --- ИСПРАВЛЕНИЕ КНОПКИ ОТМЕНА ---
+document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+    // 1. Скрываем модалку
+    document.getElementById('product-modal').hidden = true;
+    
+    // 2. Очищаем форму (опционально)
+    document.getElementById('product-form').reset();
+    document.getElementById('image-preview').style.display = 'none';
+});
+});
     </script>
 </body>
 </html>
