@@ -1,532 +1,667 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Кабинет продавца</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f2f4f7;
-      color: #111;
-    }
-    a { color: inherit; text-decoration: none; }
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+    <title data-i18n="cabinet.title">Yakutia Local — Личный кабинет</title>
 
-    :root {
-      --accent: #00a86b;
-      --accent-dark: #008055;
-    }
-
-    header {
-      background: var(--accent);
-      color: #fff;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .back-link {
-      font-size: 13px;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .lk-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .lk-tab {
-      padding: 6px 10px;
-      font-size: 14px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      background: #e4e7ec;
-    }
-    .lk-tab.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .section-title {
-      font-size: 18px;
-      margin: 0 0 10px;
-    }
-
-    .lk-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr);
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .box {
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      padding: 12px;
-      font-size: 13px;
-    }
-    .box h2 {
-      margin: 0 0 8px;
-      font-size: 16px;
-    }
-
-    .form-row {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 8px;
-      gap: 3px;
-    }
-    label {
-      font-size: 12px;
-      color: #555;
-    }
-    input,
-    textarea,
-    select {
-      font: inherit;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid #d0d0d0;
-      background: #fafafa;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 48px;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      font-size: 13px;
-      cursor: pointer;
-      margin-top: 4px;
-      width: 100%;
-    }
-
-    .btn-danger {
-      background: #e53935;
-    }
-
-    .hint {
-      font-size: 11px;
-      color: #777;
-      margin-top: 4px;
-    }
-
-    .grid-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 10px;
-    }
-    .card {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-      padding: 8px;
-      font-size: 13px;
-    }
-    .card-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-    .card-price {
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .card-meta {
-      font-size: 11px;
-      color: #777;
-      margin-bottom: 6px;
-    }
-
-    input.error,
-    textarea.error,
-    select.error {
-      border-color: #e53935;
-      background: #ffebee;
-    }
-
-    @media (max-width: 800px) {
-      .lk-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-  </style>
+    <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
 <body>
-<header>
-  <div class="container header-top">
-    <div class="logo">YAKUTIA LOCAL</div>
-    <div class="back-link"><a href="index.html" style="color:#fff;">← На главную</a></div>
-  </div>
+<header class="header">
+    <div class="header__left">
+        <a href="./index.html" class="header__logo" data-i18n="header.logo">
+            Yakutia Local
+        </a>
+    </div>
+    <div class="header__right">
+        <select
+            id="language-select"
+            class="header__lang-select"
+            aria-label="Выбор языка"
+        >
+            <option value="ru">RU</option>
+            <option value="en">EN</option>
+        </select>
+
+        <button
+            id="cart-button"
+            class="header__icon-button"
+            data-i18n="header.cart"
+        >
+            Корзина
+        </button>
+        <button
+            id="orders-button"
+            class="header__icon-button"
+            data-i18n="header.orders"
+        >
+            Мои заказы
+        </button>
+
+        <div id="auth-block" class="header__auth">
+            <!-- JS подставит имя пользователя и роль -->
+            <span id="current-user-name" class="header__user-name">
+                Иван (роль: продавец)
+            </span>
+            <button
+                id="logout-button"
+                class="header__auth-button"
+                data-i18n="header.logout"
+            >
+                Выйти
+            </button>
+        </div>
+    </div>
 </header>
 
-<main>
-  <div class="lk-tabs">
-    <div class="lk-tab active" data-tab="profile">Профиль</div>
-    <div class="lk-tab" data-tab="my-ads">Мои объявления</div>
-  </div>
+<main class="main main--cabinet">
+    <section class="cabinet">
+        <header class="cabinet__header">
+            <h1 class="cabinet__title" data-i18n="cabinet.mainTitle">
+                Личный кабинет
+            </h1>
+            <p class="cabinet__subtitle" data-i18n="cabinet.subtitle">
+                Управляйте профилем, объявлениями, заказами и доставкой в одном месте.
+            </p>
+        </header>
 
-  <!-- Профиль -->
-  <section id="profile-section">
-    <h1 class="section-title">Профиль продавца</h1>
-    <div class="lk-grid">
-      <div class="box">
-        <h2>Ваши данные</h2>
+        <!-- Вкладки ролей: покупатель / продавец / курьер -->
+        <nav class="cabinet__role-tabs" aria-label="Выбор роли">
+            <button
+                class="cabinet__role-tab cabinet__role-tab--active"
+                data-role="buyer"
+                data-i18n="cabinet.roles.buyer"
+            >
+                Покупатель
+            </button>
+            <button
+                class="cabinet__role-tab"
+                data-role="seller"
+                data-i18n="cabinet.roles.seller"
+            >
+                Продавец
+            </button>
+            <button
+                class="cabinet__role-tab"
+                data-role="courier"
+                data-i18n="cabinet.roles.courier"
+            >
+                Курьер
+            </button>
+        </nav>
 
-        <div class="form-row">
-          <label>Имя</label>
-          <input placeholder="Как к вам обращаться" />
-        </div>
-        <div class="form-row">
-          <label>Город / населённый пункт</label>
-          <input placeholder="Якутск, Нерюнгри, село..." />
-        </div>
-        <div class="form-row">
-          <label>Телефон</label>
-          <input placeholder="+7 999 000‑00‑00" />
-        </div>
-        <div class="form-row">
-          <label>Email</label>
-          <input placeholder="you@example.com" />
-        </div>
-        <div class="form-row">
-          <label>О себе и бренде</label>
-          <textarea placeholder="Коротко расскажите, чем вы занимаетесь, какие товары производите."></textarea>
-        </div>
-        <button class="btn" type="button">Сохранить профиль (макет)</button>
-        <p class="hint">В демонстрационной версии данные профиля не сохраняются на сервер.</p>
-      </div>
+        <!-- ========== БЛОК ПОКУПАТЕЛЯ ========== -->
+        <section
+            id="cabinet-buyer"
+            class="cabinet__role-panel cabinet__role-panel--active"
+            aria-label="Кабинет покупателя"
+        >
+            <div class="cabinet__grid">
+                <!-- Профиль покупателя -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.buyer.profile">
+                        Профиль покупателя
+                    </h2>
+                    <form id="buyer-profile-form" class="form">
+                        <!-- Комментарий: эти данные в боевой версии сохраняются в users.json / БД -->
+                        <label class="form__field">
+                            <span class="form__label">Имя</span>
+                            <input type="text" name="name" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Телефон</span>
+                            <input type="tel" name="phone" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">E‑mail</span>
+                            <input type="email" name="email" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Адрес доставки</span>
+                            <textarea
+                                name="address"
+                                class="form__textarea"
+                            ></textarea>
+                        </label>
+                        <button
+                            type="submit"
+                            class="form__submit"
+                            data-i18n="cabinet.save"
+                        >
+                            Сохранить
+                        </button>
+                    </form>
+                </article>
 
-      <div class="box">
-        <h2>Статистика (макет)</h2>
-        <p>Заказы: <strong>0</strong></p>
-        <p>Опубликовано объявлений: <span id="ads-count">0</span></p>
-        <p>В избранном у покупателей: <strong>0</strong></p>
-        <p class="hint">В реальной системе здесь была бы живая аналитика по вашим товарам и заказам.</p>
-      </div>
-    </div>
-  </section>
+                <!-- Избранные товары -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.buyer.favorites">
+                        Понравившиеся товары
+                    </h2>
+                    <p class="cabinet-card__subtitle">
+                        Здесь показываются все товары, которые вы добавили в избранное на главной странице.
+                    </p>
+                    <div
+                        id="buyer-favorites-list"
+                        class="cabinet-card__list cabinet-card__list--products"
+                    >
+                        <!-- Список избранных товаров покупателя -->
+                    </div>
+                </article>
 
-  <!-- Мои объявления -->
-  <section id="my-ads-section" style="display:none;">
-    <h1 class="section-title">Мои объявления</h1>
-    <div class="lk-grid">
-      <div class="box">
-        <h2>Новое объявление</h2>
+                <!-- Заказы покупателя -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.buyer.orders">
+                        Мои заказы
+                    </h2>
+                    <div
+                        id="buyer-orders-list"
+                        class="cabinet-card__list cabinet-card__list--orders"
+                    >
+                        <!-- Список заказов покупателя -->
+                    </div>
+                </article>
+            </div>
+        </section>
 
-        <div class="form-row">
-          <label for="a-title">Заголовок *</label>
-          <input id="a-title" placeholder="Например: Продам шкуры оленя" />
-        </div>
+        <!-- ========== БЛОК ПРОДАВЦА ========== -->
+        <section
+            id="cabinet-seller"
+            class="cabinet__role-panel"
+            aria-label="Кабинет продавца"
+        >
+            <div class="cabinet__grid">
+                <!-- Профиль продавца -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.seller.profile">
+                        Профиль продавца
+                    </h2>
+                    <p class="cabinet-card__subtitle" data-i18n="cabinet.seller.profileHint">
+                        Заполните данные, чтобы покупатели лучше понимали, кто вы.
+                    </p>
+                    <form id="seller-profile-form" class="form">
+                        <label class="form__field">
+                            <span class="form__label">Название магазина / ИП</span>
+                            <input type="text" name="shopName" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Контактное лицо</span>
+                            <input type="text" name="contactName" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Телефон</span>
+                            <input type="tel" name="phone" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">E‑mail</span>
+                            <input type="email" name="email" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Описание</span>
+                            <textarea
+                                name="description"
+                                class="form__textarea"
+                            ></textarea>
+                        </label>
+                        <button
+                            type="submit"
+                            class="form__submit"
+                            data-i18n="cabinet.save"
+                        >
+                            Сохранить
+                        </button>
+                    </form>
+                </article>
 
-        <div class="form-row">
-          <label for="a-price">Цена, ₽ *</label>
-          <input id="a-price" type="number" min="1" placeholder="3500" />
-        </div>
+                <!-- Статистика продавца -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.seller.stats">
+                        Статистика
+                    </h2>
+                    <div class="stats">
+                        <div class="stats__item">
+                            <span class="stats__label" data-i18n="cabinet.seller.stats.orders">
+                                Заказы
+                            </span>
+                            <span
+                                id="seller-stats-orders"
+                                class="stats__value"
+                            >
+                                0
+                            </span>
+                        </div>
+                        <div class="stats__item">
+                            <span class="stats__label" data-i18n="cabinet.seller.stats.products">
+                                Опубликовано объявлений
+                            </span>
+                            <span
+                                id="seller-stats-products"
+                                class="stats__value"
+                            >
+                                0
+                            </span>
+                        </div>
+                        <div class="stats__item">
+                            <span class="stats__label" data-i18n="cabinet.seller.stats.favorites">
+                                В избранном у покупателей
+                            </span>
+                            <span
+                                id="seller-stats-favorites"
+                                class="stats__value"
+                            >
+                                0
+                            </span>
+                        </div>
+                    </div>
+                    <!--
+                        Комментарий:
+                        В боевой версии эти значения берутся из orders.json / favorites.json / products.json
+                        и обновляются при каждой операции.
+                    -->
+                </article>
 
-        <div class="form-row">
-          <label for="a-oldprice">Старая цена, ₽ (если есть)</label>
-          <input id="a-oldprice" type="number" min="1" placeholder="4200" />
-        </div>
+                <!-- Мои объявления -->
+                <article class="cabinet-card cabinet-card--full">
+                    <div class="cabinet-card__header-row">
+                        <h2 class="cabinet-card__title" data-i18n="cabinet.seller.products">
+                            Мои объявления
+                        </h2>
+                        <button
+                            id="seller-add-product-button"
+                            class="cabinet-card__action-button"
+                            data-i18n="cabinet.seller.addProduct"
+                        >
+                            Добавить объявление
+                        </button>
+                    </div>
+                    <p class="cabinet-card__subtitle">
+                        Здесь вы можете создавать, редактировать и удалять свои товары. Картинки загружаются на сервер и отображаются на главной странице.
+                    </p>
 
-        <div class="form-row">
-          <label for="a-type">Где показывать</label>
-          <select id="a-type">
-            <option value="market">Маркетплейс (товары)</option>
-            <option value="ads">Объявление (услуги/аренда и т.п.)</option>
-          </select>
-        </div>
+                    <!-- Список объявлений продавца -->
+                    <div
+                        id="seller-products-list"
+                        class="cabinet-card__list cabinet-card__list--products"
+                    >
+                        <!-- Карточки объявлений продавца (мини‑список) -->
+                    </div>
+                </article>
+            </div>
+        </section>
 
-        <div class="form-row">
-          <label for="a-category">Категория</label>
-          <select id="a-category">
-            <option value="food">🥩🍯 Продовольственные товары</option>
-            <option value="clothes">🧥🧤 Одежда, обувь и аксессуары</option>
-            <option value="souvenirs">🎁 Сувениры, украшения, интерьер</option>
-            <option value="cosmetics">🧴 Косметика и БАДы</option>
-            <option value="industrial">🧱 Промышленные и строительные материалы</option>
-          </select>
-        </div>
+        <!-- ========== БЛОК КУРЬЕРА ========== -->
+        <section
+            id="cabinet-courier"
+            class="cabinet__role-panel"
+            aria-label="Кабинет курьера"
+        >
+            <div class="cabinet__grid">
+                <!-- Профиль курьера -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.courier.profile">
+                        Профиль курьера
+                    </h2>
+                    <form id="courier-profile-form" class="form">
+                        <label class="form__field">
+                            <span class="form__label">Имя</span>
+                            <input type="text" name="name" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Телефон</span>
+                            <input type="tel" name="phone" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Районы работы</span>
+                            <input type="text" name="areas" class="form__input" />
+                        </label>
+                        <label class="form__field">
+                            <span class="form__label">Тип транспорта</span>
+                            <input type="text" name="transport" class="form__input" />
+                        </label>
+                        <button
+                            type="submit"
+                            class="form__submit"
+                            data-i18n="cabinet.save"
+                        >
+                            Сохранить
+                        </button>
+                    </form>
+                </article>
 
-        <div class="form-row">
-          <label for="a-season">Сезонность (для витрины)</label>
-          <select id="a-season">
-            <option value="">Не указано</option>
-            <option value="winter">Зима</option>
-            <option value="spring">Весна</option>
-            <option value="summer">Лето</option>
-            <option value="autumn">Осень</option>
-          </select>
-        </div>
+                <!-- Активные заказы курьера -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.courier.activeOrders">
+                        Активные заказы для доставки
+                    </h2>
+                    <div
+                        id="courier-active-orders"
+                        class="cabinet-card__list cabinet-card__list--orders"
+                    >
+                        <!-- Список заказов, назначенных этому курьеру -->
+                    </div>
+                </article>
 
-        <div class="form-row">
-          <label for="a-desc">Описание</label>
-          <textarea id="a-desc" placeholder="Кратко опишите товар: материалы, размеры, особенности, условия доставки."></textarea>
-        </div>
-
-        <div class="form-row">
-          <label for="a-place">Где находится товар</label>
-          <input id="a-place" placeholder="Якутск, частное лицо / мастерская" />
-        </div>
-
-        <div class="form-row">
-          <label>
-            <input type="checkbox" id="a-promoted" />
-            Выделить как «ТОП» (макет, пока без оплаты)
-          </label>
-        </div>
-
-        <div class="form-row">
-          <label>
-            <input type="checkbox" id="a-sale" />
-            Товар по акции (будет показана скидка)
-          </label>
-        </div>
-
-        <button class="btn" type="button" id="submit-ad-btn" onclick="addMyAd()">Опубликовать объявление</button>
-        <p class="hint">В демо-версии объявления сохраняются в файле products.json на сервере.</p>
-      </div>
-
-      <div class="box">
-        <h2>Ваши объявления</h2>
-        <div class="grid-cards" id="my-ads-list"></div>
-      </div>
-    </div>
-  </section>
+                <!-- История доставок -->
+                <article class="cabinet-card">
+                    <h2 class="cabinet-card__title" data-i18n="cabinet.courier.history">
+                        История доставок
+                    </h2>
+                    <div
+                        id="courier-history"
+                        class="cabinet-card__list cabinet-card__list--orders"
+                    >
+                        <!-- История выполненных доставок -->
+                    </div>
+                </article>
+            </div>
+        </section>
+    </section>
 </main>
 
-<script>
-  let editId = null;
+<!-- ========== МОДАЛКА СОЗДАНИЯ/РЕДАКТИРОВАНИЯ ОБЪЯВЛЕНИЯ ПРОДАВЦА ========== -->
+<div
+    id="product-edit-modal"
+    class="modal"
+    aria-hidden="true"
+>
+    <div
+        class="modal__overlay"
+        data-modal-close
+    ></div>
+    <div class="modal__content modal__content--wide">
+        <header class="modal__header">
+            <h3
+                id="product-edit-title"
+                class="modal__title"
+            >
+                Новое объявление
+            </h3>
+            <button
+                class="modal__close-button"
+                data-modal-close
+            >
+                &times;
+            </button>
+        </header>
+        <div class="modal__body">
+            <!-- Форма товара -->
+            <form id="product-edit-form" class="form form--two-columns">
+                <input type="hidden" name="id" />
 
-  // Переключение вкладок
-  const lkTabs = document.querySelectorAll('.lk-tab');
-  const profileSection = document.getElementById('profile-section');
-  const adsSection = document.getElementById('my-ads-section');
+                <label class="form__field">
+                    <span class="form__label">Название</span>
+                    <input type="text" name="title" class="form__input" required />
+                </label>
+                <label class="form__field">
+                    <span class="form__label">Цена, ₽</span>
+                    <input
+                        type="number"
+                        name="price"
+                        class="form__input"
+                        min="0"
+                        required
+                    />
+                </label>
+                <label class="form__field">
+                    <span class="form__label">Старая цена, ₽ (если есть)</span>
+                    <input
+                        type="number"
+                        name="oldPrice"
+                        class="form__input"
+                        min="0"
+                    />
+                </label>
+                <label class="form__field">
+                    <span class="form__label">Скидка, %</span>
+                    <input
+                        type="number"
+                        name="discount"
+                        class="form__input"
+                        min="0"
+                        max="100"
+                    />
+                </label>
+                <label class="form__field">
+                    <span class="form__label">Категория</span>
+                    <select name="category" class="form__select">
+                        <option value="meat">Мясо и рыба</option>
+                        <option value="milk">Молочные продукты</option>
+                        <option value="berries">Ягоды и дикоросы</option>
+                        <option value="ready">Готовые блюда</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </label>
+                <label class="form__field">
+                    <span class="form__label">Локация</span>
+                    <input
+                        type="text"
+                        name="place"
+                        class="form__input"
+                        placeholder="Якутск, район, формат выдачи"
+                    />
+                </label>
 
-  lkTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      lkTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+                <label class="form__field form__field--full">
+                    <span class="form__label">Описание</span>
+                    <textarea
+                        name="desc"
+                        class="form__textarea"
+                        rows="3"
+                    ></textarea>
+                </label>
 
-      const t = tab.dataset.tab;
-      if (t === 'profile') {
-        profileSection.style.display = '';
-        adsSection.style.display = 'none';
-      } else {
-        profileSection.style.display = 'none';
-        adsSection.style.display = '';
-      }
-    });
-  });
+                <!-- Картинка товара -->
+                <label class="form__field form__field--full">
+                    <span class="form__label">Картинка товара</span>
+                    <!--
+                        Комментарий:
+                        В боевой версии файл отправляется на /api/upload,
+                        а полученный URL записывается в поле imageUrl товара.
+                    -->
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        class="form__input"
+                    />
+                    <div class="form__image-preview">
+                        <img
+                            id="product-image-preview"
+                            src=""
+                            alt=""
+                            hidden
+                        />
+                    </div>
+                </label>
 
-  // Загрузка объявлений
-  async function loadMyAds() {
-    try {
-      const res = await fetch('/api/products');
-      const products = await res.json();
-      const list = document.getElementById('my-ads-list');
-      list.innerHTML = '';
+                <!-- Доп. параметры -->
+                <label class="form__field">
+                    <span class="form__label">
+                        Выделить как продвигаемое объявление
+                    </span>
+                    <input
+                        type="checkbox"
+                        name="promoted"
+                        class="form__checkbox"
+                    />
+                </label>
+                <label class="form__field">
+                    <span class="form__label">
+                        Товар по акции
+                    </span>
+                    <input
+                        type="checkbox"
+                        name="isSale"
+                        class="form__checkbox"
+                    />
+                </label>
 
-      products.forEach(p => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-title">${p.title}</div>
-          <div class="card-price">${p.price} ₽</div>
-          <div class="card-meta">
-            ${p.type === 'market' ? 'Товар на витрине' : 'Объявление'} •
-            ${p.place || 'Якутия'}<br>
-            Категория: ${p.category || 'не указана'}
-          </div>
-          <button class="btn" type="button"
-                  data-id="${p.id}" data-action="edit">Редактировать</button>
-          <button class="btn btn-danger" type="button" style="margin-top:6px;"
-                  data-id="${p.id}" data-action="delete">Удалить</button>
-        `;
-        list.appendChild(card);
-      });
+                <div class="form__actions form__actions--full">
+                    <button
+                        type="submit"
+                        class="form__submit"
+                    >
+                        Сохранить объявление
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-      const countEl = document.getElementById('ads-count');
-      if (countEl) countEl.textContent = products.length;
-    } catch (e) {
-      console.error(e);
-    }
-  }
+<!-- ========== МОДАЛКИ КОРЗИНЫ И ЗАКАЗОВ (ПЕРЕИСПОЛЬЗУЕМ ИЗ index) ========== -->
+<div
+    id="cart-modal"
+    class="modal"
+    aria-hidden="true"
+>
+    <div
+        class="modal__overlay"
+        data-modal-close
+    ></div>
+    <div class="modal__content">
+        <header class="modal__header">
+            <h3
+                class="modal__title"
+                data-i18n="cart.title"
+            >
+                Моя корзина
+            </h3>
+            <button
+                class="modal__close-button"
+                data-modal-close
+            >
+                &times;
+            </button>
+        </header>
+        <div
+            id="cart-items"
+            class="modal__body"
+        ></div>
+        <footer class="modal__footer">
+            <div class="modal__footer-row">
+                <span data-i18n="cart.total">Итого:</span>
+                <span id="cart-total-amount">0 ₽</span>
+            </div>
+            <button
+                id="cart-checkout"
+                class="modal__primary-button"
+                data-i18n="cart.checkout"
+            >
+                Оформить заказ
+            </button>
+        </footer>
+    </div>
+</div>
 
-  // Делегирование кликов для редактирования/удаления
-  document.getElementById('my-ads-list').addEventListener('click', async (e) => {
-    const btn = e.target.closest('button[data-action]');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    const action = btn.dataset.action;
+<div
+    id="orders-modal"
+    class="modal"
+    aria-hidden="true"
+>
+    <div
+        class="modal__overlay"
+        data-modal-close
+    ></div>
+    <div class="modal__content">
+        <header class="modal__header">
+            <h3
+                class="modal__title"
+                data-i18n="orders.title"
+            >
+                Мои заказы
+            </h3>
+            <button
+                class="modal__close-button"
+                data-modal-close
+            >
+                &times;
+            </button>
+        </header>
+        <div
+            id="orders-list"
+            class="modal__body"
+        ></div>
+    </div>
+</div>
 
-    if (action === 'delete') {
-      if (!confirm('Удалить это объявление?')) return;
-      try {
-        const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-        if (!res.ok) {
-          alert('Ошибка при удалении');
-          return;
-        }
-        await loadMyAds();
-      } catch (err) {
-        console.error(err);
-        alert('Сетевая ошибка при удалении');
-      }
-    }
+<!-- ========== ВИДЖЕТ ИИ-БОТА ========== -->
+<div class="bot-widget">
+    <button
+        id="bot-toggle"
+        class="bot-widget__button"
+        data-i18n="bot.help"
+    >
+        Нужна помощь?
+    </button>
+    <div
+        id="bot-panel"
+        class="bot-widget__panel"
+        hidden
+    >
+        <div
+            id="bot-messages"
+            class="bot-widget__messages"
+        ></div>
+        <div class="bot-widget__footer">
+            <input
+                type="text"
+                id="bot-input"
+                class="bot-widget__input"
+                placeholder="Спросите о настройке кабинета..."
+                data-i18n-placeholder="bot.placeholderCabinet"
+            />
+            <button
+                id="bot-send"
+                class="bot-widget__send"
+                data-i18n="bot.send"
+            >
+                ▶
+            </button>
+        </div>
+    </div>
+</div>
 
-    if (action === 'edit') {
-      startEditAd(id);
-    }
-  });
+<footer class="footer">
+    <div class="footer__inner">
+        <span data-i18n="footer.copy">
+            © Yakutia Local. Все права защищены.
+        </span>
+        <a
+            href="#"
+            class="footer__link"
+            data-i18n="footer.about"
+        >
+            О проекте
+        </a>
+        <a
+            href="#"
+            class="footer__link"
+            data-i18n="footer.contacts"
+        >
+            Контакты
+        </a>
+    </div>
+</footer>
 
-  function fillFormFromProduct(p) {
-    document.getElementById('a-title').value = p.title || '';
-    document.getElementById('a-price').value = p.price || '';
-    document.getElementById('a-oldprice').value = p.oldPrice || '';
-    document.getElementById('a-type').value = p.type || 'market';
-    document.getElementById('a-season').value = p.season || '';
-    document.getElementById('a-desc').value = p.desc || '';
-    document.getElementById('a-place').value = p.place || '';
-    document.getElementById('a-promoted').checked = !!p.promoted;
-    document.getElementById('a-sale').checked = !!p.isSale;
-    document.getElementById('a-category').value = p.category || 'food';
-  }
-
-  async function startEditAd(id) {
-    try {
-      const res = await fetch('/api/products');
-      const products = await res.json();
-      const p = products.find(x => String(x.id) === String(id));
-      if (!p) {
-        alert('Объявление не найдено');
-        return;
-      }
-      editId = p.id;
-      fillFormFromProduct(p);
-      document.getElementById('submit-ad-btn').textContent = 'Сохранить изменения';
-      // переключаемся на вкладку "Мои объявления", если вдруг не там
-      lkTabs.forEach(t => {
-        t.classList.toggle('active', t.dataset.tab === 'my-ads');
-      });
-      profileSection.style.display = 'none';
-      adsSection.style.display = '';
-    } catch (e) {
-      console.error(e);
-      alert('Ошибка загрузки объявления');
-    }
-  }
-
-  // Добавление / обновление объявления
-  async function addMyAd() {
-    const titleEl = document.getElementById('a-title');
-    const priceEl = document.getElementById('a-price');
-
-    const title = titleEl.value.trim();
-    const price = priceEl.value.trim();
-    const oldPrice = document.getElementById('a-oldprice').value.trim();
-    const type = document.getElementById('a-type').value;
-    const season = document.getElementById('a-season').value;
-    const desc = document.getElementById('a-desc').value.trim();
-    const place = document.getElementById('a-place').value.trim();
-    const promoted = document.getElementById('a-promoted').checked;
-    const isSale = document.getElementById('a-sale').checked;
-    const category = document.getElementById('a-category').value;
-
-    // сброс ошибок
-    [titleEl, priceEl].forEach(el => el.classList.remove('error'));
-
-    if (!title || !price || Number(price) <= 0) {
-      if (!title) titleEl.classList.add('error');
-      if (!price || Number(price) <= 0) priceEl.classList.add('error');
-      alert('Заполните название и корректную цену');
-      return;
-    }
-
-    let discount = null;
-    if (oldPrice) {
-      discount = Math.round((1 - Number(price) / Number(oldPrice)) * 100);
-    }
-
-    const payload = {
-      title,
-      price,
-      oldPrice: oldPrice || null,
-      discount,
-      type,
-      desc,
-      place,
-      promoted,
-      isSale,
-      season,
-      category,
-      popularity: 0
-    };
-
-    const url = editId ? `/api/products/${editId}` : '/api/products';
-    const method = editId ? 'PUT' : 'POST';
-
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        alert('Ошибка при сохранении объявления');
-        return;
-      }
-
-      await loadMyAds();
-
-      // сброс формы
-      editId = null;
-      document.getElementById('submit-ad-btn').textContent = 'Опубликовать объявление';
-      titleEl.value = '';
-      priceEl.value = '';
-      document.getElementById('a-oldprice').value = '';
-      document.getElementById('a-desc').value = '';
-      document.getElementById('a-place').value = '';
-      document.getElementById('a-promoted').checked = false;
-      document.getElementById('a-sale').checked = false;
-      document.getElementById('a-season').value = '';
-      document.getElementById('a-category').value = 'food';
-    } catch (e) {
-      console.error(e);
-      alert('Сетевая ошибка при сохранении');
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', loadMyAds);
-</script>
+<!-- СКРИПТЫ -->
+<script src="./assets/js/modules/state.js"></script>
+<script src="./assets/js/modules/i18n.js"></script>
+<script src="./assets/js/api/apiClient.js"></script>
+<script src="./assets/js/api/productsApi.js"></script>
+<script src="./assets/js/api/usersApi.js"></script>
+<script src="./assets/js/api/ordersApi.js"></script>
+<script src="./assets/js/api/favoritesApi.js"></script>
+<script src="./assets/js/modules/cart.js"></script>
+<script src="./assets/js/modules/orders.js"></script>
+<script src="./assets/js/modules/favorites.js"></script>
+<script src="./assets/js/modules/chat.js"></script>
+<script src="./assets/js/modules/bot.js"></script>
+<script src="./assets/js/modules/auth.js"></script>
+<script src="./assets/js/pages/cabinetPage.js"></script>
 </body>
 </html>
