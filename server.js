@@ -1,83 +1,64 @@
-// server.js — простой сервер для Yakutia Local
-
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 10000;
+const PRODUCTS_FILE = path.join(__dirname, 'products.json');
 
-// путь к файлу с товарами
-const DATA_FILE = path.join(__dirname, 'products.json');
-
-// парсим JSON в body
 app.use(express.json());
-
-// раздаём статические файлы из папки public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// GET /api/products — отдать все товары/объявления
+// получить товары
 app.get('/api/products', (req, res) => {
-  fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        // файла ещё нет — вернём пустой массив
-        return res.json([]);
-      }
-      console.error('Read error:', err);
-      return res.status(500).json({ error: 'read_error' });
-    }
-
+  fs.readFile(PRODUCTS_FILE, 'utf8', (err, data) => {
+    if (err) return res.json([]);
     try {
-      const products = JSON.parse(data || '[]');
-      res.json(products);
-    } catch (e) {
-      console.error('JSON parse error:', e);
+      const items = JSON.parse(data || '[]');
+      res.json(items);
+    } catch {
       res.json([]);
     }
   });
 });
 
-// POST /api/products — добавить новый товар/объявление
+// добавить товар из кабинета
 app.post('/api/products', (req, res) => {
-  const { title, price, type, desc, place } = req.body || {};
-
-  if (!title || !price) {
-    return res.status(400).json({ error: 'title_and_price_required' });
-  }
-
-  fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-    let products = [];
+  fs.readFile(PRODUCTS_FILE, 'utf8', (err, data) => {
+    let items = [];
     if (!err && data) {
-      try {
-        products = JSON.parse(data);
-      } catch {
-        products = [];
-      }
+      try { items = JSON.parse(data); } catch { items = []; }
     }
-
-    const product = {
+    const body = req.body || {};
+    const item = {
       id: Date.now(),
-      title,
-      price,
-      type: type || 'market',
-      desc: desc || '',
-      place: place || 'Якутия'
+      type: 'market',
+      title: body.title || '',
+      desc: body.desc || '',
+      price: body.price || 0,
+      oldPrice: body.oldPrice || '',
+      discount: body.discount || '',
+      place: body.place || 'Якутия',
+      category: body.category || '',
+      brand: body.brand || 'Малый бизнес Якутии',
+      season: body.season || '',
+      promoted: !!body.promoted,
+      isSale: !!body.isSale,
+      isLocal: true,
+      popularity: 1
     };
-
-    products.push(product);
-
-    fs.writeFile(DATA_FILE, JSON.stringify(products, null, 2), (err2) => {
-      if (err2) {
-        console.error('Write error:', err2);
-        return res.status(500).json({ error: 'write_error' });
-      }
-      res.status(201).json(product);
+    items.push(item);
+    fs.writeFile(PRODUCTS_FILE, JSON.stringify(items, null, 2), () => {
+      res.json({ ok: true, item });
     });
   });
 });
 
-// запуск сервера
+// fallback для SPA: главная
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(PORT, () => {
-  console.log(`Server started: http://localhost:${PORT}`);
+  console.log('Server started on port', PORT);
 });
