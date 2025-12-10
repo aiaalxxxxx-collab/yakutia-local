@@ -469,6 +469,26 @@
   <script src="./assets/js/modules/bot.js"></script>
   <script src="./assets/js/headerActions.js"></script>
   <script src="./assets/js/pages/indexPage.js"></script>
+  <!-- МОДАЛЬНОЕ ОКНО КОРЗИНЫ -->
+<div id="cart-modal" class="modal" hidden>
+  <div class="modal__overlay" id="cart-overlay"></div> <!-- Добавили ID для оверлея -->
+  <div class="modal__content">
+    <div class="modal__header">
+      <h2>Моя корзина</h2>
+      <!-- Важно: id="cart-close-x" для привязки JS -->
+      <button class="modal__close" id="cart-close-x">&times;</button>
+    </div>
+    <div id="cart-items-list">
+      <!-- Товары рендерятся тут -->
+      <p>Корзина пуста</p>
+    </div>
+    <div class="modal__footer">
+      <div class="cart-total">Итого: <span id="cart-total-price">0</span> ₽</div>
+      <button class="button button--primary">Оформить заказ</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
