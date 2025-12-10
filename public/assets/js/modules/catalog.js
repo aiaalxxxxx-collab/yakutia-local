@@ -165,8 +165,11 @@ function bindProductCardEvents(container) {
     // Чат
     if (target.closest('.js-open-chat')) {
       // Здесь позже откроем модалку чата c продуктом
-      alert('Тут откроется чат с продавцом по этому товару.');
-      return;
+      if (target.closest('.js-open-chat')) {
+  openChatForProduct(product.id, product.title);
+  return;
+}
+
     }
 
     // Редактировать
