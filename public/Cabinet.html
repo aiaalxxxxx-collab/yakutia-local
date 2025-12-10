@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Личный кабинет — Якутия Локальная</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f2f4f7;
+      color: #111;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    :root {
+      --accent: #00a86b;
+      --accent-dark: #008055;
+    }
+
+    header {
+      background: var(--accent);
+      color: #fff;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .back-link {
+      font-size: 13px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .lk-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .lk-tab {
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: #e4e7ec;
+    }
+    .lk-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .section-title {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+
+    .lk-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .box {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      font-size: 13px;
+    }
+    .box h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 8px;
+      gap: 3px;
+    }
+    label {
+      font-size: 12px;
+      color: #555;
+    }
+    input, textarea, select {
+      font: inherit;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #d0d0d0;
+      background: #fafafa;
+    }
+    textarea { resize: vertical; min-height: 48px; }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
+    }
+    .hint {
+      font-size: 11px;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      padding: 8px;
+      font-size: 13px;
+    }
+    .card-title { font-weight: 500; margin-bottom: 4px; }
+    .card-price { font-weight: 600; margin-bottom: 2px; }
+    .card-meta { font-size: 11px; color: #777; }
+
+    @media (max-width: 800px) {
+      .lk-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container header-top">
+    <div class="logo">Личный кабинет</div>
+    <div class="back-link"><a href="index.html" style="color:#fff;">← На главную</a></div>
+  </div>
+</header>
+
+<main>
+  <div class="lk-tabs">
+    <div class="lk-tab active" data-tab="profile">Профиль</div>
+    <div class="lk-tab" data-tab="my-ads">Мои объявления</div>
+  </div>
+
+  <!-- Профиль -->
+  <section id="profile-section">
+    <h1 class="section-title">Профиль продавца</h1>
+    <div class="lk-grid">
+      <div class="box">
+        <h2>Ваши данные</h2>
+        <div class="form-row">
+          <label>Имя / название бренда</label>
+          <input placeholder="Например: Мастерская «Якутский свет»">
+        </div>
+        <div class="form-row">
+          <label>Телефон</label>
+          <input placeholder="+7...">
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input placeholder="you@example.com">
+        </div>
+        <div class="form-row">
+          <label>О себе / о бренде</label>
+          <textarea placeholder="Кратко расскажите, чем занимаетесь."></textarea>
+        </div>
+        <button class="btn" type="button">Сохранить профиль (заглушка)</button>
+      </div>
+      <div class="box">
+        <h2>Статистика (макет)</h2>
+        <p>Заказы: 0</p>
+        <p>Опубликовано объявлений: <span id="ads-count">0</span></p>
+        <p>В избранном у покупателей: 0</p>
+        <p class="hint">В реальной системе здесь была бы живая аналитика по вашим товарам и заказам.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Мои объявления -->
+  <section id="my-ads-section" style="display:none;">
+    <h1 class="section-title">Мои объявления</h1>
+    <div class="lk-grid">
+      <div class="box">
+        <h2>Добавить объявление / товар</h2>
+
+        <div class="form-row">
+          <label for="a-title">Заголовок</label>
+          <input id="a-title" placeholder="Например: Браслет «Полярная звезда»">
+        </div>
+        <div class="form-row">
+          <label for="a-price">Цена, ₽</label>
+          <input id="a-price" type="number" min="1" placeholder="Например: 3500">
+        </div>
+        <div class="form-row">
+          <label for="a-oldprice">Старая цена, ₽ (для акций)</label>
+          <input id="a-oldprice" type="number" min="1" placeholder="Например: 4200">
+        </div>
+        <div class="form-row">
+          <label for="a-type">Тип</label>
+          <select id="a-type">
+            <option value="market">Товар маркетплейса</option>
+            <option value="ads">Частное объявление</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="a-season">Сезон</label>
+          <select id="a-season">
+            <option value="">Всегда</option>
+            <option value="winter">Зима</option>
+            <option value="spring">Весна</option>
+            <option value="summer">Лето</option>
+            <option value="autumn">Осень</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="a-desc">Краткое описание</label>
+          <textarea id="a-desc" placeholder="Материал, состояние, особенности"></textarea>
+        </div>
+        <div class="form-row">
+          <label for="a-place">Город / район</label>
+          <input id="a-place" placeholder="Якутск, центр">
+        </div>
+        <div class="form-row">
+          <label>
+            <input type="checkbox" id="a-promoted">
+            Продвинуть в ТОП‑выдачу за 1500 ₽
+          </label>
+        </div>
+        <div class="form-row">
+          <label>
+            <input type="checkbox" id="a-sale">
+            Отметить как акцию (бейдж «Акция»)
+          </label>
+        </div>
+        <button class="btn" type="button" onclick="addMyAd()">Опубликовать</button>
+        <p class="hint">В прототипе оплата за продвижение не списывается, но карточка будет отмечена как ТОП.</p>
+      </div>
+
+      <div class="box">
+        <h2>Опубликованные</h2>
+        <div class="grid-cards" id="my-ads-list"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Переключение вкладок ЛК
+  const lkTabs = document.querySelectorAll('.lk-tab');
+  const profileSection = document.getElementById('profile-section');
+  const adsSection = document.getElementById('my-ads-section');
+
+  lkTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      lkTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const t = tab.dataset.tab;
+      if (t === 'profile') {
+        profileSection.style.display = '';
+        adsSection.style.display = 'none';
+      } else {
+        profileSection.style.display = 'none';
+        adsSection.style.display = '';
+      }
+    });
+  });
+
+  // загрузка объявлений/товаров с сервера
+  async function loadMyAds() {
+    try {
+      const res = await fetch('/api/products');
+      const products = await res.json();
+      const list = document.getElementById('my-ads-list');
+      list.innerHTML = '';
+      products.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-title">${p.title}</div>
+          <div class="card-price">${p.price} ₽</div>
+          <div class="card-meta">
+            ${(p.type === 'market' ? 'Товар маркетплейса' : 'Частное объявление')} • ${p.place || 'Якутия'}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+      const countEl = document.getElementById('ads-count');
+      if (countEl) countEl.textContent = products.length;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // отправка нового объявления на сервер
+  async function addMyAd() {
+    const title = document.getElementById('a-title').value.trim();
+    const price = document.getElementById('a-price').value.trim();
+    const oldPrice = document.getElementById('a-oldprice').value.trim();
+    const type = document.getElementById('a-type').value;
+    const season = document.getElementById('a-season').value;
+    const desc = document.getElementById('a-desc').value.trim();
+    const place = document.getElementById('a-place').value.trim();
+    const promoted = document.getElementById('a-promoted').checked;
+    const isSale = document.getElementById('a-sale').checked;
+
+    if (!title || !price) {
+      alert('Нужно указать хотя бы заголовок и цену.');
+      return;
+    }
+
+    let discount = null;
+    if (oldPrice && Number(oldPrice) > Number(price)) {
+      discount = Math.round((1 - Number(price) / Number(oldPrice)) * 100);
+    }
+
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          price,
+          oldPrice: oldPrice || null,
+          discount,
+          type,
+          desc,
+          place,
+          promoted,
+          isSale,
+          season,
+          popularity: 0
+        })
+      });
+      if (!res.ok) {
+        alert('Ошибка сохранения на сервере');
+        return;
+      }
+      await loadMyAds();
+
+      document.getElementById('a-title').value = '';
+      document.getElementById('a-price').value = '';
+      document.getElementById('a-oldprice').value = '';
+      document.getElementById('a-desc').value = '';
+      document.getElementById('a-place').value = '';
+      document.getElementById('a-promoted').checked = false;
+      document.getElementById('a-sale').checked = false;
+      document.getElementById('a-season').value = '';
+    } catch (e) {
+      console.error(e);
+      alert('Не удалось отправить данные на сервер');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadMyAds);
+</script>
+
+</body>
+</html>
