@@ -1,738 +1,119 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Made in Yakutia — Маркетплейс</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f2f4f7;
-      color: #111;
-    }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
+const BIGBRANDS = [
+  // 🥩 Продовольствие
+  {
+    name: "Якутские продукты / ТД «Якутия»",
+    desc: "Колбасы, полуфабрикаты и деликатесы из конины, оленины и говядины.",
+    category: "food",
+    tag: "Топ‑бренд"
+  },
+  {
+    name: "Мясокомбинат «Якутский»",
+    desc: "Крупный мясокомбинат с широким ассортиментом.",
+    category: "food",
+    tag: "Топ‑бренд"
+  },
+  {
+    name: "Чочур Муран",
+    desc: "Колбасы и молочная продукция: сметана, творог и другое.",
+    category: "food",
+    tag: "Местный бренд"
+  },
+  {
+    name: "Туймаада",
+    desc: "Молоко, кефир, сливки и другая молочная продукция.",
+    category: "food",
+    tag: "Молочная продукция"
+  },
+  {
+    name: "Сахабулт",
+    desc: "Хлебобулочные и кондитерские изделия.",
+    category: "food",
+    tag: "Хлеб и выпечка"
+  },
+  {
+    name: "Ситэ",
+    desc: "Кондитерская фабрика: конфеты, вафли, зефир.",
+    category: "food",
+    tag: "Сладости"
+  },
+  {
+    name: "Якутская птицефабрика",
+    desc: "Свежие яйца и куриное мясо.",
+    category: "food",
+    tag: "Птица"
+  },
 
-    :root {
-      --accent: #00a86b;
-      --accent-dark: #008055;
-    }
+  // 🧥 Одежда и мех
+  {
+    name: "Сардана",
+    desc: "Национальная и современная одежда из меха и сукна.",
+    category: "clothes",
+    tag: "Меховая одежда"
+  },
+  {
+    name: "Ever Sky",
+    desc: "Современная одежда с этническими элементами, унты и аксессуары.",
+    category: "clothes",
+    tag: "Современный бренд"
+  },
+  {
+    name: "Сай Сарын",
+    desc: "Женская одежда и аксессуары из меха и бисера.",
+    category: "clothes",
+    tag: "Женская мода"
+  },
 
-    header {
-      background: var(--accent);
-      color: #fff;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 8px 0;
-      flex-wrap: wrap;
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .logo-sub {
-      font-size: 11px;
-      opacity: 0.9;
-    }
-    .search {
-      flex: 1 1 260px;
-      display: flex;
-      background: #fff;
-      border-radius: 999px;
-      padding: 4px 10px;
-      gap: 6px;
-    }
-    .search input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font: inherit;
-      font-size: 13px;
-    }
-    .search button {
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .header-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      font-size: 13px;
-    }
-    .header-links {
-      display: flex;
-      gap: 10px;
-    }
-    .header-links a { color:#fff; }
+  // 🎁 Сувениры и украшения
+  {
+    name: "Кудай Бахсы",
+    desc: "Сувениры и украшения из мамонтовой кости и бивня.",
+    category: "souvenirs",
+    tag: "Мамонтовая кость"
+  },
+  {
+    name: "Алмаз-Эпистиль",
+    desc: "Ювелирные изделия с якутскими алмазами и серебром.",
+    category: "souvenirs",
+    tag: "Ювелирные изделия"
+  },
+  {
+    name: "ГК «Мамонт»",
+    desc: "Сувениры из мамонтовой кости, рога оленя, кожи и меха.",
+    category: "souvenirs",
+    tag: "Сувениры"
+  },
 
-    .lang-select {
-      padding: 3px 6px;
-      border-radius: 999px;
-      border: none;
-      font-size: 12px;
-      cursor: pointer;
-    }
+  // 🧴 Косметика и БАДы
+  {
+    name: "Сахафарм",
+    desc: "Бальзамы и продукция на основе местных трав и прополиса.",
+    category: "cosmetics",
+    tag: "БАДы и бальзамы"
+  },
+  {
+    name: "Arctic Natural / Якутские травы",
+    desc: "Натуральная косметика и чаи на основе чаги и северных ягод.",
+    category: "cosmetics",
+    tag: "Натуральная косметика"
+  },
 
-    .tabs-bar {
-      background: #ffffff;
-      border-bottom: 1px solid #d0d4de;
-    }
-    .tabs-inner {
-      display: flex;
-      gap: 10px;
-      padding: 8px 0;
-      font-size: 14px;
-    }
-    .tab-btn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      border: 1px solid transparent;
-    }
-    .tab-btn.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .section-title {
-      font-size: 20px;
-      margin: 0 0 10px;
-      font-weight: 700;
-    }
-
-    /* Категории */
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .category-card {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 10px;
-      border: 1px solid #e0e0e0;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-    .category-card.active {
-      border-color: var(--accent);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-    }
-    .category-emoji {
-      font-size: 22px;
-    }
-    .category-title {
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .category-sub {
-      font-size: 11px;
-      color: #666;
-    }
-
-    /* Блок известных брендов */
-    .brands-block {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 10px 12px;
-      border: 1px solid #e0e0e0;
-      margin-bottom: 16px;
-    }
-    .brands-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      gap: 8px;
-    }
-    .brands-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .brands-subtitle {
-      font-size: 11px;
-      color: #666;
-    }
-    .brands-list {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: minmax(180px, 1fr);
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-    .brand-card {
-      min-width: 180px;
-      background: #f7fafc;
-      border-radius: 10px;
-      padding: 8px;
-      border: 1px solid #e0e0e0;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .brand-card.active {
-      border-color: var(--accent);
-      background: #e6f7ef;
-    }
-    .brand-name {
-      font-weight: 600;
-      margin-bottom: 3px;
-    }
-    .brand-desc {
-      font-size: 11px;
-      color: #555;
-    }
-    .brand-tag {
-      display: inline-block;
-      margin-top: 4px;
-      font-size: 10px;
-      color: #055c36;
-      background: #e6f7ef;
-      padding: 2px 6px;
-      border-radius: 999px;
-    }
-
-    /* Подфильтры */
-    .subfilters {
-      display: flex;
-      gap: 8px;
-      margin: 6px 0 10px;
-      font-size: 13px;
-      flex-wrap: wrap;
-    }
-    .subfilter-btn {
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid #d0d4de;
-      cursor: pointer;
-      background: #fff;
-    }
-    .subfilter-btn.active {
-      background: #e6f7ef;
-      border-color: var(--accent);
-      color: #055c36;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      font-size: 13px;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-    }
-    .card-like {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      color: #999;
-    }
-    .badge-top {
-      position: absolute;
-      left: 8px;
-      top: 8px;
-      background: #ff9800;
-      color: #fff;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-    }
-    .badge-sale {
-      position: absolute;
-      left: 8px;
-      top: 28px;
-      background: #e91e63;
-      color: #fff;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-    }
-    .badge-local {
-      position: absolute;
-      left: 8px;
-      bottom: 8px;
-      background: #00a86b;
-      color: #fff;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-    }
-    .card-img {
-      height: 180px;
-      border-radius: 10px;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 8px;
-      text-align: center;
-      padding: 4px;
-    }
-    .card-price {
-      margin-top: 4px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #e91e63;
-    }
-    .card-price-old {
-      font-size: 11px;
-      color: #999;
-      text-decoration: line-through;
-      margin-left: 6px;
-    }
-    .card-discount {
-      font-size: 11px;
-      color: #388e3c;
-      margin-left: 4px;
-    }
-    .card-title {
-      margin-top: 4px;
-      font-size: 13px;
-      line-height: 1.3;
-    }
-    .card-meta {
-      margin-top: 4px;
-      font-size: 11px;
-      color: #777;
-    }
-
-    .card-ads {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-      padding: 8px;
-      font-size: 13px;
-    }
-    .ads-title { font-weight: 500; margin-bottom: 4px; }
-    .ads-price { font-weight: 600; margin-bottom: 2px; }
-    .ads-meta { font-size: 11px; color: #777; }
-
-    .card-event {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-      padding: 8px;
-      font-size: 13px;
-    }
-    .event-date { font-size: 11px; color: #555; margin-bottom: 2px; }
-    .event-title { font-weight: 600; margin-bottom: 2px; }
-    .event-place { font-size: 11px; color: #777; }
-  </style>
-</head>
-<body>
-
-<header>
-  <div class="container header-top">
-    <div>
-      <div class="logo" data-i18n="logo">Made in Yakutia</div>
-      <div class="logo-sub" data-i18n="logo_sub">Маркетплейс местных производителей</div>
-    </div>
-    <div class="search">
-      <input type="text" data-i18n-placeholder="search_placeholder" placeholder="Искать товары, бренды, мастеров…">
-      <button type="button" data-i18n="btn_search">Найти</button>
-    </div>
-    <div class="header-right">
-      <select class="lang-select" id="lang-select">
-        <option value="ru">RU</option>
-        <option value="en">EN</option>
-        <option value="zh">中文</option>
-      <div class="header-links">
-  <a href="Cabinet.html">Личный кабинет</a>
-  <a href="orders.html">Мои заказы</a>
-  <a href="cart.html">Корзина</a>
-</div>
-
-    </div>
-  </div>
-</header>
-
-<div class="tabs-bar">
-  <div class="container tabs-inner">
-    <div class="tab-btn active" data-tab="market" data-i18n="tab_market">Маркетплейс</div>
-    <div class="tab-btn" data-tab="ads" data-i18n="tab_ads">Объявления</div>
-    <div class="tab-btn" data-tab="events" data-i18n="tab_events">Афиша</div>
-  </div>
-</div>
-
-<main>
-  <h1 class="section-title" id="section-title" data-i18n="title_market">Товары местных производителей Якутии</h1>
-
-  <!-- Категории -->
-  <section id="categories-section">
-    <div class="categories" id="categories">
-      <div class="category-card active" data-category="">
-        <div class="category-emoji">🌐</div>
-        <div class="category-title">Все категории</div>
-        <div class="category-sub">Весь маркетплейс</div>
-      </div>
-      <div class="category-card" data-category="food">
-        <div class="category-emoji">🥩🍯</div>
-        <div class="category-title">Продовольствие</div>
-        <div class="category-sub">Колбасы, молоко, сладости</div>
-      </div>
-      <div class="category-card" data-category="clothes">
-        <div class="category-emoji">🧥🧤</div>
-        <div class="category-title">Одежда и мех</div>
-        <div class="category-sub">Шубы, унты, аксессуары</div>
-      </div>
-      <div class="category-card" data-category="souvenirs">
-        <div class="category-emoji">🎁</div>
-        <div class="category-title">Сувениры</div>
-        <div class="category-sub">Кость, серебро, декор</div>
-      </div>
-      <div class="category-card" data-category="cosmetics">
-        <div class="category-emoji">🧴</div>
-        <div class="category-title">Косметика и БАДы</div>
-        <div class="category-sub">Травы, чаи, уход</div>
-      </div>
-      <div class="category-card" data-category="industrial">
-        <div class="category-emoji">🏗</div>
-        <div class="category-title">Промтовары</div>
-        <div class="category-sub">Материалы, мебель</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Известные бренды -->
-  <section class="brands-block">
-    <div class="brands-header">
-      <div>
-        <div class="brands-title">Известные бренды Якутии</div>
-        <div class="brands-subtitle">Колбасы, мех, сувениры, косметика</div>
-      </div>
-      <div style="font-size:11px;color:#777;">Нажми на бренд, чтобы отфильтровать товары</div>
-    </div>
-    <div class="brands-list" id="brands-list"></div>
-  </section>
-
-  <!-- Доп. фильтры -->
-  <div class="subfilters" id="subfilters">
-    <button class="subfilter-btn active" data-filter="all" data-i18n="filter_all">Все</button>
-    <button class="subfilter-btn" data-filter="sale" data-i18n="filter_sales">Акции</button>
-    <button class="subfilter-btn" data-filter="popular" data-i18n="filter_popular">Популярное</button>
-    <button class="subfilter-btn" data-filter="season" data-i18n="filter_season">По сезонам</button>
-    <button class="subfilter-btn" data-filter="local" data-i18n="filter_local">Малый бизнес</button>
-  </div>
-
-  <!-- Маркетплейс -->
-  <div class="grid" id="tab-market"></div>
-
-  <!-- Объявления -->
-  <div class="grid" id="tab-ads" style="display:none;">
-    <article class="card-ads">
-      <div class="ads-title">Продам шкуры оленя</div>
-      <div class="ads-price">12 000 ₽</div>
-      <div class="ads-meta">Якутск • Частное объявление • Сегодня</div>
-    </article>
-    <article class="card-ads">
-      <div class="ads-title">Сдам в аренду мастерскую</div>
-      <div class="ads-price">25 000 ₽ / месяц</div>
-      <div class="ads-meta">Центр • Для ремесленников и мастеров</div>
-    </article>
-  </div>
-
-  <!-- Афиша -->
-  <div class="grid" id="tab-events" style="display:none;">
-    <article class="card-event">
-      <div class="event-date">12 декабря, 19:00</div>
-      <div class="event-title">Фестиваль локальных брендов «Сделано в Якутии»</div>
-      <div class="event-place">ТРЦ • Билеты онлайн</div>
-    </article>
-    <article class="card-event">
-      <div class="event-date">20 декабря, 18:30</div>
-      <div class="event-title">Мастер‑класс по резьбе по кости</div>
-      <div class="event-place">Дом ремёсел • Запись обязательна</div>
-    </article>
-  </div>
-</main>
-
-<script>
-  // ----- переключение вкладок -----
-  const tabs = document.querySelectorAll('.tab-btn');
-  const blocks = {
-    market: document.getElementById('tab-market'),
-    ads: document.getElementById('tab-ads'),
-    events: document.getElementById('tab-events')
-  };
-  const titleEl = document.getElementById('section-title');
-  const categoriesSection = document.getElementById('categories-section');
-  const subfilters = document.getElementById('subfilters');
-
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      tabs.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      Object.keys(blocks).forEach(key => {
-        blocks[key].style.display = key === tab ? 'grid' : 'none';
-      });
-      if (tab === 'market') titleEl.dataset.i18n = 'title_market';
-      if (tab === 'ads') titleEl.textContent = 'Объявления жителей Якутии';
-      if (tab === 'events') titleEl.textContent = 'События и афиша';
-      categoriesSection.style.display = tab === 'market' ? 'block' : 'none';
-      subfilters.style.display = tab === 'market' ? 'flex' : 'none';
-      applyTranslations();
-    });
-  });
-
-  // ----- известные бренды -----
-  const BIG_BRANDS = [
-    { name: 'Якутские продукты / ТД «Якутия»', desc: 'Колбасы, полуфабрикаты и деликатесы из конины, оленины, говядины', category: 'food' },
-    { name: 'Мясокомбинат «Якутский»', desc: 'Широкий ассортимент мясной продукции', category: 'food' },
-    { name: '«Чочур Муран»', desc: 'Колбасная и молочная продукция', category: 'food' },
-    { name: '«Туймаада»', desc: 'Молочная продукция: молоко, кефир, сливки', category: 'food' },
-    { name: '«Сахабулт»', desc: 'Хлеб и кондитерские изделия', category: 'food' },
-    { name: '«Ситэ»', desc: 'Конфеты, вафли, зефир', category: 'food' },
-    { name: 'Якутская птицефабрика', desc: 'Свежие яйца и куриное мясо', category: 'food' },
-
-    { name: '«Сардана»', desc: 'Одежда из меха и сукна', category: 'clothes' },
-    { name: '«Эверский» (Ever Sky)', desc: 'Современная этно‑одежда и унты', category: 'clothes' },
-    { name: '«Сай Сарын»', desc: 'Женская одежда и аксессуары из меха', category: 'clothes' },
-
-    { name: '«Кудай Бахсы»', desc: 'Сувениры из мамонтовой кости', category: 'souvenirs' },
-    { name: '«Алмаз-Эпистиль»', desc: 'Ювелирные изделия с якутскими алмазами', category: 'souvenirs' },
-    { name: 'ГК «Мамонт»', desc: 'Сувениры из кости, меха и рога', category: 'souvenirs' },
-
-    { name: '«Сахафарм»', desc: 'Бальзамы «Таёжный доктор», БАДы', category: 'cosmetics' },
-    { name: 'Arctic Natural / «Якутские травы»', desc: 'Косметика и чаи на основе северных растений', category: 'cosmetics' },
-
-    { name: '«Сахамебель»', desc: 'Корпусная и мягкая мебель', category: 'industrial' }
-  ];
-
-  const brandsListEl = document.getElementById('brands-list');
-  let currentBrand = '';
-  BIG_BRANDS.forEach(brand => {
-    const el = document.createElement('div');
-    el.className = 'brand-card';
-    el.dataset.brand = brand.name;
-    el.innerHTML = `
-      <div class="brand-name">${brand.name}</div>
-      <div class="brand-desc">${brand.desc}</div>
-      <div class="brand-tag">Фильтр по бренду</div>
-    `;
-    el.addEventListener('click', () => {
-      if (currentBrand === brand.name) {
-        currentBrand = '';
-        el.classList.remove('active');
-      } else {
-        currentBrand = brand.name;
-        document.querySelectorAll('.brand-card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-      }
-      renderProducts();
-    });
-    brandsListEl.appendChild(el);
-  });
-
-  // ----- категории -----
-  let currentCategory = '';
-  document.querySelectorAll('.category-card').forEach(card => {
-    card.addEventListener('click', () => {
-      currentCategory = card.dataset.category || '';
-      document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      renderProducts();
-    });
-  });
-
-  // ----- подфильтры -----
-  let currentFilter = 'all';
-  document.querySelectorAll('.subfilter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
-      document.querySelectorAll('.subfilter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderProducts();
-    });
-  });
-
-  // ----- загрузка товаров с сервера -----
-  let productsCache = [];
-  async function loadMarketFromServer() {
-    try {
-      const res = await fetch('/api/products');
-      const products = await res.json();
-      productsCache = products.map(p => ({
-        category: '',
-        brand: 'Малый бизнес Якутии',
-        isLocal: true,
-        ...p
-      }));
-      renderProducts();
-    } catch (e) {
-      console.error(e);
-    }
+  // 🧱 Промышленные и стройматериалы
+  {
+    name: "Якутский газоперерабатывающий завод",
+    desc: "Производство и поставка сжиженного газа.",
+    category: "industrial",
+    tag: "Промышленность"
+  },
+  {
+    name: "Завод строительных материалов",
+    desc: "Производство бетона и железобетонных изделий.",
+    category: "industrial",
+    tag: "Стройматериалы"
+  },
+  {
+    name: "Сахамебель",
+    desc: "Корпусная и мягкая мебель.",
+    category: "industrial",
+    tag: "Мебель"
   }
-
-  function renderProducts() {
-    const container = document.getElementById('tab-market');
-    container.innerHTML = '';
-
-    let products = [...productsCache];
-
-    if (currentCategory) {
-      products = products.filter(p => p.category === currentCategory);
-    }
-    if (currentBrand) {
-      products = products.filter(p => p.brand === currentBrand);
-    }
-
-    if (currentFilter === 'sale') {
-      products = products.filter(p => p.isSale);
-    } else if (currentFilter === 'popular') {
-      products = products.slice().sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-    } else if (currentFilter === 'season') {
-      const month = new Date().getMonth();
-      const season = (month === 11 || month <= 1) ? 'winter'
-                    : (month >= 2 && month <= 4) ? 'spring'
-                    : (month >= 5 && month <= 7) ? 'summer'
-                    : 'autumn';
-      products = products.filter(p => !p.season || p.season === season);
-    } else if (currentFilter === 'local') {
-      products = products.filter(p => p.isLocal || (!p.brand || p.brand === 'Малый бизнес Якутии'));
-    }
-
-    products
-      .filter(p => p.type === 'market')
-      .sort((a, b) => (b.promoted === true) - (a.promoted === true))
-      .forEach(p => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          ${p.promoted ? '<div class="badge-top">ТОП</div>' : ''}
-          ${p.isSale ? '<div class="badge-sale">Акция</div>' : ''}
-          ${(p.isLocal || (!p.brand || p.brand === 'Малый бизнес Якутии')) ? '<div class="badge-local">Малый бизнес</div>' : ''}
-          <div class="card-like">♡</div>
-          <div class="card-img">${p.desc || 'Фото товара'}</div>
-          <div class="card-price">
-            ${p.price} ₽
-            ${p.oldPrice ? '<span class="card-price-old">'+p.oldPrice+' ₽</span>' : ''}
-            ${p.discount ? '<span class="card-discount">'+p.discount+'%</span>' : ''}
-          </div>
-          <div class="card-title">${p.title}</div>
-          <div class="card-meta">${p.brand || 'Малый бизнес Якутии'} • ${p.place || 'Якутия'}</div>
-        `;
-        container.appendChild(card);
-      });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    loadMarketFromServer();
-    applyTranslations();
-  });
-
-  // ----- переводы -----
-  const translations = {
-    ru: {
-      logo: 'Made in Yakutia',
-      logo_sub: 'Маркетплейс местных производителей',
-      search_placeholder: 'Искать товары, бренды, мастеров…',
-      btn_search: 'Найти',
-      tab_market: 'Маркетплейс',
-      tab_ads: 'Объявления',
-      tab_events: 'Афиша',
-      title_market: 'Товары местных производителей Якутии',
-      filter_all: 'Все',
-      filter_sales: 'Акции',
-      filter_popular: 'Популярное',
-      filter_season: 'По сезонам',
-      filter_local: 'Малый бизнес'
-    },
-    en: {
-      logo: 'Made in Yakutia',
-      logo_sub: 'Marketplace of local producers',
-      search_placeholder: 'Search products, brands, makers…',
-      btn_search: 'Search',
-      tab_market: 'Marketplace',
-      tab_ads: 'Listings',
-      tab_events: 'Events',
-      title_market: 'Local products from Yakutia',
-      filter_all: 'All',
-      filter_sales: 'Deals',
-      filter_popular: 'Popular',
-      filter_season: 'Seasonal',
-      filter_local: 'Small business'
-    },
-    zh: {
-      logo: '雅库茨克本地制造',
-      logo_sub: '本地生产者市集',
-      search_placeholder: '搜索商品、品牌、手工艺人…',
-      btn_search: '搜索',
-      tab_market: '市集',
-      tab_ads: '公告',
-      tab_events: '活动',
-      title_market: '雅库茨克本地生产的商品',
-      filter_all: '全部',
-      filter_sales: '优惠',
-      filter_popular: '热门',
-      filter_season: '应季',
-      filter_local: '小型商家'
-    }
-  };
-
-  const langSelect = document.getElementById('lang-select');
-  let currentLang = 'ru';
-
-  function applyTranslations() {
-    const dict = translations[currentLang];
-    if (!dict) return;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      if (dict[key]) el.textContent = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.dataset.i18nPlaceholder;
-      if (dict[key]) el.placeholder = dict[key];
-    });
-  }
-
-  langSelect.addEventListener('change', () => {
-    currentLang = langSelect.value;
-    applyTranslations();
-  });
-</script>
-
-</body>
-</html>
+];
