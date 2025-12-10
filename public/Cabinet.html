@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Личный кабинет — Якутия Локальная</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Кабинет продавца</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -103,14 +103,19 @@
       font-size: 12px;
       color: #555;
     }
-    input, textarea, select {
+    input,
+    textarea,
+    select {
       font: inherit;
       padding: 6px 8px;
       border-radius: 8px;
       border: 1px solid #d0d0d0;
       background: #fafafa;
     }
-    textarea { resize: vertical; min-height: 48px; }
+    textarea {
+      resize: vertical;
+      min-height: 48px;
+    }
 
     .btn {
       display: inline-block;
@@ -124,6 +129,7 @@
       margin-top: 4px;
       width: 100%;
     }
+
     .hint {
       font-size: 11px;
       color: #777;
@@ -142,9 +148,18 @@
       padding: 8px;
       font-size: 13px;
     }
-    .card-title { font-weight: 500; margin-bottom: 4px; }
-    .card-price { font-weight: 600; margin-bottom: 2px; }
-    .card-meta { font-size: 11px; color: #777; }
+    .card-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .card-price {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .card-meta {
+      font-size: 11px;
+      color: #777;
+    }
 
     @media (max-width: 800px) {
       .lk-grid {
@@ -154,10 +169,9 @@
   </style>
 </head>
 <body>
-
 <header>
   <div class="container header-top">
-    <div class="logo">Личный кабинет</div>
+    <div class="logo">YAKUTIA LOCAL</div>
     <div class="back-link"><a href="index.html" style="color:#fff;">← На главную</a></div>
   </div>
 </header>
@@ -174,29 +188,36 @@
     <div class="lk-grid">
       <div class="box">
         <h2>Ваши данные</h2>
+
         <div class="form-row">
-          <label>Имя / название бренда</label>
-          <input placeholder="Например: Мастерская «Якутский свет»">
+          <label>Имя</label>
+          <input placeholder="Как к вам обращаться" />
+        </div>
+        <div class="form-row">
+          <label>Город / населённый пункт</label>
+          <input placeholder="Якутск, Нерюнгри, село..." />
         </div>
         <div class="form-row">
           <label>Телефон</label>
-          <input placeholder="+7...">
+          <input placeholder="+7 999 000‑00‑00" />
         </div>
         <div class="form-row">
           <label>Email</label>
-          <input placeholder="you@example.com">
+          <input placeholder="you@example.com" />
         </div>
         <div class="form-row">
-          <label>О себе / о бренде</label>
-          <textarea placeholder="Кратко расскажите, чем занимаетесь."></textarea>
+          <label>О себе и бренде</label>
+          <textarea placeholder="Коротко расскажите, чем вы занимаетесь, какие товары производите."></textarea>
         </div>
-        <button class="btn" type="button">Сохранить профиль (заглушка)</button>
+        <button class="btn" type="button">Сохранить профиль (макет)</button>
+        <p class="hint">В демонстрационной версии данные профиля не сохраняются на сервер.</p>
       </div>
+
       <div class="box">
         <h2>Статистика (макет)</h2>
-        <p>Заказы: 0</p>
+        <p>Заказы: <strong>0</strong></p>
         <p>Опубликовано объявлений: <span id="ads-count">0</span></p>
-        <p>В избранном у покупателей: 0</p>
+        <p>В избранном у покупателей: <strong>0</strong></p>
         <p class="hint">В реальной системе здесь была бы живая аналитика по вашим товарам и заказам.</p>
       </div>
     </div>
@@ -207,63 +228,83 @@
     <h1 class="section-title">Мои объявления</h1>
     <div class="lk-grid">
       <div class="box">
-        <h2>Добавить объявление / товар</h2>
+        <h2>Новое объявление</h2>
 
         <div class="form-row">
           <label for="a-title">Заголовок</label>
-          <input id="a-title" placeholder="Например: Браслет «Полярная звезда»">
+          <input id="a-title" placeholder="Например: Продам шкуры оленя" />
         </div>
+
         <div class="form-row">
           <label for="a-price">Цена, ₽</label>
-          <input id="a-price" type="number" min="1" placeholder="Например: 3500">
+          <input id="a-price" type="number" min="1" placeholder="3500" />
         </div>
+
         <div class="form-row">
-          <label for="a-oldprice">Старая цена, ₽ (для акций)</label>
-          <input id="a-oldprice" type="number" min="1" placeholder="Например: 4200">
+          <label for="a-oldprice">Старая цена, ₽ (если есть)</label>
+          <input id="a-oldprice" type="number" min="1" placeholder="4200" />
         </div>
+
         <div class="form-row">
-          <label for="a-type">Тип</label>
+          <label for="a-type">Где показывать</label>
           <select id="a-type">
-            <option value="market">Товар маркетплейса</option>
-            <option value="ads">Частное объявление</option>
+            <option value="market">Маркетплейс (товары)</option>
+            <option value="ads">Объявление (услуги/аренда и т.п.)</option>
           </select>
         </div>
+
         <div class="form-row">
-          <label for="a-season">Сезон</label>
+          <label for="a-category">Категория</label>
+          <select id="a-category">
+            <option value="food">🥩🍯 Продовольственные товары</option>
+            <option value="clothes">🧥🧤 Одежда, обувь и аксессуары</option>
+            <option value="souvenirs">🎁 Сувениры, украшения, интерьер</option>
+            <option value="cosmetics">🧴 Косметика и БАДы</option>
+            <option value="industrial">🧱 Промышленные и строительные материалы</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="a-season">Сезонность (для витрины)</label>
           <select id="a-season">
-            <option value="">Всегда</option>
+            <option value="">Не указано</option>
             <option value="winter">Зима</option>
             <option value="spring">Весна</option>
             <option value="summer">Лето</option>
             <option value="autumn">Осень</option>
           </select>
         </div>
+
         <div class="form-row">
-          <label for="a-desc">Краткое описание</label>
-          <textarea id="a-desc" placeholder="Материал, состояние, особенности"></textarea>
+          <label for="a-desc">Описание</label>
+          <textarea id="a-desc" placeholder="Кратко опишите товар: материалы, размеры, особенности, условия доставки."></textarea>
         </div>
+
         <div class="form-row">
-          <label for="a-place">Город / район</label>
-          <input id="a-place" placeholder="Якутск, центр">
+          <label for="a-place">Где находится товар</label>
+          <input id="a-place" placeholder="Якутск, частное лицо / мастерская" />
         </div>
-        <div class="form-row">
-          <label>
-            <input type="checkbox" id="a-promoted">
-            Продвинуть в ТОП‑выдачу за 1500 ₽
-          </label>
-        </div>
+
         <div class="form-row">
           <label>
-            <input type="checkbox" id="a-sale">
-            Отметить как акцию (бейдж «Акция»)
+            <input type="checkbox" id="a-promoted" />
+            Выделить как «ТОП» (макет, пока без оплаты)
           </label>
         </div>
-        <button class="btn" type="button" onclick="addMyAd()">Опубликовать</button>
-        <p class="hint">В прототипе оплата за продвижение не списывается, но карточка будет отмечена как ТОП.</p>
+
+        <div class="form-row">
+          <label>
+            <input type="checkbox" id="a-sale" />
+            Товар по акции (будет показана скидка)
+          </label>
+        </div>
+
+        <button class="btn" type="button" onclick="addMyAd()">Опубликовать объявление</button>
+        <p class="hint">В демо-версии объявления сохраняются в файле products.json на сервере.</p>
       </div>
 
       <div class="box">
-        <h2>Опубликованные</h2>
+        <h2>Ваши объявления</h2>
         <div class="grid-cards" id="my-ads-list"></div>
       </div>
     </div>
@@ -271,7 +312,7 @@
 </main>
 
 <script>
-  // Переключение вкладок ЛК
+  // Переключение вкладок
   const lkTabs = document.querySelectorAll('.lk-tab');
   const profileSection = document.getElementById('profile-section');
   const adsSection = document.getElementById('my-ads-section');
@@ -280,6 +321,7 @@
     tab.addEventListener('click', () => {
       lkTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
+
       const t = tab.dataset.tab;
       if (t === 'profile') {
         profileSection.style.display = '';
@@ -291,13 +333,14 @@
     });
   });
 
-  // загрузка объявлений/товаров с сервера
+  // Загрузка объявлений пользователя (на самом деле всех из products.json)
   async function loadMyAds() {
     try {
       const res = await fetch('/api/products');
       const products = await res.json();
       const list = document.getElementById('my-ads-list');
       list.innerHTML = '';
+
       products.forEach(p => {
         const card = document.createElement('article');
         card.className = 'card';
@@ -305,11 +348,14 @@
           <div class="card-title">${p.title}</div>
           <div class="card-price">${p.price} ₽</div>
           <div class="card-meta">
-            ${(p.type === 'market' ? 'Товар маркетплейса' : 'Частное объявление')} • ${p.place || 'Якутия'}
+            ${p.type === 'market' ? 'Товар на витрине' : 'Объявление'} •
+            ${p.place || 'Якутия'}<br>
+            Категория: ${p.category || 'не указана'}
           </div>
         `;
         list.appendChild(card);
       });
+
       const countEl = document.getElementById('ads-count');
       if (countEl) countEl.textContent = products.length;
     } catch (e) {
@@ -317,7 +363,7 @@
     }
   }
 
-  // отправка нового объявления на сервер
+  // Добавление объявления
   async function addMyAd() {
     const title = document.getElementById('a-title').value.trim();
     const price = document.getElementById('a-price').value.trim();
@@ -328,14 +374,15 @@
     const place = document.getElementById('a-place').value.trim();
     const promoted = document.getElementById('a-promoted').checked;
     const isSale = document.getElementById('a-sale').checked;
+    const category = document.getElementById('a-category').value;
 
     if (!title || !price) {
-      alert('Нужно указать хотя бы заголовок и цену.');
+      alert('Укажите название и цену');
       return;
     }
 
     let discount = null;
-    if (oldPrice && Number(oldPrice) > Number(price)) {
+    if (oldPrice) {
       discount = Math.round((1 - Number(price) / Number(oldPrice)) * 100);
     }
 
@@ -354,13 +401,16 @@
           promoted,
           isSale,
           season,
+          category,
           popularity: 0
         })
       });
+
       if (!res.ok) {
-        alert('Ошибка сохранения на сервере');
+        alert('Ошибка при сохранении объявления');
         return;
       }
+
       await loadMyAds();
 
       document.getElementById('a-title').value = '';
@@ -371,14 +421,14 @@
       document.getElementById('a-promoted').checked = false;
       document.getElementById('a-sale').checked = false;
       document.getElementById('a-season').value = '';
+      document.getElementById('a-category').value = 'food';
     } catch (e) {
       console.error(e);
-      alert('Не удалось отправить данные на сервер');
+      alert('Сетевая ошибка при сохранении');
     }
   }
 
   document.addEventListener('DOMContentLoaded', loadMyAds);
 </script>
-
 </body>
 </html>
