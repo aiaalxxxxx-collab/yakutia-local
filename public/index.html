@@ -27,12 +27,7 @@
         <div class="container header__container">
             <a href="index.html" class="header__logo">Yakutia Local</a>
             
-            <!-- Поиск -->
-            <div class="header__search">
-                <input type="text" id="search-input" placeholder="Поиск товаров..." data-i18n-placeholder="search_placeholder">
-            </div>
-
-            <!-- Правая часть меню -->
+                       <!-- Правая часть меню (ОБНОВЛЕННАЯ) -->
             <div class="header__actions">
                 
                 <!-- Выбор языка -->
@@ -42,20 +37,43 @@
                     <option value="sakha">🌲 SA</option>
                 </select>
 
-                <!-- Кнопки -->
+                <!-- Кнопка Корзины -->
                 <button id="cart-button" class="button button--secondary">
                     <span data-i18n="btn_cart">Тележка</span> 
-                    <!-- Можно добавить счетчик -->
                     <span id="cart-count" class="badge">0</span>
                 </button>
                 
-                <a href="Cabinet.html" class="button button--secondary" data-i18n="btn_orders">Кабинет</a>
-                <!-- Если не авторизован, можно менять на "Войти" через JS -->
+                <!-- Умная кнопка Вход/Кабинет -->
+                <!-- Мы убрали href="Cabinet.html" и добавили onclick -->
+                <a href="#" id="auth-link" class="button button--secondary" onclick="handleAuthClick()">
+                    <span id="auth-text" data-i18n="btn_login">Войти</span>
+                </a>
             </div>
-        </div>
-    </header>
 
-    <main>
+            <!-- Скрипт для проверки входа (вставь прямо тут или в indexPage.js) -->
+            <script>
+                function handleAuthClick() {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        window.location.href = 'Cabinet.html';
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                }
+
+                // При загрузке страницы проверяем токен
+                document.addEventListener('DOMContentLoaded', () => {
+                    const token = localStorage.getItem('token');
+                    const btnText = document.getElementById('auth-text');
+                    
+                    if (token && btnText) {
+                        // Если вошел - пишем "Кабинет"
+                        btnText.textContent = 'Кабинет';
+                        btnText.setAttribute('data-i18n', 'btn_orders'); // Меняем ключ перевода
+                    }
+                });
+            </script>
+
         <!-- БЛОК ФИЛЬТРОВ -->
         <section class="hero container">
             <h1 data-i18n="header_find">Найдите продукты Якутии</h1>
