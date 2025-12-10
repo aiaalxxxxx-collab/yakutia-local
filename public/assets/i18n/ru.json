@@ -1,0 +1,30 @@
+{
+  "header": {
+    "logo": "Yakutia Local",
+    "searchPlaceholder": "Поиск по товарам...",
+    "cart": "Корзина",
+    "orders": "Мои заказы",
+    "cabinet": "Кабинет",
+    "login": "Вход",
+    "register": "Регистрация"
+  },
+  "filters": {
+    "title": "Найдите продукты Якутии под свои задачи",
+    "subtitle": "Задайте категорию, цену и формат поставки.",
+    "category": "Категория",
+    "category_all": "Все категории",
+    "category_meat": "Мясо и рыба",
+    "category_milk": "Молочные продукты",
+    "category_berries": "Ягоды и дикоросы",
+    "category_ready": "Готовые блюда",
+    "priceRange": "Диапазон цены",
+    "onlySale": "Только со скидкой",
+    "onlyPopular": "Самое популярное",
+    "apply": "Применить"
+  },
+  "bot": {
+    "help": "Нужна помощь?",
+    "placeholder": "Спросите о товаре...",
+    "send": "Отправить"
+  }
+}
