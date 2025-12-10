@@ -2,85 +2,37 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход и Регистрация | Yakutia Local</title>
+    <title>Вход — Yakutia Local</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        /* Стили специально для страницы входа */
-        body { background: #f4f6f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .auth-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-header h1 { margin: 0; color: #2563eb; font-size: 24px; }
-        .auth-tabs { display: flex; border-bottom: 1px solid #eee; margin-bottom: 20px; }
-        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #666; font-weight: 500; transition: 0.3s; }
-        .auth-tab.active { color: #2563eb; border-bottom: 2px solid #2563eb; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #333; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        .btn-full { width: 100%; padding: 12px; font-size: 1rem; margin-top: 10px; }
-        .error-msg { color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; text-align: center; display: none; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; font-size: 0.9rem; }
-        .back-link:hover { text-decoration: underline; }
-    </style>
 </head>
-<body>
+<body class="auth-page">
+    <div class="auth-card">
+        <h2 style="text-align:center; color: var(--primary); margin-bottom: 30px;">Yakutia Local</h2>
+        
+        <div style="display:flex; border-bottom:1px solid #eee; margin-bottom:20px;">
+            <div style="flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; border-bottom:2px solid var(--primary);" onclick="showLogin()">Вход</div>
+            <div style="flex:1; text-align:center; padding:10px; cursor:pointer; color:#888;" onclick="showRegister()">Регистрация</div>
+        </div>
 
-<div class="auth-container">
-    <div class="auth-header">
-        <h1>Yakutia Local</h1>
-        <p>Добро пожаловать</p>
+        <form id="login-form">
+            <div style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.9rem;">Email</label>
+                <input type="email" name="email" class="input-field" style="width:100%" required>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.9rem;">Пароль</label>
+                <input type="password" name="password" class="input-field" style="width:100%" required>
+            </div>
+            <button type="submit" class="button button--primary" style="width:100%">Войти</button>
+        </form>
+        
+        <a href="index.html" style="display:block; text-align:center; margin-top:20px; color:#888; text-decoration:none;">На главную</a>
     </div>
-
-    <!-- Вкладки -->
-    <div class="auth-tabs">
-        <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Вход</div>
-        <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Регистрация</div>
-    </div>
-
-    <!-- Сообщение об ошибке -->
-    <div id="error-message" class="error-msg"></div>
-
-    <!-- ФОРМА ВХОДА -->
-    <form id="login-form">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required placeholder="example@mail.ru">
-        </div>
-        <div class="form-group">
-            <label>Пароль</label>
-            <input type="password" name="password" required placeholder="********">
-        </div>
-        <button type="submit" class="button button--primary btn-full">Войти</button>
-    </form>
-
-    <!-- ФОРМА РЕГИСТРАЦИИ (Скрыта) -->
-    <form id="register-form" hidden>
-        <div class="form-group">
-            <label>Как вас зовут?</label>
-            <input type="text" name="name" required placeholder="Иван Иванов">
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required placeholder="example@mail.ru">
-        </div>
-        <div class="form-group">
-            <label>Пароль</label>
-            <input type="password" name="password" required placeholder="Минимум 6 символов">
-        </div>
-        <div class="form-group">
-            <label>Кто вы?</label>
-            <select name="role">
-                <option value="buyer">Покупатель</option>
-                <option value="seller">Продавец</option>
-                <option value="courier">Курьер</option>
-            </select>
-        </div>
-        <button type="submit" class="button button--primary btn-full">Зарегистрироваться</button>
-    </form>
-
-    <a href="index.html" class="back-link">← Вернуться на главную</a>
-</div>
-
-<script src="assets/js/auth.js"></script>
+    
+    <script src="assets/js/auth.js"></script>
+    <script>
+        function showLogin() { alert('Переключение вкладок пока просто для демо'); }
+        function showRegister() { window.location.href = 'login.html'; } // Тут можно докрутить логику
+    </script>
 </body>
 </html>
