@@ -130,6 +130,10 @@
       width: 100%;
     }
 
+    .btn-danger {
+      background: #e53935;
+    }
+
     .hint {
       font-size: 11px;
       color: #777;
@@ -159,6 +163,14 @@
     .card-meta {
       font-size: 11px;
       color: #777;
+      margin-bottom: 6px;
+    }
+
+    input.error,
+    textarea.error,
+    select.error {
+      border-color: #e53935;
+      background: #ffebee;
     }
 
     @media (max-width: 800px) {
@@ -231,12 +243,12 @@
         <h2>Новое объявление</h2>
 
         <div class="form-row">
-          <label for="a-title">Заголовок</label>
+          <label for="a-title">Заголовок *</label>
           <input id="a-title" placeholder="Например: Продам шкуры оленя" />
         </div>
 
         <div class="form-row">
-          <label for="a-price">Цена, ₽</label>
+          <label for="a-price">Цена, ₽ *</label>
           <input id="a-price" type="number" min="1" placeholder="3500" />
         </div>
 
@@ -299,7 +311,7 @@
           </label>
         </div>
 
-        <button class="btn" type="button" onclick="addMyAd()">Опубликовать объявление</button>
+        <button class="btn" type="button" id="submit-ad-btn" onclick="addMyAd()">Опубликовать объявление</button>
         <p class="hint">В демо-версии объявления сохраняются в файле products.json на сервере.</p>
       </div>
 
@@ -312,6 +324,8 @@
 </main>
 
 <script>
+  let editId = null;
+
   // Переключение вкладок
   const lkTabs = document.querySelectorAll('.lk-tab');
   const profileSection = document.getElementById('profile-section');
@@ -333,7 +347,7 @@
     });
   });
 
-  // Загрузка объявлений пользователя (на самом деле всех из products.json)
+  // Загрузка объявлений
   async function loadMyAds() {
     try {
       const res = await fetch('/api/products');
@@ -352,6 +366,10 @@
             ${p.place || 'Якутия'}<br>
             Категория: ${p.category || 'не указана'}
           </div>
+          <button class="btn" type="button"
+                  data-id="${p.id}" data-action="edit">Редактировать</button>
+          <button class="btn btn-danger" type="button" style="margin-top:6px;"
+                  data-id="${p.id}" data-action="delete">Удалить</button>
         `;
         list.appendChild(card);
       });
@@ -363,10 +381,77 @@
     }
   }
 
-  // Добавление объявления
+  // Делегирование кликов для редактирования/удаления
+  document.getElementById('my-ads-list').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+
+    if (action === 'delete') {
+      if (!confirm('Удалить это объявление?')) return;
+      try {
+        const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+          alert('Ошибка при удалении');
+          return;
+        }
+        await loadMyAds();
+      } catch (err) {
+        console.error(err);
+        alert('Сетевая ошибка при удалении');
+      }
+    }
+
+    if (action === 'edit') {
+      startEditAd(id);
+    }
+  });
+
+  function fillFormFromProduct(p) {
+    document.getElementById('a-title').value = p.title || '';
+    document.getElementById('a-price').value = p.price || '';
+    document.getElementById('a-oldprice').value = p.oldPrice || '';
+    document.getElementById('a-type').value = p.type || 'market';
+    document.getElementById('a-season').value = p.season || '';
+    document.getElementById('a-desc').value = p.desc || '';
+    document.getElementById('a-place').value = p.place || '';
+    document.getElementById('a-promoted').checked = !!p.promoted;
+    document.getElementById('a-sale').checked = !!p.isSale;
+    document.getElementById('a-category').value = p.category || 'food';
+  }
+
+  async function startEditAd(id) {
+    try {
+      const res = await fetch('/api/products');
+      const products = await res.json();
+      const p = products.find(x => String(x.id) === String(id));
+      if (!p) {
+        alert('Объявление не найдено');
+        return;
+      }
+      editId = p.id;
+      fillFormFromProduct(p);
+      document.getElementById('submit-ad-btn').textContent = 'Сохранить изменения';
+      // переключаемся на вкладку "Мои объявления", если вдруг не там
+      lkTabs.forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === 'my-ads');
+      });
+      profileSection.style.display = 'none';
+      adsSection.style.display = '';
+    } catch (e) {
+      console.error(e);
+      alert('Ошибка загрузки объявления');
+    }
+  }
+
+  // Добавление / обновление объявления
   async function addMyAd() {
-    const title = document.getElementById('a-title').value.trim();
-    const price = document.getElementById('a-price').value.trim();
+    const titleEl = document.getElementById('a-title');
+    const priceEl = document.getElementById('a-price');
+
+    const title = titleEl.value.trim();
+    const price = priceEl.value.trim();
     const oldPrice = document.getElementById('a-oldprice').value.trim();
     const type = document.getElementById('a-type').value;
     const season = document.getElementById('a-season').value;
@@ -376,8 +461,13 @@
     const isSale = document.getElementById('a-sale').checked;
     const category = document.getElementById('a-category').value;
 
-    if (!title || !price) {
-      alert('Укажите название и цену');
+    // сброс ошибок
+    [titleEl, priceEl].forEach(el => el.classList.remove('error'));
+
+    if (!title || !price || Number(price) <= 0) {
+      if (!title) titleEl.classList.add('error');
+      if (!price || Number(price) <= 0) priceEl.classList.add('error');
+      alert('Заполните название и корректную цену');
       return;
     }
 
@@ -386,24 +476,29 @@
       discount = Math.round((1 - Number(price) / Number(oldPrice)) * 100);
     }
 
+    const payload = {
+      title,
+      price,
+      oldPrice: oldPrice || null,
+      discount,
+      type,
+      desc,
+      place,
+      promoted,
+      isSale,
+      season,
+      category,
+      popularity: 0
+    };
+
+    const url = editId ? `/api/products/${editId}` : '/api/products';
+    const method = editId ? 'PUT' : 'POST';
+
     try {
-      const res = await fetch('/api/products', {
-        method: 'POST',
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          price,
-          oldPrice: oldPrice || null,
-          discount,
-          type,
-          desc,
-          place,
-          promoted,
-          isSale,
-          season,
-          category,
-          popularity: 0
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
@@ -413,8 +508,11 @@
 
       await loadMyAds();
 
-      document.getElementById('a-title').value = '';
-      document.getElementById('a-price').value = '';
+      // сброс формы
+      editId = null;
+      document.getElementById('submit-ad-btn').textContent = 'Опубликовать объявление';
+      titleEl.value = '';
+      priceEl.value = '';
       document.getElementById('a-oldprice').value = '';
       document.getElementById('a-desc').value = '';
       document.getElementById('a-place').value = '';
