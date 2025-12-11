@@ -1,231 +1,321 @@
 /**
- * YAKUTIA ENTERPRISE CORE v2.0
- * Architecture: Component-Based State-Driven UI
- * Standard: ECMAScript 2024
+ * Yakutia Market Core
+ * Built with "Vanilla JS Components" pattern (No frameworks, pure speed)
  */
 
-// --- 1. CORE UTILS (Инженерная база) ---
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
-
-// Имитация React.createElement для чистого JS
-const h = (tag, props = {}, children = []) => {
-    const el = document.createElement(tag);
-    Object.entries(props).forEach(([key, val]) => {
-        if (key.startsWith('on') && typeof val === 'function') {
-            el.addEventListener(key.toLowerCase().substring(2), val);
-        } else if (key === 'className') {
-            el.className = val;
-        } else if (key === 'style' && typeof val === 'object') {
-            Object.assign(el.style, val);
-        } else {
-            el.setAttribute(key, val);
-        }
-    });
-    children.forEach(child => {
-        if (typeof child === 'string' || typeof child === 'number') {
-            el.appendChild(document.createTextNode(child));
-        } else if (child instanceof Node) {
-            el.appendChild(child);
-        }
-    });
-    return el;
+// --- STATE MANAGEMENT (Reactive Store) ---
+const createState = (initial) => {
+    let state = initial;
+    const listeners = new Set();
+    return {
+        get: () => state,
+        set: (update) => {
+            state = { ...state, ...update };
+            listeners.forEach(fn => fn(state));
+        },
+        subscribe: (fn) => { listeners.add(fn); fn(state); return () => listeners.delete(fn); }
+    };
 };
 
-// State Manager (Redux-lite)
-class Store {
-    constructor(initialState) {
-        this.state = initialState;
-        this.listeners = new Set();
-    }
-
-    getState() { return this.state; }
-
-    setState(newState) {
-        this.state = { ...this.state, ...newState }; // Immutability pattern
-        this.notify();
-    }
-
-    subscribe(fn) {
-        this.listeners.add(fn);
-        return () => this.listeners.delete(fn);
-    }
-
-    notify() {
-        this.listeners.forEach(fn => fn(this.state));
-    }
-}
-
-// --- 2. BUSINESS LOGIC (Слой данных) ---
-const api = {
-    async fetchProducts() {
-        try {
-            const res = await fetch('/api/products');
-            if (!res.ok) throw new Error('API Error');
-            return await res.json();
-        } catch (e) {
-            console.error('Data fetch failed', e);
-            return [];
-        }
-    },
-    async submitOrder(order) {
-        return fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: JSON.stringify(order)
-        });
-    }
-};
-
-// Global Store Instance
-const store = new Store({
-    products: [],
-    cart: JSON.parse(localStorage.getItem('cart_v2')) || [],
-    filter: { category: 'all', search: '' },
-    ui: { isCartOpen: false, isLoading: true }
+// Global Store
+const store = createState({
+    user: JSON.parse(localStorage.getItem('user')) || null, // {id, role, name}
+    lang: localStorage.getItem('lang') || 'ru',
+    page: 'home', // Current Route
+    cart: JSON.parse(localStorage.getItem('cart')) || [],
+    products: [ // Mock Data (Pseudo DB)
+        { id: 1, title: 'Оленина Premium', price: 1200, category: 'meat', sellerId: 101, img: 'https://placehold.co/400x300/cce5ff/001d32?text=Meat' },
+        { id: 2, title: 'Чир Подледный', price: 950, category: 'fish', sellerId: 101, img: 'https://placehold.co/400x300/cce5ff/001d32?text=Fish' },
+        { id: 3, title: 'Брусника (ведро)', price: 3500, category: 'berry', sellerId: 102, img: 'https://placehold.co/400x300/cce5ff/001d32?text=Berry' },
+    ],
+    searchQuery: '',
+    aiChatOpen: false
 });
 
-// Effects (Side Effects)
-store.subscribe(state => {
-    localStorage.setItem('cart_v2', JSON.stringify(state.cart));
-    // Dynamic Title update
-    document.title = state.cart.length ? `(${state.cart.length}) Yakutia Local` : 'Yakutia Local';
-});
+// Effects
+store.subscribe(state => localStorage.setItem('user', JSON.stringify(state.user)));
+store.subscribe(state => localStorage.setItem('cart', JSON.stringify(state.cart)));
 
-// Actions
-const actions = {
-    async init() {
-        store.setState({ ui: { ...store.state.ui, isLoading: true } });
-        const products = await api.fetchProducts();
-        // Fallback data for Demo if API fails
-        const demoData = products.length ? products : [
-            { id: 1, title: 'Оленина Premium', price: 850, category: 'meat', image: '/assets/img/meat.jpg', tags: ['hit'] },
-            { id: 2, title: 'Чир Подледный', price: 1200, category: 'fish', image: '/assets/img/fish.jpg', tags: ['new'] },
-            { id: 3, title: 'Брусника Таежная', price: 400, category: 'berries', image: '/assets/img/berry.jpg' }
-        ];
-        store.setState({ products: demoData, ui: { ...store.state.ui, isLoading: false } });
-    },
-    addToCart(product) {
-        const { cart } = store.getState();
-        const existing = cart.find(i => i.id === product.id);
-        const newCart = existing 
-            ? cart.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i)
-            : [...cart, { ...product, quantity: 1 }];
-        store.setState({ cart: newCart });
-    },
-    removeFromCart(id) {
-        const newCart = store.getState().cart.filter(i => i.id !== id);
-        store.setState({ cart: newCart });
-    },
-    toggleCart(isOpen) {
-        store.setState({ ui: { ...store.state.ui, isCartOpen: isOpen } });
-    },
-    setFilter(key, value) {
-        store.setState({ filter: { ...store.state.filter, [key]: value } });
-    }
-};
-
-// --- 3. UI COMPONENTS (Визуальный слой) ---
-
-// Product Card Component
-const ProductCard = (product) => {
-    return h('article', { className: 'card animate-in' }, [
-        h('div', { className: 'card__media' }, [
-            h('img', { src: product.image || 'https://placehold.co/400x300?text=Yakutia', alt: product.title, loading: 'lazy' }),
-            product.tags?.includes('hit') ? h('span', { className: 'badge badge--hot' }, ['HIT']) : ''
-        ]),
-        h('div', { className: 'card__content' }, [
-            h('h3', { className: 'card__title' }, [product.title]),
-            h('div', { className: 'card__meta' }, [
-                h('span', { className: 'price' }, [`${product.price} ₽`]),
-                h('button', { 
-                    className: 'btn btn--primary btn--sm',
-                    onClick: () => actions.addToCart(product)
-                }, ['В корзину'])
-            ])
-        ])
-    ]);
-};
-
-// Cart Item Component
-const CartItem = (item) => {
-    return h('div', { className: 'cart-item' }, [
-        h('div', { className: 'cart-item__info' }, [
-            h('div', { className: 'cart-item__title' }, [item.title]),
-            h('div', { className: 'cart-item__price' }, [`${item.quantity} x ${item.price} ₽`])
-        ]),
-        h('button', { 
-            className: 'btn-icon text-danger',
-            onClick: () => actions.removeFromCart(item.id)
-        }, ['✕'])
-    ]);
-};
-
-// Main Renderer
-const render = (state) => {
-    // 1. Render Products
-    const grid = $('#app-grid');
-    if (grid) {
-        grid.innerHTML = '';
-        const filtered = state.products.filter(p => {
-            const matchesSearch = p.title.toLowerCase().includes(state.filter.search.toLowerCase());
-            const matchesCat = state.filter.category === 'all' || p.category === state.filter.category;
-            return matchesSearch && matchesCat;
-        });
-
-        if (state.ui.isLoading) {
-            grid.innerHTML = '<div class="loader-spinner"></div>';
-        } else if (filtered.length === 0) {
-            grid.innerHTML = '<div class="empty-state">Ничего не найдено</div>';
-        } else {
-            filtered.forEach(p => grid.appendChild(ProductCard(p)));
+// --- I18N DICTIONARY ---
+const t = (key) => {
+    const dict = {
+        ru: {
+            home: 'Главная', orders: 'Заказы', fav: 'Избранное', profile: 'Профиль',
+            search: 'Поиск свежих продуктов...',
+            meat: 'Мясо', fish: 'Рыба', berry: 'Ягоды', milk: 'Молоко',
+            addToCart: 'В корзину',
+            aiHello: 'Привет! Я AI-помощник. Чем помочь?',
+            roleBuyer: 'Покупатель', roleSeller: 'Продавец', roleCourier: 'Курьер'
+        },
+        en: {
+            home: 'Home', orders: 'Orders', fav: 'Favorites', profile: 'Profile',
+            search: 'Search fresh products...',
+            meat: 'Meat', fish: 'Fish', berry: 'Berry', milk: 'Milk',
+            addToCart: 'Add to Cart',
+            aiHello: 'Hi! I am AI Assistant. How can I help?',
+            roleBuyer: 'Buyer', roleSeller: 'Seller', roleCourier: 'Courier'
+        },
+        sah: {
+            home: 'Сүрүн', orders: 'Сакаастар', fav: 'Сөбүлүүр', profile: 'Кабинет',
+            search: 'Ас көрдөөһүн...',
+            meat: 'Эт', fish: 'Балык', berry: 'Отон', milk: 'Үүт',
+            addToCart: 'Корзинаҕа',
+            aiHello: 'Дорообо! Мин өйдөөх көмөлөһөөччүбүн.',
+            roleBuyer: 'Атыылаһааччы', roleSeller: 'Атыыһыт', roleCourier: 'Таһааччы'
         }
-    }
+    };
+    return dict[store.get().lang][key] || key;
+};
 
-    // 2. Render Cart Counter
-    const badge = $('#cart-badge');
-    const totalCount = state.cart.reduce((acc, i) => acc + i.quantity, 0);
-    if (badge) {
-        badge.textContent = totalCount;
-        badge.style.display = totalCount > 0 ? 'flex' : 'none';
-        // Animation pop
-        if (totalCount > 0) {
-            badge.classList.remove('pop');
-            void badge.offsetWidth; // trigger reflow
-            badge.classList.add('pop');
-        }
-    }
+// --- COMPONENTS ---
 
-    // 3. Render Cart Modal
-    const modal = $('#cart-modal');
-    const list = $('#cart-list');
-    const totalEl = $('#cart-total');
+const Icon = (name) => `<span class="material-symbols-rounded">${name}</span>`;
+
+// 1. App Shell
+const renderApp = () => {
+    const s = store.get();
+    const app = document.getElementById('app');
     
-    if (modal && list) {
-        if (state.ui.isCartOpen) {
-            modal.classList.add('modal--active');
-            list.innerHTML = '';
-            state.cart.forEach(item => list.appendChild(CartItem(item)));
-            if (state.cart.length === 0) list.innerHTML = '<p class="text-muted">Корзина пуста</p>';
-            if (totalEl) totalEl.textContent = `${state.cart.reduce((sum, i) => sum + (i.price * i.quantity), 0)} ₽`;
-        } else {
-            modal.classList.remove('modal--active');
-        }
+    app.innerHTML = `
+        <!-- TOP BAR -->
+        <header class="top-app-bar">
+            <div class="brand" onclick="actions.nav('home')">
+                ${Icon('storefront')} YakutiaMarket
+            </div>
+            <div style="display:flex; gap:8px">
+                <button class="btn-icon" onclick="actions.toggleLang()">
+                    <span style="font-size:14px; font-weight:bold">${s.lang.toUpperCase()}</span>
+                </button>
+                ${s.user ? `
+                    <button class="btn-icon" onclick="actions.nav('profile')">${Icon('account_circle')}</button>
+                ` : `
+                    <button class="btn-filled" style="height:32px" onclick="actions.nav('auth')">Login</button>
+                `}
+                <button class="btn-icon" onclick="actions.nav('cart')">
+                    ${Icon('shopping_bag')}
+                    ${s.cart.length ? `<span style="position:absolute; top:8px; right:8px; width:8px; height:8px; background:red; border-radius:50%"></span>` : ''}
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN VIEW PORT -->
+        <main id="main-content">
+            ${renderRoute(s.page, s)}
+        </main>
+
+        <!-- AI FAB -->
+        <button class="fab" onclick="actions.toggleAI()">
+            ${Icon('smart_toy')}
+        </button>
+
+        <!-- BOTTOM NAV (Mobile) -->
+        <nav class="nav-bar">
+            ${navItem('home', 'home', s.page === 'home')}
+            ${navItem('favorite', 'fav', s.page === 'fav')}
+            ${navItem('receipt_long', 'orders', s.page === 'orders')}
+            ${navItem('person', 'profile', s.page === 'profile')}
+        </nav>
+    `;
+
+    if (s.aiChatOpen) renderAIModal();
+};
+
+const navItem = (icon, page, active) => `
+    <div class="nav-item ${active ? 'active' : ''}" onclick="actions.nav('${page}')">
+        <div class="icon-box">${Icon(icon)}</div>
+        <span>${t(page)}</span>
+    </div>
+`;
+
+// 2. Router Logic
+const renderRoute = (page, s) => {
+    switch(page) {
+        case 'home': return renderHome(s);
+        case 'auth': return renderAuth(s);
+        case 'profile': return renderProfile(s);
+        case 'cart': return renderCart(s);
+        case 'chat': return renderChat(s);
+        default: return renderHome(s);
     }
 };
 
-// --- 4. INIT & EVENTS (Связывание) ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Initial Render subscription
-    store.subscribe(render);
+// --- PAGES ---
 
-    // Event Delegation
-    $('#search-input')?.addEventListener('input', (e) => actions.setFilter('search', e.target.value));
-    $('#category-filter')?.addEventListener('change', (e) => actions.setFilter('category', e.target.value));
-    $('#cart-btn')?.addEventListener('click', () => actions.toggleCart(true));
-    $('#close-cart')?.addEventListener('click', () => actions.toggleCart(false));
-    $('#overlay')?.addEventListener('click', () => actions.toggleCart(false));
+const renderHome = (s) => `
+    <div class="search-bar-container">
+        <div class="search-bar">
+            ${Icon('search')}
+            <input type="text" class="search-input" placeholder="${t('search')}" 
+                   oninput="actions.search(this.value)" value="${s.searchQuery}">
+        </div>
+    </div>
+    
+    <div class="container">
+        <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; margin-bottom:8px">
+            <button class="btn btn-tonal">${t('meat')}</button>
+            <button class="btn btn-tonal">${t('fish')}</button>
+            <button class="btn btn-tonal">${t('berry')}</button>
+            <button class="btn btn-tonal">${t('milk')}</button>
+        </div>
 
-    // Start App
-    actions.init();
-});
+        <div class="card-grid">
+            ${s.products
+                .filter(p => p.title.toLowerCase().includes(s.searchQuery.toLowerCase()))
+                .map(p => `
+                <div class="md-card" onclick="actions.openProduct(${p.id})">
+                    <div class="card-media"><img src="${p.img}" loading="lazy"></div>
+                    <div class="card-content">
+                        <div class="headline">${p.title}</div>
+                        <div class="subhead">${t(p.category)}</div>
+                        <div class="price-tag">${p.price} ₽</div>
+                        <button class="btn-filled" style="margin-top:8px" 
+                            onclick="event.stopPropagation(); actions.addToCart(${p.id})">
+                            ${t('addToCart')}
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    </div>
+`;
+
+const renderAuth = (s) => `
+    <div class="container" style="max-width:400px; margin-top:40px; text-align:center">
+        <h2>Welcome</h2>
+        <p style="color:var(--md-sys-color-secondary); margin-bottom:24px">Выберите роль для входа</p>
+        
+        <div style="display:flex; flex-direction:column; gap:16px">
+            <button class="btn-filled" style="height:56px" onclick="actions.login('buyer', 'Ivan User')">
+                ${Icon('shopping_bag')} &nbsp; Я Покупатель
+            </button>
+            <button class="btn-tonal" style="height:56px" onclick="actions.login('seller', 'Aiaal Farm')">
+                ${Icon('store')} &nbsp; Я Продавец
+            </button>
+            <button class="btn-tonal" style="height:56px" onclick="actions.login('courier', 'Fast Courier')">
+                ${Icon('local_shipping')} &nbsp; Я Курьер
+            </button>
+        </div>
+    </div>
+`;
+
+const renderProfile = (s) => {
+    if (!s.user) return renderAuth(s);
+    return `
+    <div class="container" style="margin-top:24px">
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:32px">
+            <div style="width:80px; height:80px; border-radius:50%; background:var(--md-sys-color-primary-container); display:flex; align-items:center; justify-content:center; font-size:32px; color:var(--md-sys-color-on-primary-container)">
+                ${s.user.name[0]}
+            </div>
+            <div>
+                <h2 style="margin:0">${s.user.name}</h2>
+                <div class="subhead">${t('role' + s.user.role.charAt(0).toUpperCase() + s.user.role.slice(1))}</div>
+            </div>
+        </div>
+
+        ${s.user.role === 'seller' ? `
+            <div class="md-card" style="padding:16px; margin-bottom:16px; background:var(--md-sys-color-secondary-container)">
+                <h3>Панель Продавца</h3>
+                <div style="display:flex; gap:8px; margin-top:16px">
+                    <button class="btn-filled">${Icon('add')} Добавить товар</button>
+                    <button class="btn-filled" onclick="actions.nav('home')">Мои товары</button>
+                </div>
+            </div>
+        ` : ''}
+
+        <div style="display:flex; flex-direction:column; gap:8px">
+            <button class="btn-tonal" style="justify-content:flex-start" onclick="alert('Demo')">${Icon('favorite')} Избранное</button>
+            <button class="btn-tonal" style="justify-content:flex-start" onclick="alert('Demo')">${Icon('settings')} Настройки</button>
+            <button class="btn-tonal" style="justify-content:flex-start; color:var(--md-sys-color-error)" onclick="actions.logout()">${Icon('logout')} Выйти</button>
+        </div>
+    </div>
+`;
+};
+
+const renderCart = (s) => `
+    <div class="container" style="margin-top:24px">
+        <h2>Корзина (${s.cart.length})</h2>
+        <div style="margin-top:16px">
+            ${s.cart.length === 0 ? '<p>Пусто</p>' : s.cart.map(item => `
+                <div style="display:flex; justify-content:space-between; padding:16px; border-bottom:1px solid #eee">
+                    <div><b>${item.title}</b> <br> ${item.quantity} x ${item.price} ₽</div>
+                    <div>${item.quantity * item.price} ₽</div>
+                </div>
+            `).join('')}
+        </div>
+        ${s.cart.length ? `
+            <div style="margin-top:24px; padding:16px; background:#eee; border-radius:16px">
+                <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:bold; margin-bottom:16px">
+                    <span>Итого:</span>
+                    <span>${s.cart.reduce((a, b) => a + (b.price * b.quantity), 0)} ₽</span>
+                </div>
+                <button class="btn-filled" style="width:100%; height:48px">Оплатить</button>
+            </div>
+        ` : ''}
+    </div>
+`;
+
+// AI Modal
+const renderAIModal = () => {
+    const el = document.createElement('div');
+    el.innerHTML = `
+        <div class="modal-overlay" onclick="actions.toggleAI()">
+            <div class="modal-dialog" onclick="event.stopPropagation()">
+                <div style="display:flex; justify-content:space-between; margin-bottom:16px">
+                    <h3>AI Assistant</h3>
+                    <button class="btn-icon" onclick="actions.toggleAI()">${Icon('close')}</button>
+                </div>
+                <div style="height:200px; background:#f5f5f5; border-radius:12px; padding:12px; margin-bottom:12px; overflow-y:auto">
+                    <div style="background:white; padding:8px 12px; border-radius:12px 12px 12px 0; margin-bottom:8px; width:fit-content">
+                        ${t('aiHello')}
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px">
+                    <input type="text" placeholder="Спроси рецепт..." class="search-input" style="background:#eee; border-radius:12px; padding:0 12px">
+                    <button class="btn-icon" style="background:var(--md-sys-color-primary); color:white">${Icon('send')}</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(el);
+};
+
+// --- ACTIONS ---
+window.actions = {
+    nav: (page) => store.set({ page }),
+    login: (role, name) => {
+        store.set({ user: { id: Date.now(), role, name }, page: 'profile' });
+    },
+    logout: () => {
+        store.set({ user: null, page: 'home' });
+    },
+    toggleLang: () => {
+        const langs = ['ru', 'en', 'sah'];
+        const current = store.get().lang;
+        const next = langs[(langs.indexOf(current) + 1) % langs.length];
+        localStorage.setItem('lang', next);
+        store.set({ lang: next });
+    },
+    search: (q) => store.set({ searchQuery: q }),
+    addToCart: (id) => {
+        const s = store.get();
+        const p = s.products.find(x => x.id === id);
+        const exists = s.cart.find(x => x.id === id);
+        let newCart;
+        if (exists) {
+            newCart = s.cart.map(x => x.id === id ? { ...x, quantity: x.quantity + 1 } : x);
+        } else {
+            newCart = [...s.cart, { ...p, quantity: 1 }];
+        }
+        store.set({ cart: newCart });
+        // Toast Effect could be added here
+    },
+    toggleAI: () => {
+        const open = store.get().aiChatOpen;
+        if (open) document.querySelector('.modal-overlay')?.remove();
+        store.set({ aiChatOpen: !open });
+    },
+    openProduct: (id) => alert('Product Details Page ID: ' + id)
+};
+
+// --- INIT ---
+store.subscribe(renderApp); // Auto-render on state change
