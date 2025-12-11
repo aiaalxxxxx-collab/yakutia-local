@@ -1,291 +1,50 @@
-/**
- * YAKUTIA PLATFORM CORE v3.0 (Google Scale)
- */
-
-// --- 1. LOCALIZATION (i18n) ---
-const I18N = {
-    ru: {
-        brand: 'Yakutia Market',
-        search: 'Поиск продуктов...',
-        login: 'Войти',
-        register: 'Регистрация',
-        cart: 'Корзина',
-        roles: { buyer: 'Покупатель', seller: 'Продавец', courier: 'Курьер' },
-        nav: { home: 'Главная', favorites: 'Избранное', orders: 'Мои заказы', chat: 'Сообщения' },
-        hero: { title: 'Свежее. Местное. Твое.', subtitle: 'Платформа для фермеров и гурманов' },
-        ai_bot: 'AI Помощник'
-    },
-    en: {
-        brand: 'Yakutia Market',
-        search: 'Search products...',
-        login: 'Sign In',
-        register: 'Sign Up',
-        cart: 'Cart',
-        roles: { buyer: 'Buyer', seller: 'Seller', courier: 'Courier' },
-        nav: { home: 'Home', favorites: 'Favorites', orders: 'My Orders', chat: 'Messages' },
-        hero: { title: 'Fresh. Local. Yours.', subtitle: 'Platform for farmers and gourmets' },
-        ai_bot: 'AI Assistant'
-    },
-    sah: { // Yakut language placeholder
-        brand: 'Саха Маркет',
-        search: 'Ас көрдөөһүн...',
-        login: 'Киир',
-        register: 'Бэлиэтэнии',
-        cart: 'Корзина',
-        roles: { buyer: 'Атыылаһааччы', seller: 'Атыыһыт', courier: 'Таһааччы' },
-        nav: { home: 'Сүрүн', favorites: 'Сөбүлүүрүм', orders: 'Сакаастарым', chat: 'Суруйуу' },
-        hero: { title: 'Саха Сирин амтана.', subtitle: 'Олохтоох оҥорооччулартан' },
-        ai_bot: 'Өйдөөх Көмөлөһөөччү'
-    }
-};
-
-// --- 2. STATE STORE ---
-const store = {
-    user: JSON.parse(localStorage.getItem('user')) || null, // { id, role, name, token }
-    lang: localStorage.getItem('lang') || 'ru',
-    cart: JSON.parse(localStorage.getItem('cart')) || [],
-    products: [],
-    page: 'home', // 'home', 'login', 'register', 'cabinet', 'product', 'chat'
-    modal: null,
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
     
-    // Methods
-    setUser(user) {
-        this.user = user;
-        localStorage.setItem('user', JSON.stringify(user));
-        this.emit();
-    },
-    setLang(lang) {
-        this.lang = lang;
-        localStorage.setItem('lang', lang);
-        this.emit();
-    },
-    addToCart(product) {
-        const exist = this.cart.find(i => i.id === product.id);
-        if (exist) exist.quantity++;
-        else this.cart.push({ ...product, quantity: 1 });
-        localStorage.setItem('cart', JSON.stringify(this.cart));
-        this.emit();
-    },
-    navigate(page, params = {}) {
-        this.page = page;
-        this.params = params;
-        this.emit();
-    },
-    listeners: new Set(),
-    subscribe(fn) { this.listeners.add(fn); },
-    emit() { this.listeners.forEach(fn => fn(this)); }
-};
-
-// --- 3. COMPONENTS ---
-
-// Helper to create elements
-const el = (tag, cls, text, props = {}) => {
-    const node = document.createElement(tag);
-    if (cls) node.className = cls;
-    if (text) node.textContent = text;
-    Object.entries(props).forEach(([k, v]) => {
-        if (k.startsWith('on')) node.addEventListener(k.slice(2).toLowerCase(), v);
-        else node.setAttribute(k, v);
-    });
-    return node;
-};
-
-// App Shell
-function renderApp() {
-    const app = document.getElementById('app');
-    app.innerHTML = '';
-    const t = I18N[store.lang];
-
-    // HEADER
-    const header = el('header', 'header', '', {});
-    header.innerHTML = `
-        <div class="container header__inner">
-            <div class="logo" onclick="window.navigate('home')">
-                <span class="material-icons-round">storefront</span> ${t.brand}
-            </div>
-            <div class="search-wrap">
-                <input type="text" placeholder="${t.search}">
-            </div>
-            <div class="controls">
-                <select onchange="window.setLang(this.value)" class="lang-select">
-                    <option value="ru" ${store.lang==='ru'?'selected':''}>RU</option>
-                    <option value="en" ${store.lang==='en'?'selected':''}>EN</option>
-                    <option value="sah" ${store.lang==='sah'?'selected':''}>SAH</option>
-                </select>
-                ${store.user 
-                    ? `<button class="btn-icon" onclick="window.navigate('cabinet')"><span class="material-icons-round">person</span></button>`
-                    : `<button class="btn btn-sm" onclick="window.navigate('login')">${t.login}</button>`
-                }
-                <button class="btn-icon badge-wrap" onclick="window.toggleCart()">
-                    <span class="material-icons-round">shopping_cart</span>
-                    ${store.cart.length ? `<span class="badge">${store.cart.length}</span>` : ''}
-                </button>
-            </div>
-        </div>
-    `;
-    app.appendChild(header);
-
-    // MAIN CONTENT ROUTER
-    const main = el('main', 'container main-content', '');
+    <!-- 
+        Это критически важно для мобильных устройств.
+        Отключаем масштабирование, чтобы приложение выглядело как нативное.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    if (store.page === 'home') renderHome(main, t);
-    else if (store.page === 'login') renderLogin(main, t);
-    else if (store.page === 'register') renderRegister(main, t);
-    else if (store.page === 'cabinet') renderCabinet(main, t);
-    else if (store.page === 'chat') renderChat(main, t);
-
-    app.appendChild(main);
-
-    // AI BOT FAB
-    const fab = el('button', 'fab-ai', '', { onclick: () => alert('AI Bot: Привет! Я помогу подобрать рецепт для оленины.') });
-    fab.innerHTML = `<span class="material-icons-round">smart_toy</span>`;
-    app.appendChild(fab);
-}
-
-// --- PAGES ---
-
-function renderHome(root, t) {
-    // Hero
-    root.innerHTML += `
-        <section class="hero-box">
-            <h1>${t.hero.title}</h1>
-            <p>${t.hero.subtitle}</p>
-        </section>
-        <div class="tabs">
-            <button class="chip active">Все</button>
-            <button class="chip">Мясо</button>
-            <button class="chip">Рыба</button>
-            <button class="chip">Молочка</button>
-        </div>
-        <div class="grid" id="product-grid"></div>
-    `;
-
-    // Products (Demo Data if no API)
-    const products = store.products.length ? store.products : [
-        { id: 1, title: 'Жеребятина', price: 1200, img: 'https://via.placeholder.com/300/1A73E8/FFF?text=Meat', sellerId: 10 },
-        { id: 2, title: 'Чир Свежий', price: 900, img: 'https://via.placeholder.com/300/1A73E8/FFF?text=Fish', sellerId: 10 },
-        { id: 3, title: 'Голубика', price: 500, img: 'https://via.placeholder.com/300/1A73E8/FFF?text=Berry', sellerId: 10 }
-    ];
-
-    const grid = root.querySelector('#product-grid');
-    products.forEach(p => {
-        const card = el('div', 'card', '');
-        card.innerHTML = `
-            <div class="card-img" style="background-image: url('${p.img}')">
-                ${store.user?.role === 'seller' ? `<button class="edit-btn"><span class="material-icons-round">edit</span></button>` : ''}
-            </div>
-            <div class="card-body">
-                <h3>${p.title}</h3>
-                <div class="price">${p.price} ₽</div>
-                <div class="actions">
-                    <button class="btn btn-primary" onclick="window.addToCart(${p.id})">В корзину</button>
-                    <button class="btn-icon" onclick="window.navigate('chat', {sellerId: ${p.sellerId}})"><span class="material-icons-round">chat</span></button>
-                </div>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-function renderLogin(root, t) {
-    root.innerHTML = `
-        <div class="auth-box">
-            <h2>${t.login}</h2>
-            <input type="email" placeholder="Email" id="email">
-            <input type="password" placeholder="Password" id="pass">
-            <button class="btn btn-primary full" onclick="window.doLogin()">Войти</button>
-            <p class="link" onclick="window.navigate('register')">Нет аккаунта? Создать</p>
-        </div>
-    `;
-}
-
-function renderRegister(root, t) {
-    root.innerHTML = `
-        <div class="auth-box">
-            <h2>${t.register}</h2>
-            <div class="role-selector">
-                <label><input type="radio" name="role" value="buyer" checked> ${t.roles.buyer}</label>
-                <label><input type="radio" name="role" value="seller"> ${t.roles.seller}</label>
-                <label><input type="radio" name="role" value="courier"> ${t.roles.courier}</label>
-            </div>
-            <input type="text" placeholder="Имя" id="reg-name">
-            <input type="email" placeholder="Email" id="reg-email">
-            <input type="password" placeholder="Пароль" id="reg-pass">
-            <button class="btn btn-primary full" onclick="window.doRegister()">Зарегистрироваться</button>
-        </div>
-    `;
-}
-
-function renderCabinet(root, t) {
-    if (!store.user) return window.navigate('login');
+    <!-- Цвет адресной строки в Chrome на Android -->
+    <meta name="theme-color" content="#f8fdff">
     
-    root.innerHTML = `
-        <div class="cabinet-layout">
-            <aside class="sidebar">
-                <div class="user-info">
-                    <div class="avatar">${store.user.name[0]}</div>
-                    <h3>${store.user.name}</h3>
-                    <span class="badge-role">${t.roles[store.user.role]}</span>
-                </div>
-                <nav class="side-nav">
-                    <a onclick="window.alert('Скоро')" class="active">${t.nav.orders}</a>
-                    <a onclick="window.alert('Скоро')">${t.nav.favorites}</a>
-                    ${store.user.role === 'seller' ? `<a>Мои товары</a><a>Статистика</a>` : ''}
-                    <a class="text-danger" onclick="window.logout()">Выйти</a>
-                </nav>
-            </aside>
-            <div class="content">
-                <h2>Добро пожаловать, ${store.user.name}!</h2>
-                <div class="stats-grid">
-                     <div class="stat-card"><h3>0</h3><p>Заказов</p></div>
-                     <div class="stat-card"><h3>0 ₽</h3><p>Баланс</p></div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function renderChat(root, t) {
-    root.innerHTML = `
-        <div class="chat-interface">
-            <div class="chat-header">
-                <button onclick="window.navigate('home')">← Назад</button>
-                <span>Чат с продавцом</span>
-            </div>
-            <div class="messages" id="msg-box">
-                <div class="msg in">Здравствуйте! Товар в наличии?</div>
-                <div class="msg out">Да, конечно. Свежий завоз.</div>
-            </div>
-            <div class="chat-input">
-                <input type="text" placeholder="Напишите сообщение...">
-                <button class="btn-icon"><span class="material-icons-round">send</span></button>
-            </div>
-        </div>
-    `;
-}
-
-// --- ACTIONS (GLOBAL API) ---
-window.navigate = (page, params) => store.navigate(page, params);
-window.setLang = (lang) => store.setLang(lang);
-window.addToCart = (id) => store.addToCart({ id }); // Simplified
-window.logout = () => { store.setUser(null); store.navigate('home'); };
-
-window.doLogin = async () => {
-    // Simulation
-    store.setUser({ id: 1, name: 'User Test', role: 'buyer', token: 'xyz' });
-    store.navigate('cabinet');
-};
-
-window.doRegister = async () => {
-    const role = document.querySelector('input[name="role"]:checked').value;
-    const name = document.getElementById('reg-name').value;
-    if(!name) return alert('Введите имя');
+    <title>Yakutia Market</title>
     
-    // Simulation
-    store.setUser({ id: Date.now(), name, role, token: 'xyz' });
-    store.navigate('cabinet');
-};
+    <!-- 1. Подключаем шрифты и иконки от Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    
+    <!-- 2. Подключаем наши стили (Material Design 3) -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- 3. Подключаем ядро приложения (JavaScript) -->
+    <script src="js/app.js" type="module" defer></script>
+</head>
+<body>
+    <!-- 
+        Это "точка монтирования". 
+        Весь интерфейс (кнопки, карточки, страницы) будет создан JS и вставлен сюда.
+    -->
+    <div id="app">
+        <!-- Скелет загрузки, пока JS не взял управление -->
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; color: #555;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; border: 4px solid #eee; border-top-color: #00639b; animation: spin 1s linear infinite;"></div>
+            <span>Загрузка платформы...</span>
+        </div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    </div>
 
-// --- INIT ---
-store.subscribe(renderApp);
-renderApp(); // Initial Render
+    <!-- 
+        "Порталы" для глобальных элементов, таких как всплывающие окна и уведомления.
+        Это позволяет им отображаться поверх всего приложения.
+    -->
+    <div id="toast-container"></div>
+    <div id="modal-portal"></div>
+</body>
+</html>
