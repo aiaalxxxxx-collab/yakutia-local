@@ -2,49 +2,293 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    
-    <!-- 
-        Это критически важно для мобильных устройств.
-        Отключаем масштабирование, чтобы приложение выглядело как нативное.
-    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <!-- Цвет адресной строки в Chrome на Android -->
     <meta name="theme-color" content="#f8fdff">
-    
     <title>Yakutia Market</title>
     
-    <!-- 1. Подключаем шрифты и иконки от Google -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     
-    <!-- 2. Подключаем наши стили (Material Design 3) -->
-    <link rel="stylesheet" href="assets/css/style.css">
-    
-    <!-- 3. Подключаем ядро приложения (JavaScript) -->
-    <script src="js/app.js" type="module" defer></script>
+    <!-- STYLES (Встроены для надежности) -->
+    <style>
+        :root {
+            --primary: #00639b; --on-primary: #ffffff;
+            --surface: #f8fdff; --surface-container: #f0f4f8;
+            --outline: #72777f; --text: #191c1e;
+            --radius: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--surface); color: var(--text); font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
+        
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .top-app-bar { position: sticky; top: 0; z-index: 100; background: var(--surface-container); height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .brand { font-size: 20px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        
+        /* Components */
+        .btn-icon { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-filled { background: var(--primary); color: var(--on-primary); border: none; padding: 0 24px; height: 40px; border-radius: 20px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 16px; }
+        
+        /* Product Card */
+        .md-card { background: #fff; border-radius: var(--radius); border: 1px solid #eee; overflow: hidden; position: relative; }
+        .card-media { height: 160px; background: #eee; position: relative; }
+        .card-media img { width: 100%; height: 100%; object-fit: cover; }
+        .card-content { padding: 12px; }
+        .headline { font-weight: 500; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .price { font-size: 18px; font-weight: bold; color: var(--primary); margin-top: 4px; }
+        
+        /* Auth & Profile */
+        .auth-container { text-align: center; margin-top: 40px; }
+        .role-card { background: var(--surface-container); padding: 24px; border-radius: 16px; margin: 8px 0; cursor: pointer; display: flex; align-items: center; gap: 16px; font-weight: 500; font-size: 18px; }
+        .profile-header { display: flex; align-items: center; gap: 16px; margin-top: 24px; margin-bottom: 24px; }
+        .avatar-xl { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 16px; }
+        
+        /* Floating Elements */
+        .fab-main { position: fixed; bottom: 90px; right: 16px; width: 56px; height: 56px; border-radius: 16px; background: #eaddff; color: #21005d; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 90; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: center; justify-content: center; }
+        .ai-dialog { background: white; width: 90%; max-width: 400px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        
+        /* Cart Item */
+        .cart-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; }
+        .cart-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .qty { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+        .qty button { width: 28px; height: 28px; }
+
+        /* Actions on Card */
+        .edit-fab, .delete-fab { position: absolute; top: 8px; width: 32px; height: 32px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .edit-fab { right: 44px; background: white; color: black; }
+        .delete-fab { right: 8px; background: white; color: #ba1a1a; }
+        
+        /* Search */
+        .search-bar { background: var(--surface-container); border-radius: 24px; padding: 0 16px; height: 48px; display: flex; align-items: center; margin: 16px; }
+        .search-bar input { border: none; background: transparent; flex: 1; height: 100%; font-size: 16px; margin-left: 8px; outline: none; }
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 16px; }
+        .chip { padding: 8px 16px; background: var(--surface-container); border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+    </style>
 </head>
 <body>
-    <!-- 
-        Это "точка монтирования". 
-        Весь интерфейс (кнопки, карточки, страницы) будет создан JS и вставлен сюда.
-    -->
-    <div id="app">
-        <!-- Скелет загрузки, пока JS не взял управление -->
-        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; color: #555;">
-            <div style="width: 48px; height: 48px; border-radius: 50%; border: 4px solid #eee; border-top-color: #00639b; animation: spin 1s linear infinite;"></div>
-            <span>Загрузка платформы...</span>
-        </div>
-        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-    </div>
+    <div id="app"></div>
 
-    <!-- 
-        "Порталы" для глобальных элементов, таких как всплывающие окна и уведомления.
-        Это позволяет им отображаться поверх всего приложения.
-    -->
-    <div id="toast-container"></div>
-    <div id="modal-portal"></div>
+    <script>
+        /** 
+         * YAKUTIA MARKET CORE (MONOLITH FIX)
+         * All JS Logic embedded to prevent loading errors
+         */
+        
+        // --- 1. DB & STORE ---
+        const DB = {
+            get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+            toBase64: file => new Promise((res, rej) => {
+                const r = new FileReader(); r.readAsDataURL(file); 
+                r.onload = () => res(r.result); r.onerror = rej;
+            })
+        };
+
+        const defaultProducts = [
+            { id: 1, title: 'Оленина Премиум', price: 1200, category: 'meat', sellerId: 's1', img: 'https://placehold.co/400x300/00639b/white?text=Meat' },
+            { id: 2, title: 'Чир Свежий', price: 950, category: 'fish', sellerId: 's1', img: 'https://placehold.co/400x300/00639b/white?text=Fish' },
+            { id: 3, title: 'Брусника', price: 3000, category: 'berry', sellerId: 's2', img: 'https://placehold.co/400x300/00639b/white?text=Berry' }
+        ];
+
+        const store = {
+            state: {
+                user: DB.get('user', null),
+                lang: DB.get('lang', 'ru'),
+                products: DB.get('products', defaultProducts),
+                cart: DB.get('cart', []),
+                orders: DB.get('orders', []),
+                fav: DB.get('fav', []),
+                page: 'home',
+                aiOpen: false
+            },
+            update(fn) {
+                fn(this.state);
+                DB.set('user', this.state.user);
+                DB.set('lang', this.state.lang);
+                DB.set('products', this.state.products);
+                DB.set('cart', this.state.cart);
+                DB.set('orders', this.state.orders);
+                DB.set('fav', this.state.fav);
+                render();
+            }
+        };
+
+        // --- 2. I18N ---
+        const T = {
+            ru: { search:'Поиск...', meat:'Мясо', fish:'Рыба', berry:'Ягоды', login:'Войти', add:'Добавить' },
+            en: { search:'Search...', meat:'Meat', fish:'Fish', berry:'Berry', login:'Login', add:'Add' },
+            sah: { search:'Көрдөөһүн...', meat:'Эт', fish:'Балык', berry:'Отон', login:'Киир', add:'Эбэн' }
+        };
+
+        // --- 3. CONTROLLER ---
+        const Actions = {
+            nav: (p) => store.update(s => s.page = p),
+            lang: () => store.update(s => s.lang = s.lang==='ru'?'en':'ru'),
+            login: (role) => store.update(s => { 
+                s.user = { id: Date.now(), role, name: role==='seller'?'Айаал Фермер':'Покупатель' }; 
+                s.page = 'profile'; 
+            }),
+            logout: () => store.update(s => { s.user = null; s.page = 'home'; }),
+            
+            // Cart
+            add: (id) => store.update(s => {
+                const p = s.products.find(x=>x.id===id), ex = s.cart.find(x=>x.id===id);
+                if(ex) ex.quantity++; else s.cart.push({...p, quantity:1});
+                alert('Добавлено в корзину!');
+            }),
+            qty: (id, d) => store.update(s => {
+                const i = s.cart.find(x=>x.id===id);
+                i.quantity += d;
+                if(i.quantity <= 0) s.cart = s.cart.filter(x=>x.id!==id);
+            }),
+            checkout: () => store.update(s => {
+                s.orders.push({id: Date.now(), items:[...s.cart], date: new Date().toLocaleString()});
+                s.cart = []; alert('Заказ оформлен!');
+            }),
+
+            // CRUD
+            addProductPrompt: () => document.getElementById('img-input').click(),
+            handleFile: async (input) => {
+                if(!input.files[0]) return;
+                const img = await DB.toBase64(input.files[0]);
+                const title = prompt("Название?");
+                const price = prompt("Цена?");
+                if(title && price) store.update(s => s.products.push({
+                    id: Date.now(), title, price: Number(price), category:'meat', sellerId: s.user.id, img
+                }));
+            },
+            delete: (id) => { if(confirm('Удалить?')) store.update(s => s.products = s.products.filter(p=>p.id!==id)); },
+            edit: (id) => { 
+                const p = store.state.products.find(x=>x.id===id);
+                const np = prompt("Новая цена?", p.price);
+                if(np) store.update(s => p.price = Number(np));
+            },
+            
+            toggleAI: () => store.update(s => s.aiOpen = !s.aiOpen),
+            filter: (c) => render(c) // Re-render with filter
+        };
+
+        // --- 4. VIEWS ---
+        const Icon = n => `<span class="material-symbols-rounded">${n}</span>`;
+
+        function PageHome(s, t, catFilter) {
+            const list = catFilter && catFilter !== 'all' 
+                ? s.products.filter(p => p.category === catFilter) 
+                : s.products;
+                
+            return `
+                <div class="search-bar">${Icon('search')} <input placeholder="${t.search}"></div>
+                <div class="categories">
+                    <button class="chip" onclick="Actions.filter('all')">Все</button>
+                    <button class="chip" onclick="Actions.filter('meat')">${t.meat}</button>
+                    <button class="chip" onclick="Actions.filter('fish')">${t.fish}</button>
+                </div>
+                <div class="card-grid">
+                    ${list.map(p => `
+                        <div class="md-card">
+                            <div class="card-media">
+                                <img src="${p.img}">
+                                ${s.user?.role === 'seller' ? `
+                                    <button class="edit-fab" onclick="Actions.edit(${p.id})">${Icon('edit')}</button>
+                                    <button class="delete-fab" onclick="Actions.delete(${p.id})">${Icon('delete')}</button>
+                                ` : ''}
+                            </div>
+                            <div class="card-content">
+                                <div class="headline">${p.title}</div>
+                                <div class="price">${p.price} ₽</div>
+                                <button class="btn-filled" style="width:100%; margin-top:8px" onclick="Actions.add(${p.id})">${t.add}</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function PageProfile(s, t) {
+            if(!s.user) return `
+                <div class="auth-container">
+                    <h1>Вход</h1>
+                    <div class="role-card" onclick="Actions.login('buyer')">${Icon('shopping_bag')} Покупатель</div>
+                    <div class="role-card" onclick="Actions.login('seller')">${Icon('store')} Продавец</div>
+                    <div class="role-card" onclick="Actions.login('courier')">${Icon('local_shipping')} Курьер</div>
+                </div>`;
+            
+            return `
+                <div class="container">
+                    <div class="profile-header">
+                        <div class="avatar-xl">${s.user.name[0]}</div>
+                        <div><h2>${s.user.name}</h2><div>${s.user.role}</div></div>
+                    </div>
+                    ${s.user.role === 'seller' ? `
+                        <div class="role-card" onclick="Actions.addProductPrompt()">
+                            ${Icon('add_a_photo')} Добавить товар
+                            <input type="file" id="img-input" hidden onchange="Actions.handleFile(this)">
+                        </div>
+                    ` : ''}
+                    <div class="menu-item" onclick="Actions.nav('orders')">${Icon('receipt_long')} Мои заказы (${s.orders.length})</div>
+                    <div class="menu-item" style="color:red" onclick="Actions.logout()">${Icon('logout')} Выйти</div>
+                </div>
+            `;
+        }
+
+        function PageCart(s) {
+            return `<div class="container">
+                <h1>Корзина (${s.cart.length})</h1>
+                ${s.cart.map(i => `
+                    <div class="cart-item">
+                        <img src="${i.img}">
+                        <div><b>${i.title}</b><br>${i.price} ₽</div>
+                        <div class="qty">
+                            <button onclick="Actions.qty(${i.id}, -1)">-</button> 
+                            ${i.quantity} 
+                            <button onclick="Actions.qty(${i.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `).join('')}
+                ${s.cart.length ? `<button class="btn-filled" style="width:100%; margin-top:20px" onclick="Actions.checkout()">Заказать</button>` : '<p>Пусто</p>'}
+            </div>`;
+        }
+
+        // --- 5. RENDERER ---
+        function render(catFilter = 'all') {
+            const s = store.state;
+            const t = T[s.lang];
+            const app = document.getElementById('app');
+            
+            let content = '';
+            if (s.page === 'home') content = PageHome(s, t, catFilter);
+            else if (s.page === 'profile') content = PageProfile(s, t);
+            else if (s.page === 'cart') content = PageCart(s);
+            else if (s.page === 'orders') content = `<div class="container"><h1>Заказы</h1>${s.orders.map(o => `<div style="padding:10px; border-bottom:1px solid #eee">Заказ #${o.id}</div>`).join('')}</div>`;
+
+            app.innerHTML = `
+                <header class="top-app-bar">
+                    <div class="brand" onclick="Actions.nav('home')">${Icon('storefront')} YakutiaMarket</div>
+                    <div style="display:flex; gap:10px">
+                        <button class="btn-icon" onclick="Actions.lang()">${s.lang.toUpperCase()}</button>
+                        <button class="btn-icon" onclick="Actions.nav('profile')">${Icon('person')}</button>
+                        <button class="btn-icon" onclick="Actions.nav('cart')">${Icon('shopping_bag')} ${s.cart.length||''}</button>
+                    </div>
+                </header>
+                <main>${content}</main>
+                <button class="fab-main" onclick="Actions.toggleAI()">${Icon('smart_toy')}</button>
+                ${s.aiOpen ? `
+                    <div class="modal-overlay" onclick="Actions.toggleAI()">
+                        <div class="ai-dialog" onclick="event.stopPropagation()">
+                            <h3>AI Assistant</h3>
+                            <p>Привет! Я помогу с рецептами.</p>
+                            <input placeholder="Спроси..." style="width:100%; padding:10px; margin-top:10px">
+                        </div>
+                    </div>` : ''}
+            `;
+        }
+
+        // START
+        render();
+    </script>
 </body>
 </html>
